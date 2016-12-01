@@ -55,7 +55,7 @@ public class Test {
         if (user == null) {
             System.out.println("Unable to delete. User with id " + id + " not found");
             return new ResponseEntity<UserT>(HttpStatus.NOT_FOUND);
-        } 
+        }  
         userTMapper.deleteByPrimaryKey(id);
         return new ResponseEntity<UserT>(HttpStatus.NO_CONTENT);
     }
