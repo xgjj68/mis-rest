@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import rest.mybatis.dao.test.UserTMapper;
 import rest.mybatis.model.test.UserT;
 @RestController
-public class Test {
+public class Test{
 	@Autowired
 	private UserTMapper userTMapper;
 	@RequestMapping(value="/test",method=RequestMethod.GET)
