@@ -66,6 +66,7 @@
     from Department
     where Department_ID = #{departmentId,jdbcType=INTEGER}
   </select>
+  <!-- 查询所有的有效部门 -->
    <select id="selectAllMrDepartment"  resultMap="ResultMapWithBLOBs">
     <!--
       WARNING - @mbggenerated
@@ -76,7 +77,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from Department
+    from Department where Department_Validity = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
