@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>视频会议室管理</title>
+<!-- 新 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap.min.css">
+
+<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
+
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script type="text/javascript" src="js/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script src="js/angular/controller.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var myDate = new Date();
+		myDate.toLocaleDateString(); //获取当前日期
+		$("#input1").prop("value", "hjjh");
+		//alert(myDate.toLocaleDateString());
+	});
+</script>
+<!---->
+<script>
+	window.onload = function() {
+		var CheckAll = document.getElementById('All');
+		var table = document.getElementById('table');
+		var CheckBox = table.getElementsByTagName('input');
+		CheckAll.onclick = function() {
+			if (CheckAll.checked == true) {
+				for (i = 1; i < CheckBox.length; i++) {
+					CheckBox[i].checked = true;
+				}
+				;
+			} else {
+				for (i = 1; i < CheckBox.length; i++) {
+					CheckBox[i].checked = false;
+				}
+				;
+			}
+		};
+
+		var Check1 = document.getElementById('Getpassword1');
+		Check1.onclick = function() {
+			alert("hjhj");
+			$.ajax({
+				type : "post",
+				url : "${pageContext.request.contextPath}/json/fast54",
+				data : "name=c54",
+				success : function(msg54) {
+					console.log(msg54.length);
+					$("tbody>tr:gt(0)").remove();
+					for (var i = 0; i < msg54.length; i++) {
+						var id = msg54[i].id;
+						var name = msg54[i].name;
+						var gender = msg54[i].birth;
+						$("tbody").append(
+								"<tr>" + "<td>" + id + " " + (sig++) + "</td>"
+										+ "<td>" + name + "</td>" + "<td>"
+										+ gender + "</td>" + "</tr>");
+					}
+				},
+				dataType : "json"
+			});
+		};
+	};
+</script>
+</head>
+<body
+	style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 150%;">
+	<!-- 预定列表 -->
+	<div class="panel panel-success"
+		style="width: 1400px; margin-left: 13%;margin-top: 5%">
+		<div class="panel-heading">
+			<div>
+				<h3 class="panel-title">
+					<strong>会议室管理</strong>
+				</h3>
+			</div>
+			<div style="" align="right">
+				<a href="mettingroom.html" class="btn btn-lg btn-info" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
+			</div>
+		</div>
+		<div class="panel-body">
+			<div class="panel panel-success" style="width: 90%; margin-left: 5%;">
+				<div class="panel-heading">
+					<h3 class="panel-title">会议室列表</h3>
+				</div>
+				<div class="panel-body">
+
+					<div style="height: 50px;">
+						<div style="margin-left: 0px; float: left;">
+							<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal3" style="height: 40px;">添加</button>
+						</div>
+					</div>
+					<div style="width: 90%">
+						<table id="table" class="table">
+							<thead>
+								<tr class="success">
+									<td><input id="All" type="text" hidden="true" name="" /></td>
+									<td>会议名称</td>
+									<td>账户</td>
+									<td>密码</td>
+									<td>密码修改时间</td>
+									<td>修改人</td>
+									<td></td>
+									<td></td>
+								</tr>
+							</thead>
+							<tr class="success">
+								<td><input id="All" type="text" hidden="true" name="" /></td>
+								<td>adx视频会议室</td>
+								<td>78jgjh</td>
+								<td>6576576</td>
+								<td>xxxx</td>
+								<td>xxxx</td>
+								<td>
+									<div style="height: 50px;">
+										<div style="margin-left: 0px; float: left;">
+											<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal4" style="height: 40px; margin-left: 60px;">修改</button>
+										</div>
+									</div>
+								</td>
+								<td>
+									<div style="height: 50px;">
+										<div style="margin-left: 0px; float: left;">
+											<a class="btn btn-lg btn-info" href="#" role="button"
+												style="height: 40px;">删除</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr class="success">
+								<td><input id="All" type="text" hidden="true" name="" /></td>
+								<td>cdx视频会议室</td>
+								<td>7879iuhh</td>
+								<td>6576575</td>
+								<td>xxxx</td>
+								<td>xxxx</td>
+								<td>
+									<div style="height: 50px;">
+										<div style="margin-left: 0px; float: left;">
+											<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal4" style="height: 40px; margin-left: 60px;">修改</button>
+										</div>
+									</div>
+								</td>
+								<td>
+									<div style="height: 50px;">
+										<div style="margin-left: 0px; float: left;">
+											<a class="btn btn-lg btn-info" href="#" role="button"
+												style="height: 40px;">删除</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- 链接管理 -->
+			<div class="panel panel-success" style="width: 90%; margin-left: 5%;">
+				<div class="panel-heading">
+					<h3 class="panel-title">链接管理</h3>
+				</div>
+				<div class="panel-body">
+
+					<div style="height: 100px; float: left;">
+						<strong>视频会议室app下载：&nbsp&nbsp&nbsp</strong> <a
+							style="color: purple; font-weight: bold;"><u>gf77sfy的感觉会更好gyhg</u></a>
+					</div>
+					<div style="height: 100px; margin-left: 80px;">
+						<!-- 按钮触发模态框 -->
+						<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal1" style="height: 40px; margin-left: 100px;">修改</button>
+					</div>
+
+					<div style="height: 100px; float: left;">
+						<strong>视频会议室使用说明文档下载：&nbsp&nbsp&nbsp</strong> <a
+							style="color: purple; font-weight: bold;"><u>sdfhfhfg黄金古神东莞房价估计很贵hhh</u></a>
+					</div>
+					<div style="height: 100px; margin-left: 80px;">
+						<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal2" style="height: 40px; margin-left: 100px;">修改</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- 模态框（Modal） -->
+<!-- 修改下载视频app的链接 -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		style="margin-top: 400px;" data-backdrop="false" >
+    <div class="modal-dialog">
+    <form action="" class="">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">修改视频会议室app下载链接</h4>
+            </div>
+            <div class="modal-body">
+				输入新的链接：<input id="" type="text" name="" style="width: 500px" required="required"/>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button id="tijiao1" type="submit" class="btn btn-primary">提交更改</button>
+            </div>
+        </div>
+     </form>   
+    </div>
+</div>
+<!-- 修改下载使用文档链接 -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		style="margin-top: 400px;" data-backdrop="false">
+    <div class="modal-dialog">
+    <form action="" class="" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">修改使用文档下载链接</h4>
+            </div>
+            <div class="modal-body">
+				输入新的链接：<input id="" type="text" name="" style="width: 500px"/>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button id="tijiao2" type="submit" class="btn btn-primary">提交更改</button>
+            </div>
+        </div>
+     </form>   
+    </div>
+</div>
+<!-- 添加视频会议室 -->
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		style="margin-top: 100px;" data-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">添加视频会议室</h4>
+            </div>
+            <form action="" class="" style="">
+	            <div class="modal-body">
+						<div class="panel panel-primary" style="width: 500px;height: 300px;margin-left: 40px">
+							<div class="panel-heading">
+								<h3 class="panel-title">添加</h3>
+							</div>
+							<div class="panel-body">
+								<div>
+									<div style="margin-left:20px;margin-top: 20px;">
+										会议室名称: <input type="text"
+											style="width: 185px; height: 40px; margin-left: 20px" />
+									</div>
+									<div style="margin-left:60px;margin-top: 20px">
+										账户: <input type="text"
+											style="width: 185px; height: 40px; margin-left: 20px" />
+									</div>
+									<div style="margin-left: 60px;margin-top: 20px">
+										密码: <input type="text"
+											style="width: 185px; height: 40px; margin-left: 20px" />
+									</div>
+								</div>
+
+							</div>
+						</div>
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	                <button id="tijiao3" type="submit" class="btn btn-primary">提交</button>
+	            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- 修改室视频会议室会信息-->
+<div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		style="margin-top: 100px;" data-backdrop="false"
+		>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">修改室视频会议室会信息</h4>
+            </div>
+            <form action="" class="form-horizontal" style="">
+            <div class="control-group">
+            <div class="modal-body">
+				<div class="panel panel-primary" style="width: 500px;height: 300px;margin-left: 40px">
+							<div class="panel-heading">
+								<h3 class="panel-title">修改</h3>
+							</div>
+							<div class="panel-body">
+								<div>
+									<div style="margin-left:20px;margin-top: 20px;">
+										<label class="control-label">会议室名称:</label> <input type="text" class="uneditable-input"
+											style="width: 185px; height: 40px; margin-left: 20px;" disabled="disabled" />
+											
+									</div>
+									<div style="margin-left: 65px;margin-top: 20px">
+										<label class="control-label">账户:</label> <input type="text"
+											style="width: 185px; height: 40px; margin-left: 20px;" />
+									</div>
+									<div style="margin-left: 65px;margin-top: 20px">
+										<label class="control-label">密码:</label> <input type="text"
+											style="width: 185px; height: 40px; margin-left: 20px;" />
+									</div>
+								</div>
+
+							</div>
+						</div>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button id="tijiao4" type="button" class="btn btn-primary">提交更改</button>
+            </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

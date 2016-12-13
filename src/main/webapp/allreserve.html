@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>视频会议室 预定</title>
+<!-- 新 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap.min.css">
+
+<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
+
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script type="text/javascript" src="js/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script src="js/angular/controller.js"></script>
+<script type="text/javascript">
+		
+		window.onload=function(){
+			
+		      var tijiao = document.getElementById('tijiaoform');
+		      var bumen = document.getElementById('bumen');
+		      var zuzhiren = document.getElementById('zuzhiren');
+		      var huiyi = document.getElementById('huiyi');
+		      var mettingroom = document.getElementById('mettingroom');
+		      var starttimes =  document.getElementById('starttime');
+			  var endtimes = document.getElementById('endtime');
+			  var startDate = document.getElementById('startDate');
+			  var renyuan =  document.getElementById('renyuan');
+			  var ry_tianjia = document.getElementById('ry_tianjia');
+			  var renshu = document.getElementById('renshu');
+			  var huiyijianyao = document.getElementById('huiyijianyao');
+			  var youjian1 = document.getElementById('youjian1');
+			  var weixin1 = document.getElementById('weixin1');
+			//初始化结束时间
+			  mettingroom.onchange=function(){
+				  //alert("及爱好");
+				  var endDate = document.getElementById('endDate');
+				  endDate.value = startDate.value;
+				  for( i=0 ;i<starttimes.length;i++){
+					   starttimes[i].removeAttribute("disabled");   
+					   endtimes[i].removeAttribute("disabled");  
+					   }
+				   //alert("上个");
+			    	 if(mettingroom.value == "请选择视频会议室"){
+			         }else{
+			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
+			        	 var stringObj = startDate.value; */  
+			        	 var date=startDate.value;  
+			        	 var id = mettingroom.value  
+			        	
+			        	 $.ajax({
+								type:"post",
+								url:"http://localhost:8080/searchSpOrderByMeettingRoomId",
+								//contentType: "application/json",
+								data: {meettingRoomId:id,startdate:date},
+								success:function(msg54){
+									//alert(msg54.length);
+									for( i=0 ;i<starttimes.length;i++){
+										   for(j=0;j<msg54.length;j++){
+											  //alert(msg54.length);
+											   var arr1 = msg54[j].startTime.split(":");
+											   //alert("来不");
+											   var arr2 = msg54[j].endTime.split(":");
+											   if(arr2[0]>=i & i>=arr1[0]){
+												   
+												   starttimes[i].disabled="disabled";
+												   endtimes[i].disabled="disabled";
+											   }
+										   }
+									   }  	
+								}
+							});
+			         } 
+			}
+			  startDate.onchange=function(){
+				//alert("kkk");
+				  var endDate = document.getElementById('endDate');
+				  endDate.value = startDate.value;
+				  for( i=0 ;i<starttimes.length;i++){
+					   starttimes[i].removeAttribute("disabled");   
+					   endtimes[i].removeAttribute("disabled");  
+					   }
+				   //alert("popop");
+			    	 if(mettingroom.value == "请选择视频会议室"){
+			         }else{
+			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
+			        	 var stringObj = startDate.value; */  
+			        	 var date=startDate.value;  
+			        	 var id = mettingroom.value  
+			        	
+			        	 $.ajax({
+								type:"post",
+								url:"http://localhost:8080/searchSpOrderByMeettingRoomId",
+								//contentType: "application/json",
+								data: {meettingRoomId:id,startdate:date},
+								success:function(msg54){
+									//alert(msg54.length);
+									for( i=0 ;i<starttimes.length;i++){
+										   for(j=0;j<msg54.length;j++){
+											  //alert(msg54.length);
+											   var arr1 = msg54[j].startTime.split(":");
+											   //alert("来不");
+											   var arr2 = msg54[j].endTime.split(":");
+											   if(arr2[0]>=i & i>=arr1[0]){
+												   
+												   starttimes[i].disabled="disabled";
+												   endtimes[i].disabled="disabled";
+											   }
+										   }
+									   }  	
+								}
+							});
+			         } 
+		      } 
+			//表单信息验证
+		      tijiao.onclick=function(){
+		    	  var arr1 = starttimes.value.split(":");
+		    	  
+			      var arr2 = endtimes.value.split(":");
+			      
+		    	  if(bumen.value =="请选择部门"){
+			    	  alert("部门不能为空");
+			    	  return;
+		         }else if (zuzhiren.value == ""){
+		        	 alert("组织人不能为空");
+		        	 return;
+		         }else if(huiyi.value == ""){
+		        	 alert("会议议题不能为空");
+		        	 return;
+		         }else if(mettingroom.value == "请选择视频会议室"){
+		        	 alert("请选择会议室");
+		        	 return;
+		         }else if(arr1[0] - arr2[0]>=0){
+		        	 alert("请选择正确的结束时间");
+		        	 return;
+		         }
+		    	 /*  alert(bumen.value);
+		    	  alert(zuzhiren.value);
+		    	  alert(yuangongid.value);
+		    	  alert(huiyi.value);
+		    	  alert(renshu.value);
+		    	  alert(huiyijianyao.value);
+		    	  alert(mettingroom.value);
+		    	  alert(startDate.value);
+		    	  alert(endDate.value);
+		    	  alert(starttimes.value);
+		    	  alert(endtimes.value);
+		    	  alert(ids);
+		    	  alert(youjian1.checked);
+		    	  alert(weixin1.checked); */
+		    	  var mrSpOrder =
+		    			  {
+				    		    department: bumen.value,
+				    		    organization: zuzhiren.value,
+				    		    meettingName: huiyi.value,
+				    		    peopleNumbers: renshu.value,
+				    		    startTime: starttimes.value,
+				    		    endTime: endtimes.value,
+				    		    startDate: startDate.value,
+				    		    endDate: endDate.value,
+				    		    meettingRoomId: mettingroom.value,
+				    		    meettingTitle: huiyijianyao.value
+				    		  } ;
+		    	   $.ajax({
+					type: "POST",
+					url: "http://localhost:8080/InsertSpOrder",
+					contentType: "application/json", 
+					data: JSON.stringify(mrSpOrder),
+				    success:function(msg54){
+				    	//alert(ids+yuangongid.value);
+				    	var eids = (ids+yuangongid.value).split(":");
+				    	//alert(eids.length); 
+				    	$.ajax({
+							type: "POST",
+							url: "http://localhost:8080/InsertMrMeettingEmployee",
+							contentType: "application/json", 
+							data: JSON.stringify(eids),
+						    success:function(msg54){
+						    	
+						    	window.location.href='myreserve.html';
+				        		}
+						});
+				    	//window.location.href='myreserve.html';
+		        		}
+				});
+					//alert(mrSpOrder.department);
+			}	  
+		   //会议室填充
+		    function getParameter(param)
+		   {
+		   var query = window.location.search;
+		   var iLen = param.length;
+		   var iStart = query.indexOf(param);
+		   if (iStart == -1)
+		   　	return "";
+		   iStart += iLen + 1;
+		   var iEnd = query.indexOf("&", iStart);
+		   if (iEnd == -1)
+		   　return query.substring(iStart);
+		   return query.substring(iStart, iEnd);
+		   }
+		   //alert(getParameter("meettingroomname"));
+		   var meettingroomname = getParameter("meettingroomname");
+		   var meettingroomid = getParameter("meettingId");
+		   var morentishi = document.getElementById('morentishi');
+		   if(meettingroomname != ""){
+			   //alert(meettingroomid);
+			   $(morentishi).before("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+meettingroomname+"</option>");
+			   morentishi.removeAttribute("selected");
+			   var xinzeng = document.getElementById('xinzeng');
+			   mettingroom.onclick=function(){
+				   xinzeng.hidden=true;
+			   }
+		   } 
+		 };
+</script>
+</head>
+<body  ng-app="myApp"  style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size:150%;">
+	<div class="jumbotron" style="background-image:url('image/beijing5.jpg'); width: 1400px;margin-left: 13%;">
+		<h3 style="color: blue;">预定提示:</h3>
+		<p style="color: blue;">
+				&nbsp&nbsp1.会议室的使用时间，是在预定的会议结束时间上顺延一个小时。
+		</p>
+		<p style="color: blue;">
+				&nbsp&nbsp2.上个会议室使用时间结束后的一小时和下个会议开始前的一小时之间，会由管理员对会议室进行维护，此时间段无法使用会议室。
+		</p>
+	</div>
+	<form action="myapp" name="form1" >
+		<!-- 必填信息模块 -->
+	<div class="panel panel-primary" style="width: 1400px;margin-left: 13%;">
+		<div class="panel-heading">
+			<h3 class="panel-title"><strong>视频会议室预定</strong></h3>
+		</div>
+		<div class="panel-body">
+			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
+				<div class="panel-heading">
+					<h3 class="panel-title">必填信息</h3>
+				</div>
+				<div class="panel-body" >
+					<div>
+						<div  ng-controller="myCtrl" style="margin-left: 302px; float: left;">
+							<strong>部门:</strong> <select id="bumen" style="margin-left: 20px; width: 185px; height: 40px;color: teal;">
+								<option selected="selected">请选择部门</option>
+								<option ng-repeat="department in departments">{{department.departmentName}}</option>
+								</select>
+						</div>
+						<div style="margin-left: 197px; float: left;">
+							<strong>组织人:</strong> <input  id="zuzhiren"  placeholder="必填" style="margin-left: 20px; width: 185px; height: 40px"/>
+													<input id="yuangongid" type="text" hidden="true" name="employeeId">
+						</div>
+						<div ng-controller="zuzhirenCtrl">
+						<strong>
+							<select id="zuhzirenleibaio" style="margin-left: 815px; width: 185px;color: teal;"   size="10" hidden="true">
+								<option selected="selected">请选择</option>
+								<option ng-repeat="zuhziren  in zuzhirens" value="{{zuhziren.userId}}">{{zuhziren.userName+"--"+zuhziren.mrDepartment.departmentName}}</option>
+							</select>
+						</strong>
+						</div>
+					</div>
+
+					<div style="height: 60px"></div>
+
+					<div>
+						<div style="margin-left: 275px; float: left;">
+							<strong>会议议题:</strong> <input type="text" id="huiyi"
+								style="width: 185px; height: 40px; margin-left: 20px" placeholder="必填"/>
+						</div>
+						<div style="margin-left: 180px; float: left;">
+							<strong>参与人数:</strong> <input type="text" id="renshu"
+								style="width: 185px; height: 40px; margin-left: 20px" onkeyup="this.value=this.value.replace(/\D/g,'')" />
+						</div>
+					</div>
+
+					<div style="height: 60px;"></div>
+
+					<div style="height: 60px">
+						<div style="margin-left: 275px; float: left;">
+							<div style="float: left;"><strong>会议简要:</strong></div>
+							<div style="float: left;">
+								<textarea id="huiyijianyao"rows="4" cols="102" style="margin-left: 20px" ></textarea>
+							</div>
+
+						</div>
+					</div>
+
+					<div style="height: 50px;"></div>
+
+					<div style="height: 50px;">
+						<div  ng-controller="meettingRoomCtrl" style="margin-left: 260px; float: left;">
+							<input id="meettingRoomId" type="text" hidden="true" name="meettingRoomId"  />
+							<strong>视频会议室:</strong> <select id="mettingroom" 
+								style="margin-left: 20px; width: 420px; height: 40px" name="meettingRoomId">
+								<option id="morentishi" selected="selected" >请选择视频会议室</option>
+								<option ng-repeat="meettingRoom in meettingRooms" value="{{meettingRoom.id}}">{{meettingRoom.meetingRoomName}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div style="height: 40px;"></div>
+					<div>
+						<div style="margin-left: 280px; float: left;">
+							<strong>开始日期:</strong><input id="startDate" value="" type="date"
+								style="margin-left: 20px; width: 200px; height: 40px" />
+						</div>
+						<div style="margin-left: 270px; float: left;">
+							<strong>开始时间:</strong><select id="starttime" style="margin-left: 20px; width: 80px; height: 40px">
+								
+								<option>0:00</option>
+								<option>1:00</option>
+								<option>2:00</option>
+								<option>3:00</option>
+								<option>4:00</option>
+								<option>5:00</option>
+								<option>6:00</option>
+								<option>7:00</option>
+								<option>8:00</option>
+								<option>9:00</option>
+								<option>10:00</option>
+								<option>11:00</option>
+								<option>12:00</option>
+								<option>13:00</option>
+								<option>14:00</option>
+								<option>15:00</option>
+								<option>16:00</option>
+								<option>17:00</option>
+								<option>18:00</option>
+								<option>19:00</option>
+								<option>20:00</option>
+								<option>21:00</option>
+								<option>22:00</option>
+								<option>23:00</option>
+							</select>
+						</div>
+
+						<div style="height: 60px;"></div>
+
+						<div style="margin-left: 280px; float: left;">
+							<strong>结束日期:</strong><input id="endDate" type="date"
+								style="margin-left: 20px; width: 200px; height: 40px" readonly="readonly" />
+						</div>
+						<div style="margin-left: 270px; float: left;">
+							<strong>结束时间:</strong> <select id="endtime"
+								style="margin-left: 20px; width: 80px; height: 40px">
+								<option >0:00</option>
+								<option>1:00</option>
+								<option>2:00</option>
+								<option>3:00</option>
+								<option>4:00</option>
+								<option>5:00</option>
+								<option>6:00</option>
+								<option>7:00</option>
+								<option>8:00</option>
+								<option>9:00</option>
+								<option>10:00</option>
+								<option>11:00</option>
+								<option>12:00</option>
+								<option>13:00</option>
+								<option>14:00</option>
+								<option>15:00</option>
+								<option>16:00</option>
+								<option>17:00</option>
+								<option>18:00</option>
+								<option>19:00</option>
+								<option>20:00</option>
+								<option>21:00</option>
+								<option>22:00</option>
+								<option>23:00</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 参会人员模块 -->
+			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
+				<div class="panel-heading">
+					<h3 class="panel-title">参与人员</h3>
+				</div>
+				<div class="panel-body">
+					<div style="margin-left: 270px; float: left;" class="input-group" >
+						<div>
+							<strong>参与人员:</strong> <input id="renyuan" placeholder="输入姓名。。。。。。" 
+						 style="margin-left: 20px; width: 420px; height: 40px" />
+						</div>
+						<div ng-controller="canyurenCtrl">
+							<select id="renyunleibaio" style="margin-left: 88px; width: 420px;color: teal;" hidden="true" size="10">
+								<option selected="selected">请选择</option>
+								<option ng-repeat="canyuren  in canyurens" value="{{canyuren.userId}}">{{canyuren.userName+"--"+canyuren.mrDepartment.departmentName}}</option>
+							</select>
+						</div>
+					</div>
+					<div style="margin-left: 100px; float: left;">
+						<a class="btn btn-lg btn-info" id="ry_tianjia" role="button"
+							style="height: 40px; margin-left: 40px">添加</a>
+					</div>
+
+					<div style="height: 60px;"></div>
+
+					<div style="height: 60px">
+						<div style="margin-left: 270px; float: left;">
+							<div style="float: left;"><strong>人员列表:</strong></div>
+							<div style="float: left;">
+								<textarea id="renyuanzhanshi" rows="4" cols="102" style="margin-left: 20px" readonly="readonly"></textarea>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 信息通知模块 -->
+			<div class="panel panel-primary" style="width: 1250px; margin-left: 5%;">
+				<div class="panel-heading">
+					<h3 class="panel-title">可选信息</h3>
+				</div>
+						<div class="panel-body" style="width: 100%">
+							<div style="width: 800px">
+								<div style="margin-left: 275px; float: left;">
+									<strong>邮件通知:</strong> <input id="youjian1"type="radio" style="margin-left: 20px" name="youjian" value="yes" checked="checked"/><strong>是</strong> 
+															 <input id="youjian2"type="radio" style="margin-left: 20px" name="youjian" value="no"/><strong>否</strong>
+								</div>
+								<div style="margin-left: 180px; float: left;">
+									<strong>微信通知:</strong> <input id="weixin1" type="radio" style="margin-left: 20px" name="weixing" value="yes"/><strong>是</strong> 
+															 <input id="weixin2" type="radio" style="margin-left: 20px" name="weixing" value="no"/><strong>否</strong>
+								</div>
+							</div>
+						</div>
+			</div>
+			<!--提交按钮 -->
+			<div style="margin-left: 500px">
+				<div style="margin-left: 40px; float: left;">
+					<button id="tijiaoform" type="button" class="btn btn-lg btn-info">提交</button>
+				</div>
+				
+				<div style="margin-left: 200px; float: left;">
+					<a class="btn btn-lg btn-info" href="mettingroom.html" role="button"
+												>取消</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+	<script type="text/javascript">
+		//部门初始化
+		 var app = angular.module('myApp', []);
+		//加载部门
+		 app.controller('myCtrl', function($scope,$http) {
+			 var url="http://localhost:8080/departments";
+				 $http.get(url).success( function(response) {
+	                 $scope.departments = response;
+	              });
+			});
+		 var yuangongid = document.getElementById('yuangongid');
+		//加载组织人
+		 app.controller('zuzhirenCtrl', function($scope,$http) {
+			 var zuzhiren = document.getElementById('zuzhiren');
+			  zuzhiren.onkeyup=function(){
+				  var url = "http://localhost:8080/searchUserByName/"+zuzhiren.value;
+					 $http.get(url).success( function(response) {
+		                 $scope.zuzhirens = response;
+		              });
+				  var zuhzirenleibaio = document.getElementById('zuhzirenleibaio');
+				  zuhzirenleibaio.removeAttribute("hidden");
+				  zuhzirenleibaio.onchange=function(){
+					  var hike = $scope.zuzhirens;
+					  for(i=0;i<hike.length;i++){
+						  if(hike[i].userId == zuhzirenleibaio.value){
+							  yuangongid.value = zuhzirenleibaio.value;
+							  zuzhiren.value = hike[i].userName; 
+						  }
+					  }
+					  zuhzirenleibaio.hidden=true;
+				  }
+				  zuhzirenleibaio.onblur =function(){
+					  zuhzirenleibaio.hidden=true; 
+				  }
+		      } 
+			 
+			}); 
+		 //加载会议室
+		 app.controller('meettingRoomCtrl', function($scope,$http) {
+			 var url="http://localhost:8080/searchAllMeettingRoom";
+				 $http.get(url).success( function(response) {
+	                 $scope.meettingRooms = response;
+	              });
+			});
+		 //点击添加将人员写入页面
+		 var ry_tianjia = document.getElementById('ry_tianjia');
+		 var ids = "";
+		 var liebiao ="";
+		 
+		 //加载参与人
+		 app.controller('canyurenCtrl', function($scope,$http) {
+			 var renyuan =  document.getElementById('renyuan');
+			 renyuan.onkeyup=function(){
+				 var url = "http://localhost:8080/searchUserByName/"+renyuan.value;
+				 $http.get(url).success( function(response) {
+	                 $scope.canyurens = response;
+	              });
+				  var renyunleibaio = document.getElementById('renyunleibaio');
+				  renyunleibaio.removeAttribute("hidden");
+				  renyunleibaio.onchange=function(){
+					  var hike = $scope.canyurens;
+					  for(i=0;i<hike.length;i++){
+						  if(hike[i].userId == renyunleibaio.value){
+							  renyuan.value = hike[i].userName; 
+						  }
+					  }
+					  renyunleibaio.hidden=true;
+					  ry_tianjia.onclick=function(){
+								  ids=ids+renyunleibaio.value+":";
+							 var renyuanzhanshi = document.getElementById('renyuanzhanshi');
+							 liebiao=liebiao+renyuan.value+"；";
+							 renyuanzhanshi.value =liebiao;
+							 renyuan.value ="";
+					      } 
+				  }
+				  renyunleibaio.onblur =function(){
+					 
+					  renyunleibaio.hidden=true; 
+				  }
+		      } 
+			 
+			}); 
+	</script>
+</body>
+</html>
