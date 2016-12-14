@@ -128,7 +128,7 @@
     from SP_ORDER
     where START_DATE = #{startDate,jdbcType=INTEGER}
   </select>
-   <!-- 查询byid Befor -->
+   <!-- 查询by Meid time Befor -->
   <select id="selectBefor" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
     <!--
       WARNING - @mbggenerated
@@ -144,10 +144,10 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from SP_ORDER order by ID desc) t
-    where  ID <![CDATA[ <]]> #{id,jdbcType=INTEGER} limit 1
+    from SP_ORDER order by START_TIME desc) t
+    where  START_TIME <![CDATA[ <]]> #{time,jdbcType=VARCHAR} and MEETTING_ROOM_ID = #{MeId,jdbcType=INTEGER} limit 1
   </select>
-   <!-- 查询id Befor -->
+   <!-- 查询Meid time next -->
   <select id="selectNext" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
     <!--
       WARNING - @mbggenerated
@@ -158,8 +158,13 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from SP_ORDER
-    where  id > #{id,jdbcType=INTEGER} limit 1
+    from 
+    (select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from SP_ORDER order by START_TIME ) t
+    where  START_TIME > #{time,jdbcType=VARCHAR} and MEETTING_ROOM_ID = #{MeId,jdbcType=INTEGER} limit 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     <!--

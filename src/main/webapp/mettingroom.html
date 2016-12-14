@@ -19,6 +19,7 @@
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
 angular.element(window).bind('load', function() { 
@@ -45,13 +46,13 @@ angular.element(window).bind('load', function() {
 	var app = angular.module('myApp', []);
 	//加载部门
 	 app.controller('myCtrl', function($scope,$http) {
-		 var url="http://localhost:8080/searchAllMeettingRoom";
+		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom;
 			 $http.get(url).success( function(response) {
 	             $scope.meettingRooms = response;
 	             //alert(response.length);
 	             for(i=0;i<response.length;i++){
 	            	 
-	            	 var url1 = "http://localhost:8080/searchSpOrderByMeettingRoomId/" + response[i].id;
+	            	 var url1 = MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomId + response[i].id;
 	            	// alert(response[i].id+url1);
 	            	 $http.get(url1).success( function(response) {
 		                 $scope.meettingRoomTimes = response;
@@ -70,7 +71,7 @@ angular.element(window).bind('load', function() {
 		var chaxunBytime = $("#chaxunBytime");
 		//点击查询按时间查询会议室
 		chaxunBytime.click(function(){
-			var url="http://localhost:8080/searchSpOrderByDate/"+time.value;
+			var url=MeettingRoominterfaces.Var_searchSpOrderByDate+time.value;
 			 $http.get(url).success( function(response) {
 				 var alltimediv = $('div[id="alltime"]');
             	 for(l=0;l<alltimediv.length;l++){
@@ -100,7 +101,7 @@ angular.element(window).bind('load', function() {
 	             }
 	          });
 		});
-		 var url="http://localhost:8080/searchSpOrderByDate/"+time.value;
+		 var url= MeettingRoominterfaces.Var_searchSpOrderByDate + time.value;
 			 $http.get(url).success( function(response) {
 	             //alert(response.length);
 	             for(i=0;i<response.length;i++){

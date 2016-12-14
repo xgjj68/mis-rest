@@ -36,9 +36,7 @@ public class MeettingEmployeeService {
 	@RequestMapping(value="/InsertMrMeettingEmployee",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody 
 	public ResponseEntity<Void> InsertMrMeettingEmployee(@RequestBody ArrayList<Integer> ids) {
-		
-		MrSpOrder lastMrSpOrder = mrSpOrderMapper.selectLastMrSpOrder();
-		Integer id2 = lastMrSpOrder.getId();
+		Integer spid = ids.get(ids.size()-1);
 		MrMeettingEmployee mrMeettingEmployee = new MrMeettingEmployee();
 		for(int i=0;i<ids.size();i++){
 			for(int j=i+1;j<ids.size();j++){
@@ -48,15 +46,15 @@ public class MeettingEmployeeService {
 			}
 		}
 		System.out.println(ids.size());
-		for (Integer integer : ids) {
-			System.out.println(integer);
-			if(integer!=null){
-				mrMeettingEmployee.setMeettingId(id2);
-				mrMeettingEmployee.setEmployeeId(integer);
+		for (int i=0;i<ids.size()-1;i++) {
+			System.out.println(ids.get(i)+"验证插入没");
+			if(ids.get(i)!=null){
+				mrMeettingEmployee.setMeettingId(spid);
+				mrMeettingEmployee.setEmployeeId(ids.get(i));
 				mrMeettingEmployeeMapper.insertSelective(mrMeettingEmployee);
+				System.out.println("哈哈插入成功");
 			}
 		}
-		System.out.println("哈哈插入成功");
 		 HttpHeaders headers = new HttpHeaders();
 		 return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }

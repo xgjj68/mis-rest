@@ -18,6 +18,7 @@
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
 		
@@ -56,7 +57,7 @@
 			        	
 			        	 $.ajax({
 								type:"post",
-								url:"http://localhost:8080/searchSpOrderByMeettingRoomId",
+								url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
 								//contentType: "application/json",
 								data: {meettingRoomId:id,startdate:date},
 								success:function(msg54){
@@ -96,7 +97,7 @@
 			        	
 			        	 $.ajax({
 								type:"post",
-								url:"http://localhost:8080/searchSpOrderByMeettingRoomId",
+								url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
 								//contentType: "application/json",
 								data: {meettingRoomId:id,startdate:date},
 								success:function(msg54){
@@ -107,7 +108,7 @@
 											   var arr1 = msg54[j].startTime.split(":");
 											   //alert("来不");
 											   var arr2 = msg54[j].endTime.split(":");
-											   if(arr2[0]>=i & i>=arr1[0]){
+											   if(((arr2[0]-0)+2)>=i & i>=arr1[0]){
 												   
 												   starttimes[i].disabled="disabled";
 												   endtimes[i].disabled="disabled";
@@ -169,7 +170,7 @@
 				    		  } ;
 		    	   $.ajax({
 					type: "POST",
-					url: "http://localhost:8080/InsertSpOrder",
+					url: MeettingRoominterfaces.Var_InsertSpOrder,
 					contentType: "application/json", 
 					data: JSON.stringify(mrSpOrder),
 				    success:function(msg54){
@@ -178,7 +179,7 @@
 				    	//alert(eids.length); 
 				    	$.ajax({
 							type: "POST",
-							url: "http://localhost:8080/InsertMrMeettingEmployee",
+							url:MeettingRoominterfaces.Var_InsertMrMeettingEmploye,
 							contentType: "application/json", 
 							data: JSON.stringify(eids),
 						    success:function(msg54){
@@ -235,8 +236,14 @@
 		<!-- 必填信息模块 -->
 	<div class="panel panel-primary" style="width: 1400px;margin-left: 13%;">
 		<div class="panel-heading">
+			<div style="float: left;">
 			<h3 class="panel-title"><strong>视频会议室预定</strong></h3>
+			</div>
+			<div style="" align="right">
+				<a href="mettingroom.html" class="btn btn-lg btn-info" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
+			</div>
 		</div>
+		
 		<div class="panel-body">
 			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
 				<div class="panel-heading">
@@ -449,7 +456,7 @@
 		 var app = angular.module('myApp', []);
 		//加载部门
 		 app.controller('myCtrl', function($scope,$http) {
-			 var url="http://localhost:8080/departments";
+			 var url=MeettingRoominterfaces.Var_departments;
 				 $http.get(url).success( function(response) {
 	                 $scope.departments = response;
 	              });
@@ -459,7 +466,7 @@
 		 app.controller('zuzhirenCtrl', function($scope,$http) {
 			 var zuzhiren = document.getElementById('zuzhiren');
 			  zuzhiren.onkeyup=function(){
-				  var url = "http://localhost:8080/searchUserByName/"+zuzhiren.value;
+				  var url = MeettingRoominterfaces.Var_searchUserByName+zuzhiren.value;
 					 $http.get(url).success( function(response) {
 		                 $scope.zuzhirens = response;
 		              });
@@ -483,7 +490,7 @@
 			}); 
 		 //加载会议室
 		 app.controller('meettingRoomCtrl', function($scope,$http) {
-			 var url="http://localhost:8080/searchAllMeettingRoom";
+			 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom;
 				 $http.get(url).success( function(response) {
 	                 $scope.meettingRooms = response;
 	              });
@@ -497,7 +504,7 @@
 		 app.controller('canyurenCtrl', function($scope,$http) {
 			 var renyuan =  document.getElementById('renyuan');
 			 renyuan.onkeyup=function(){
-				 var url = "http://localhost:8080/searchUserByName/"+renyuan.value;
+				 var url = MeettingRoominterfaces.Var_searchUserByName+renyuan.value;
 				 $http.get(url).success( function(response) {
 	                 $scope.canyurens = response;
 	              });

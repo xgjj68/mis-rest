@@ -111,20 +111,26 @@ public class SpOrderService {
 			return mrSpOrder;
 		}
 	//查询上一条会议记录
-		@RequestMapping(value="/searchbeforSpOrder/{id}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(value="/searchbeforSpOrder/{timeAndMe}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody 
-		public MrSpOrder searchafterSpOrder(@PathVariable("id") Integer id) {
-			System.out.println(id);
-			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectBefor(id);
+		public MrSpOrder searchafterSpOrder(@PathVariable("timeAndMe") String  dateAndMe) {
+			System.out.println(dateAndMe);
+			String[] strings = dateAndMe.split(":");
+			Integer  id = Integer.parseInt(strings[0]);
+			Integer  MeId = Integer.parseInt(strings[1]);
+			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectBefor(strings[0],MeId);
 			System.out.println("查询searchbeforSpOrder成功");
 			return mrSpOrder;
 		}
 	//查询下一条会议记录
-		@RequestMapping(value="/searchafterSpOrder/{id}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(value="/searchafterSpOrder/{timeAndMe}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody 
-		public MrSpOrder searchbeforSpOrder(@PathVariable("id") Integer id) {
-			System.out.println(id);
-			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectNext(id);
+		public MrSpOrder searchbeforSpOrder(@PathVariable("timeAndMe") String dateAndMe) {
+			System.out.println(dateAndMe);
+			String[] strings = dateAndMe.split(":");
+			Integer  id = Integer.parseInt(strings[0]);
+			Integer  MeId = Integer.parseInt(strings[1]);
+			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectNext(strings[0],MeId);
 			System.out.println("查询searchafterSpOrder成功");
 			return mrSpOrder;
 		}

@@ -17,6 +17,7 @@
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -64,15 +65,15 @@
     				//删除员工会议及关系记录
     				$.ajax({
     					type: "post",
-    					url: "http://localhost:8080/deleteMrMeettingEmployee/"+userId,
+    					url: MeettingRoominterfaces.Var_deleteMrMeettingEmployee+userId,
     					contentType: "application/json", 
     					data: JSON.stringify(spids),
     				    success:function(msg54){
     				    	//删除会议
-    				    	alert("删除关系");
+    				    	//alert("删除关系");
     	    				$.ajax({
     	    					type: "post",
-    	    					url: "http://localhost:8080/deleteSpOrderByIds",
+    	    					url: MeettingRoominterfaces.Var_deleteSpOrderByIds,
     	    					contentType: "application/json", 
     	    					data: JSON.stringify(spids),
     	    				    success:function(msg54){
@@ -95,7 +96,7 @@
 	 var app = angular.module('myApp', []);
 	//加载会议列表
 	 app.controller('myCtrl', function($scope,$http) {
-		 var url="http://localhost:8080/searchAllSpOrder/"+userId;
+		 var url=MeettingRoominterfaces.Var_searchAllSpOrder+userId;
 			 $http.get(url).success( function(response) {
 	             $scope.mrSpOrders = response;
 	           //修改会议预定
@@ -115,72 +116,72 @@
 	          	});
 	          });
 			 //获取密码
-			 $scope.p_yuding = function(){
+			 $scope.p_yuding = function(stratTime,endTime,id){
+				 alert(stratTime);
 				 var myDate = new Date();
-				 var mytime=myDate.getHours(); 
-				 //alert(mytime);
-				 var Check1=document.getElementById('password');
-				 alert(Check1.length);
-		            var url1="http://localhost:8080/searchbeforSpOrder/"+Check1.value;
-					 $http.get(url1).success( function(response) {
+				 var mytime=myDate.getHours();
+				 var starttime =(stratTime.split(":")[0]-0)-1;
+				 var endtime =(endTime.split(":")[0]-0);
+				 alert(starttime);
+				 alert(endtime);
+				 alert(id);
+				 if(mytime < starttime){
+					 alert("当前无法获取密码，请于"+starttime+":00点之后获取！");
+				 }else if(mytime >= endtime){
+					 alert("无法获取密码，此会议已逾期！");
+				 }else{
+					 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
+    				 $http.get(url3).success( function(response) {
+    		             alert(response.mrMeettingRoom.password);
+    		          });
+				 }
+				/*  var dateAndMe = mytime+":"+Me;
+		            var url1=MeettingRoominterfaces.Var_searchbeforSpOrder+timeAndMe; */
+					 /* $http.get(url1).success( function(response) {
 						 if(response == ""){
-							 alert(Check1.value+"p1");
-							 var url2="http://localhost:8080/searchafterSpOrder/"+Check1.value;
+							 var url2=MeettingRoominterfaces.Var_searchafterSpOrder+timeAndMe;
 							 $http.get(url2).success( function(response) {
 								 if(response == ""){
-									 alert("没有上没有下");
-									 alert(Check1.value+"p3");
-									 var url3="http://localhost:8080/searchSpOrderById/"+Check1.value;
+									 //alert("没有上没有下");
+
+									 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
 				    				 $http.get(url3).success( function(response) {
-				    		             $scope.mrSpOrder = response;
-				    		             alert($scope.mrSpOrder.mrMeettingRoom.password);
+				    		             alert(response.mrMeettingRoom.password);
 				    		          });
 								 }else{
-									//下个会议的开始时间
-									alert("没有上有下");
-									 var after = response.startTime.split(":")[0];
-									    if(mytime>((after-0)-1)){
-										   alert("无法获取密码，此会议已逾期！");
-									   }else{
-										   alert("登录密码为："+response.mrMeettingRoom.password);
-									   } 
+									//alert("没有上有下");
+									 var url8=MeettingRoominterfaces.Var_searchSpOrderById+id;
+				    				 $http.get(url8).success( function(response) {
+				    					 if(mytime>(response.endTime.split(":")[0])-1){
+											   alert("无法获取密码，此会议已逾期！");
+										   }else{
+											   alert("登录密码为："+response.mrMeettingRoom.password);
+										   } 
+				    		          });
 								 }
 					          }); 
 						 }else{
 							 var befor = response.endTime.split(":")[0];
-							 alert(Check1.value+"p4");
-							 var url4="http://localhost:8080/searchafterSpOrder/"+Check1.value;
+							 var url4=MeettingRoominterfaces.Var_searchafterSpOrder+timeAndMe;
 							 $http.get(url4).success( function(response) {
-								 //alert(response);
-								 if(response == ""){
-									 alert("有上没有下");
+									 //alert("有上没有下");
 									 if(mytime<((befor-0)+1)){
 										   alert("当前无法获取密码，请于"+((befor-0)+1)+":00点之后获取！");
 									   }else{
-										   alert(Check1.value+"p5");
-										   var url5="http://localhost:8080/searchSpOrderById/"+Check1.value;
+
+										   var url5=MeettingRoominterfaces.Var_searchSpOrderById+id;
 						    				 $http.get(url5).success( function(response) {
-						    		             $scope.mrSpOrder = response;
-						    		             alert($scope.mrSpOrder.mrMeettingRoom.password);
+						    		             //$scope.mrSpOrder = response;
+						    		             if(mytime>(response.endTime.split(":")[0])-1){
+						    		            	 alert("无法获取密码，此会议已逾期！");
+						    		             }else{
+						    		            	 alert("登录密码为："+response.mrMeettingRoom.password); 
+						    		             }
 						    		          });
 									   }
-								 }else{
-									//下个会议的开始时间
-									 alert("有上有下");
-									 alert(response.startTime.split(":")[0]);
-									 var after = response.startTime.split(":")[0];
-									   if(mytime<befor+1){
-										   alert("当前无法获取密码，请于"+(befor+1)+":00点之后获取！");
-										  
-									   }else if(mytime>after+1){
-										   alert("无法获取密码，此会议已逾期！");
-									   }else{
-										   alert("登录密码为："+response.mrMeettingRoom.password);
-									   }  
-								 } 
 					          });    
 						 }
-		          });
+		          }); */
 			    };
 			    
 				
@@ -198,7 +199,7 @@
 	    				var id = $($(trs[i]).children("td")[0]).children("input").val();
 	    				//获取会议记录详情
 	    				//alert(id);
-	    				var url="http://localhost:8080/searchSpOrderById/"+id;
+	    				var url=MeettingRoominterfaces.Var_searchSpOrderById+id;
 	    				 $http.get(url).success( function(response) {
 	    		             $scope.mrSpOrder = response;
 	    		             //alert($scope.mrSpOrder.id);
@@ -226,7 +227,7 @@
 			<strong>&nbsp&nbsp2.获取密码：点击获取密码按钮获取对应的会议室密码。</strong>
 		</p>
 		<p style="color: black;">
-			<strong>&nbsp&nbsp&nbsp&nbsp注意：会议室密码会在上个会议结束后才可获取，而且密码可能在会议开始前发生变更。请在会议开始前的一小时内获取最终的登录密码。</strong>
+			<strong>&nbsp&nbsp&nbsp&nbsp注意：会议室密码会在上个会议结束后才可获取，而且密码可能在会议开始前发生变更。请在会议开始前的一小时内获取登录密码。</strong>
 		</p>
 	</div>
 	<!-- 预定列表 -->
@@ -274,7 +275,7 @@
 									<td >
 										<div style="height: 50px;">
 											<div  style="margin-left: 0px; float: left;">
-												<button ng-click="p_yuding()" id="password" type="button" class="btn btn-lg btn-info" style="height: 40px; margin-left: 0px" value="{{mrSpOrder.id}}" >获取密码</button>
+												<button ng-click="p_yuding(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id)" id="password" type="button" class="btn btn-lg btn-info" style="height: 40px; margin-left: 0px" value="{{mrSpOrder.id}}" >获取密码</button>
 											</div>
 										</div>
 									</td>

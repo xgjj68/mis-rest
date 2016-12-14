@@ -1,0 +1,32 @@
+MeettingRoominterfaces={
+	//条件（id和开始时间）提取会议预定记录
+	Var_searchSpOrderByMeettingRoomIdAndTime:'http://localhost:8080/searchSpOrderByMeettingRoomId',
+	//添加会议室预定记录接口
+	Var_InsertSpOrder:'http://localhost:8080/InsertSpOrder',
+	//插入员工和会议关系接口
+	Var_InsertMrMeettingEmploye:'http://localhost:8080/InsertMrMeettingEmployee',
+	//提取所有部门信息的接口
+	Var_departments:'http://localhost:8080/departments',
+	//根据输入员工名模糊查询员工列表接口
+	Var_searchUserByName:'http://localhost:8080/searchUserByName/',
+	//提取所有会议室接口
+	Var_searchAllMeettingRoom:'http://localhost:8080/searchAllMeettingRoom',
+	//修改会议室记录接口
+	Var_updateSpOrder:'http://localhost:8080/updateSpOrder',
+	//根据会议Id查询会议记录接口
+	Var_searchSpOrderById:'http://localhost:8080/searchSpOrderById/',
+	//条件（id）提取会议预定记录
+	Var_searchSpOrderByMeettingRoomId:'http://localhost:8080/searchSpOrderByMeettingRoomId/',
+	//查询按时间查询会议室
+	Var_searchSpOrderByDate:'http://localhost:8080/searchSpOrderByDate/',
+	//删除会议员工关系
+	Var_deleteMrMeettingEmployee:'http://localhost:8080/deleteMrMeettingEmployee/',
+	//删除会议记录
+	Var_deleteSpOrderByIds:'http://localhost:8080/deleteSpOrderByIds',
+	//根据用户id查询该员工所有的会议记录
+	Var_searchAllSpOrder:'http://localhost:8080/searchAllSpOrder/',
+	//根据当前会议获取上一条会议记录
+	Var_searchbeforSpOrder:'http://localhost:8080/searchbeforSpOrder/',
+	//根据当前会议获取下一条会议记录
+	Var_searchafterSpOrder:'http://localhost:8080/searchafterSpOrder/',
+};
