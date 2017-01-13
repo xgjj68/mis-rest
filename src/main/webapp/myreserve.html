@@ -11,20 +11,20 @@
 
 <!-- 可选的Bootstrap主题文件（一般不用引入） -->
 <link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
-
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script type="text/javascript" src="js/jquery.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
 <script type="text/javascript" src="js/interface.js"></script>
+<!-- <script type="text/javascript" src="js/interface2.js"></script> -->
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		var myDate = new Date();
 		myDate.toLocaleDateString(); //获取当前日期
-		$("#input1").prop("value", "hjjh");
-		//alert(myDate.toLocaleDateString());
+		
 	});
 </script>
 <!-- 实现全选和反选 -->
@@ -44,60 +44,203 @@
                 };
     	  	}  
          };
+  	//获取员工id
+ 	var storage = window.localStorage;
+	var userId = storage.getItem("userId");
+	var userName =storage.getItem("userName"); 
     //删除会议预定
     var yudingshanchu = document.getElementById('yudingshanchu');
     	yudingshanchu.onclick = function(){
-    		
     		var idInputs = $(":checked");
-    		//alert("idInputs.length");
-    		var pids = "";
     		for(i=0;i<idInputs.length;i++){
-    			pids = pids+idInputs[i].value + ":"; 
-    		}
-    		//alert(pids);
-    		var spids = pids.split(":");
-    		var userId = 3;
-    		//alert(spids.length);
-    		if(idInputs.length == 0){
-    			alert("请勾选操作项");
-    		}else{
-    			if(confirm("确认删除？")){
-    				//删除员工会议及关系记录
-    				$.ajax({
-    					type: "post",
-    					url: MeettingRoominterfaces.Var_deleteMrMeettingEmployee+userId,
-    					contentType: "application/json", 
-    					data: JSON.stringify(spids),
-    				    success:function(msg54){
-    				    	//删除会议
-    				    	//alert("删除关系");
-    	    				$.ajax({
+ 
+    			if(userName == idInputs[i].name ){
+    				var pids = idInputs[i].value.split(":")[0] + ":";
+    	    		var spids = pids.split(":");
+    	    		if(idInputs.length == 0){
+    	    			alert("请勾选操作项");
+    	    		}else{
+    	    			if(confirm("确认删除？")){
+    	    				//删除员工会议及关系记录
+    	    				 $.ajax({
     	    					type: "post",
     	    					url: MeettingRoominterfaces.Var_deleteSpOrderByIds,
     	    					contentType: "application/json", 
     	    					data: JSON.stringify(spids),
     	    				    success:function(msg54){
-    	    				    	
-    	    				    	window.location.href='myreserve.html';
+    	    	    				window.location.href='myreserve.html';
     	    		        		}
-    	    				});
-    		        		}
-    				}); 
-    			};
-    			
+    	    				}); 
+    	    			};
+    	    			
+    	    		}
+    			}
     		}
-    	}
+    		
+    	};
     	//$('#yudingxuigai').attr("disabled", true);
  };
- 	//获取员工id
-	var userId=3;
- 	var userName="李永葆";
+ //获取员工信息
+ 	var storage = window.localStorage;
+	var userId = storage.getItem("userId");
+	var userName =storage.getItem("userName");
 	//会议初始化
 	 var app = angular.module('myApp', []);
 	//加载会议列表
 	 app.controller('myCtrl', function($scope,$http) {
-		 var url=MeettingRoominterfaces.Var_searchAllSpOrder+userId;
+		 
+		 $scope.checked = function(){
+		    	var idInputs = $(":checked");
+			
+		    	for(i=0;i<idInputs.length;i++){
+		    		if(userName == idInputs[i].name ){
+		    			yudingshanchu.removeAttribute("disabled");
+		    		}else{
+		    			yudingshanchu.disabled="disabled";
+		    		}
+		    	} 
+		 };
+		//日期格式化函数初始化日期
+			 var str3 = new Date().getFullYear();
+			 var str4 = new Date().getMonth()+1;
+			 var str5 = new Date().getDate(); 
+			var str2="";
+			 if(str4-10 >=0 && str5-10 >=0){
+				str2 = str3+"-"+str4+"-"+str5;
+			}else if(str4-10 <=0 && str5-10 <=0){
+				str2 = str3+"-0"+str4+"-0"+str5;
+			}else if(str4-10 >=0 && str5-10 <=0){
+				str2 = str3+"-"+str4+"-0"+str5;
+			}else if(str4-10 <=0 && str5-10 >=0){
+				str2 = str3+"-0"+str4+"-"+str5;
+			}
+			 var pages = 1;
+			 if(pages==1){
+				 $("#befor").attr("hidden",true);
+			 }else{
+				 document.getElementById('befor').removeAttribute("hidden");
+			 }
+		    //分页控制
+			//首页
+		 	$scope.first = function(){
+				var page = 1;
+				pages = page;
+				if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+				 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		    	ShowBypage(page);
+			};
+			//上一页
+		 	$scope.befor = function(){
+		 		var page = pages-1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+		 		 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		    	ShowBypage(page);
+			};
+			//下一页
+		 	$scope.next = function(){
+		 		var page = pages+1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+
+			   if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		    	ShowBypage(page);	
+			};
+	 		//获取总条数
+	 		var url=MeettingRoominterfaces.Var_searchbeSpOrderCounts+userId+"?"+Math.random();
+	 		 var number = 0;
 			 $http.get(url).success( function(response) {
+				 if(response%10==0){
+					 number = response%10;
+				 }else{
+					 number = (response-response%10)/10+1;
+				 }
+				  if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 } 
+				//最后一页
+				 $scope.last = function(){
+				 		pages = number;
+				 		if(pages==1){
+							 $("#befor").attr("hidden",true);
+						 }else{
+							 document.getElementById('befor').removeAttribute("hidden");
+						 }
+				 		 if(pages == number){
+							 $("#next").attr("hidden",true);
+						 }else{
+							 document.getElementById("next").removeAttribute("hidden");
+						 }
+			    	ShowBypage(number);
+				};
+	          });
+	function ShowBypage(page){
+		var url=MeettingRoominterfaces.Var_searchAllSpOrder+userId+"?page="+page+"&"+Math.random();
+		 $http.get(url).success( function(response) {
+			 //alert(response);
+            $scope.mrSpOrders = response;
+          //修改会议预定
+         	$('#yudingxuigai').click(function(){
+         		var idInputs = $(":checked");
+         		if(idInputs.length !=1 ){
+         			alert("请勾选操一个操作项");
+         		}else{
+         			var inid = idInputs[0].value.split(":")[0];
+         			var startDate = idInputs[0].value.split(":")[1];
+         			var nowTime = new Date().getHours();
+         			var startTime = idInputs[0].value.split(":")[2];
+         			if(startDate<str2){
+         				alert("对不起，该会议已经逾期不能修改！");
+         			}else if(startDate == str2){
+         				if(startTime<=nowTime){
+         					alert("对不起，该会议已经逾期不能修改！");
+         				}else{
+         					if(userName == idInputs[0].name){
+   	          				window.location.href='changeReserve.html?id='+inid;
+   	          			}else{
+   	          				alert("对不起，您不是组织者无修改权限！");
+   	          			}
+         				}
+         			}else{
+         				if(userName == idInputs[0].name){
+	          				window.location.href='changeReserve.html?id='+inid;
+	          			}else{
+	          				alert("对不起，您不是组织者无修改权限！");
+	          			}
+         			}	          			
+         		}	
+         	});
+         });
+	}
+		 var url=MeettingRoominterfaces.Var_searchAllSpOrder+userId+"?page="+1+"&"+Math.random();
+			 $http.get(url).success( function(response) {
+				 //alert(response);
 	             $scope.mrSpOrders = response;
 	           //修改会议预定
 	          	$('#yudingxuigai').click(function(){
@@ -105,86 +248,59 @@
 	          		if(idInputs.length !=1 ){
 	          			alert("请勾选操一个操作项");
 	          		}else{
-	          			
-	          			if(userName == idInputs[0].name){
-	          				window.location.href='changeReserve.html?id='+idInputs[0].value;
+	          			var inid = idInputs[0].value.split(":")[0];
+	          			var startDate = idInputs[0].value.split(":")[1];
+	          			var nowTime = new Date().getHours();
+	          			var startTime = idInputs[0].value.split(":")[2];
+	          			if(startDate<str2){
+	          				alert("对不起，该会议已经逾期不能修改！");
+	          			}else if(startDate == str2){
+	          				if(startTime<=nowTime){
+	          					alert("对不起，该会议已经逾期不能修改！");
+	          				}else{
+	          					if(userName == idInputs[0].name){
+	    	          				window.location.href='changeReserve.html?id='+inid;
+	    	          			}else{
+	    	          				alert("对不起，您不是组织者无修改权限！");
+	    	          			}
+	          				}
 	          			}else{
-	          				alert("对不起，您不是组织者无修改权限！");
-	          			}
-	          			
+	          				if(userName == idInputs[0].name){
+    	          				window.location.href='changeReserve.html?id='+inid;
+    	          			}else{
+    	          				alert("对不起，您不是组织者无修改权限！");
+    	          			}
+	          			}	          			
 	          		}	
 	          	});
 	          });
 			 //获取密码
-			 $scope.p_yuding = function(stratTime,endTime,id){
-				 alert(stratTime);
+			 $scope.p_yuding = function(stratTime,endTime,id,startDate,ognization){
 				 var myDate = new Date();
 				 var mytime=myDate.getHours();
 				 var starttime =(stratTime.split(":")[0]-0)-1;
 				 var endtime =(endTime.split(":")[0]-0);
-				 alert(starttime);
-				 alert(endtime);
-				 alert(id);
-				 if(mytime < starttime){
-					 alert("当前无法获取密码，请于"+starttime+":00点之后获取！");
-				 }else if(mytime >= endtime){
-					 alert("无法获取密码，此会议已逾期！");
-				 }else{
-					 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
-    				 $http.get(url3).success( function(response) {
-    		             alert(response.mrMeettingRoom.password);
-    		          });
-				 }
-				/*  var dateAndMe = mytime+":"+Me;
-		            var url1=MeettingRoominterfaces.Var_searchbeforSpOrder+timeAndMe; */
-					 /* $http.get(url1).success( function(response) {
-						 if(response == ""){
-							 var url2=MeettingRoominterfaces.Var_searchafterSpOrder+timeAndMe;
-							 $http.get(url2).success( function(response) {
-								 if(response == ""){
-									 //alert("没有上没有下");
-
-									 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
-				    				 $http.get(url3).success( function(response) {
-				    		             alert(response.mrMeettingRoom.password);
-				    		          });
-								 }else{
-									//alert("没有上有下");
-									 var url8=MeettingRoominterfaces.Var_searchSpOrderById+id;
-				    				 $http.get(url8).success( function(response) {
-				    					 if(mytime>(response.endTime.split(":")[0])-1){
-											   alert("无法获取密码，此会议已逾期！");
-										   }else{
-											   alert("登录密码为："+response.mrMeettingRoom.password);
-										   } 
-				    		          });
-								 }
-					          }); 
+				 if(ognization==userName){
+					 if(startDate<str2){
+						 alert("无法获取密码，此会议已逾期！");
+					 }else if(startDate == str2){
+						 if(mytime < starttime){
+							 alert("当前无法获取密码，请于"+starttime+":00点之后获取！");
+						 }else if(mytime >= endtime){
+							 alert("无法获取密码，此会议已逾期！");
 						 }else{
-							 var befor = response.endTime.split(":")[0];
-							 var url4=MeettingRoominterfaces.Var_searchafterSpOrder+timeAndMe;
-							 $http.get(url4).success( function(response) {
-									 //alert("有上没有下");
-									 if(mytime<((befor-0)+1)){
-										   alert("当前无法获取密码，请于"+((befor-0)+1)+":00点之后获取！");
-									   }else{
-
-										   var url5=MeettingRoominterfaces.Var_searchSpOrderById+id;
-						    				 $http.get(url5).success( function(response) {
-						    		             //$scope.mrSpOrder = response;
-						    		             if(mytime>(response.endTime.split(":")[0])-1){
-						    		            	 alert("无法获取密码，此会议已逾期！");
-						    		             }else{
-						    		            	 alert("登录密码为："+response.mrMeettingRoom.password); 
-						    		             }
-						    		          });
-									   }
-					          });    
+							 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
+		    				 $http.get(url3).success( function(response) {
+		    		             alert("会议室"+response.mrMeettingRoom.meetingRoomName +"账户为："+response.mrMeettingRoom.roomAccount+"，密码为："+response.mrMeettingRoom.password);
+		    		          });
 						 }
-		          }); */
+					 }else{
+						 alert("当前无法获取密码，请于"+startDate+"会议当天获取！");
+					 } 
+				 }else{
+					 $("#password").popover('show');
+				 }
 			    };
-			    
-				
 		});
 	//展示预定详情
 	 app.controller('xiangqingCtrl', function($scope,$http) {
@@ -196,10 +312,10 @@
 	    				//alert("lalbu");
 	    				//alert(trs[i]);
 	    				trs[i].className="info";
-	    				var id = $($(trs[i]).children("td")[0]).children("input").val();
+	    				var id = $($(trs[i]).children("td")[0]).children("input").val().split(":")[0];;
 	    				//获取会议记录详情
 	    				//alert(id);
-	    				var url=MeettingRoominterfaces.Var_searchSpOrderById+id;
+	    				var url=MeettingRoominterfaces.Var_searchSpOrderById+id+"?"+Math.random();
 	    				 $http.get(url).success( function(response) {
 	    		             $scope.mrSpOrder = response;
 	    		             //alert($scope.mrSpOrder.id);
@@ -210,7 +326,6 @@
 	    		}
 		    };
 		});
-	 
  </script>
 </head>
 <body ng-app="myApp"
@@ -245,43 +360,92 @@
 			</div>
 		</div>
 		<div class="panel-body" ng-controller="xiangqingCtrl">
-			<div class="panel panel-success" style="width: 90%; margin-left: 5%;">
+			<div class="panel panel-success" style="width: 90%; margin-left: 5%;" ng-controller="myCtrl">
 				<div class="panel-heading">
 					<h3 class="panel-title">预定列表</h3>
 				</div>
 				<div class="panel-body">
-				
+
 					<div style="height: 50px;">
 						<div style="margin-left: 0px; float: left;">
-							<a id="yudingxuigai" class="btn btn-lg btn-info"  role="button"
-								style="height: 40px; ">修改</a>
+							<a id="yudingxuigai" class="btn btn-lg btn-info" role="button"
+								style="height: 40px;" >修改</a>
 						</div>
 						<div style="margin-left: 40px; float: left;">
-							<a class="btn btn-lg btn-info" id="yudingshanchu" role="button"
-								style="height: 40px;">删除</a>
+							<button class="btn btn-lg btn-info" id="yudingshanchu"  role="button"
+								style="height: 40px;">删除</button>
 						</div>
 					</div>
-					<div style="width: 90%" ng-controller="myCtrl">
-						<table id="table" class="table" >
+					<div style="width: 90%">
+						<table id="table" class="table">
 							<thead>
-								<tr class="success" >
-									<td><input id="All" type="checkbox" name="" value="0" /></td> <td>部门</td>	<td>会议室</td>	<td>会议标题</td>
-									<td>开始时间</td>	<td>结束时间</td>	<td>组织人</td>	<td>账户</td>	<td></td>
+								<tr class="success">
+									<td><input id="All" type="checkbox" name="" value="0" /></td>
+									<td>部门</td>
+									<td>会议室</td>
+									<td>会议标题</td>
+									<td>开始时间</td>
+									<td>结束时间</td>
+									<td>组织人</td>
+									<td>账户</td>
+									<td></td>
 								</tr>
 							</thead>
-							<tr class="success" ng-repeat="mrSpOrder in mrSpOrders.mrSporderList"  ng-click="changeStatus($index)" id="success">
-								<td><input id="meetting_id" type="checkbox"  value="{{mrSpOrder.id}}" name="{{mrSpOrder.organization}}"/></td>	<td>{{mrSpOrder.department}}</td>	<td>{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</td>	<td>{{mrSpOrder.meettingName}}</td>
-									<td>{{mrSpOrder.startTime}}</td>	<td>{{mrSpOrder.endTime}}</td>	<td>{{mrSpOrder.organization}}</td>	<td>{{mrSpOrder.mrMeettingRoom.roomAccount}}</td>
-									<td >
-										<div style="height: 50px;">
-											<div  style="margin-left: 0px; float: left;">
-												<button ng-click="p_yuding(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id)" id="password" type="button" class="btn btn-lg btn-info" style="height: 40px; margin-left: 0px" value="{{mrSpOrder.id}}" >获取密码</button>
-											</div>
+							<tr class="success"
+								ng-repeat="mrSpOrder in mrSpOrders"
+								ng-click="changeStatus($index)" id="success">
+								<td><input id="meetting_id" type="checkbox"
+									value="{{mrSpOrder.id}}:{{mrSpOrder.startDate}}:{{mrSpOrder.startTime}}"
+									name="{{mrSpOrder.organization}}" ng-click="checked()"/></td>
+								<td>{{mrSpOrder.department}}</td>
+								<td>{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</td>
+								<td>{{mrSpOrder.meettingName}}</td>
+								<td>{{mrSpOrder.startTime}}</td>
+								<td>{{mrSpOrder.endTime}}</td>
+								<td>{{mrSpOrder.organization}}</td>
+								<td>{{mrSpOrder.mrMeettingRoom.roomAccount}}</td>
+								<td>
+									<div style="height: 50px;">
+										<div style="margin-left: 0px; float: left;">
+											<button
+												ng-click="p_yuding(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id,mrSpOrder.startDate,mrSpOrder.organization)"
+												id="password" type="button" class="btn btn-lg btn-info" data-content="非组织者无法获取密码！" data-original-title="信息提示"
+												data-placement="top" style="height: 40px; margin-left: 0px"
+												value="{{mrSpOrder.id}}">获取密码</button>
 										</div>
-									</td>
+									</div>
+								</td>
 							</tr>
 						</table>
 					</div>
+					<div align="center" style="margin-left: 38%">
+					<div id="first" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><a  ng-click="first()">首页</a></li>
+						</ul>
+					</div>
+
+					<div id="befor" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px"
+							>
+							<li><span  class="glyphicon  glyphicon-backward"
+								ng-click="befor()"></span></li>
+						</ul>
+					</div>
+
+					<div id="next" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><span  class="glyphicon  glyphicon-forward"
+								ng-click="next()"></span></li>
+						</ul>
+					</div>
+
+					<div id="last" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><span  ng-click="last()">最后一页</span></li>
+						</ul>
+					</div>
+				</div>	
 				</div>
 			</div>
 			
@@ -312,6 +476,9 @@
 				</div>
 				<div style="height: 40px;margin-left: 500px;"><strong>会议室账户:&nbsp&nbsp&nbsp</strong>
 					<span style="color: purple;font-weight: bold;">{{mrSpOrder.mrMeettingRoom.roomAccount}}</span>
+				</div>
+				<div style="height: 40px;"><strong>举行日期:&nbsp&nbsp&nbsp</strong>
+					<span style="color: purple;font-weight: bold;">{{mrSpOrder.startDate}}</span>
 				</div>
 				<div style="height: 40px;float: left;"><strong>开始时间:&nbsp&nbsp&nbsp</strong>
 					<span style="color: purple;font-weight: bold;">{{mrSpOrder.startTime}}</span>

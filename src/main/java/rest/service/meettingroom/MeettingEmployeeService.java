@@ -33,9 +33,34 @@ public class MeettingEmployeeService {
 	@Autowired
 	private MrSpOrderMapper mrSpOrderMapper;
 	//插入维系会议与员工关系
-	@RequestMapping(value="/InsertMrMeettingEmployee",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(value="/mis-rest/rest/service/meettingroom/InsertMrMeettingEmployee",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+		@ResponseBody 
+		public ResponseEntity<Void> InsertMrMeettingEmployee(@RequestBody ArrayList<Integer> ids) {
+			
+			MrSpOrder mrSpOrder = mrSpOrderMapper.selectLastMrSpOrder();
+			Integer spid = mrSpOrder.getId();
+			MrMeettingEmployee mrMeettingEmployee = new MrMeettingEmployee();
+			for(int i=0;i<ids.size();i++){
+				for(int j=i+1;j<ids.size();j++){
+					if(ids.get(i)==ids.get(j)){
+						ids.remove(i);
+					}
+				}
+			}
+			for (int i=0;i<ids.size();i++) {
+				if(ids.get(i)!=null){
+					mrMeettingEmployee.setMeettingId(spid);
+					mrMeettingEmployee.setEmployeeId(ids.get(i));
+					mrMeettingEmployeeMapper.insertSelective(mrMeettingEmployee);
+				}
+			}
+			 HttpHeaders headers = new HttpHeaders();
+			 return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+	    }
+	//修改维系会议与员工关系
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/UInsertMrMeettingEmployee",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody 
-	public ResponseEntity<Void> InsertMrMeettingEmployee(@RequestBody ArrayList<Integer> ids) {
+	public ResponseEntity<Void> UInsertMrMeettingEmployee(@RequestBody ArrayList<Integer> ids) {
 		Integer spid = ids.get(ids.size()-1);
 		MrMeettingEmployee mrMeettingEmployee = new MrMeettingEmployee();
 		for(int i=0;i<ids.size();i++){
@@ -45,14 +70,11 @@ public class MeettingEmployeeService {
 				}
 			}
 		}
-		System.out.println(ids.size());
 		for (int i=0;i<ids.size()-1;i++) {
-			System.out.println(ids.get(i)+"验证插入没");
 			if(ids.get(i)!=null){
 				mrMeettingEmployee.setMeettingId(spid);
 				mrMeettingEmployee.setEmployeeId(ids.get(i));
 				mrMeettingEmployeeMapper.insertSelective(mrMeettingEmployee);
-				System.out.println("哈哈插入成功");
 			}
 		}
 		 HttpHeaders headers = new HttpHeaders();
@@ -77,17 +99,14 @@ public class MeettingEmployeeService {
 		return mrMeettingEmployee;
 	}*/
 	//删除维护会议与员工的关系
-	@RequestMapping(value="/deleteMrMeettingEmployee/{userId}",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/deleteMrMeettingEmployee/{userId}",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Void> deleteMrMeettingEmployee( @RequestBody ArrayList<Integer> spids, @PathVariable("userId")Integer userId){
-		System.out.println(spids);
-		System.out.println(userId);
 		for (Integer integer : spids) {
 			if(integer!=null&&integer!=0){
 				mrMeettingEmployeeMapper.deleteByUserIdAndMid(userId, integer);
 			}
 		}
-		System.out.println("deleteMrMeettingEmployee");
 		HttpHeaders headers = new HttpHeaders();
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}

@@ -1,6 +1,7 @@
 package rest.service.meettingroom;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,102 +41,111 @@ public class SpOrderService {
 	@Autowired
 	private MrMeettingEmployeeMapper MMEMapper;
 	//插入视频会议记录
-	@RequestMapping(value="/InsertSpOrder",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/InsertSpOrder",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody 
 	public ResponseEntity<Void> InsertSpOrder(@RequestBody MrSpOrder mrSpOrder) {
 			mrSpOrderMapper.insertSelective(mrSpOrder); 
-			System.out.println("哈哈插入成功");
 			 HttpHeaders headers = new HttpHeaders();
 			 return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	    }
 	//按会议室名称查询会议记录
-	@RequestMapping(value="/searchSpOrderByMeettingRoomId",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchSpOrderByMeettingRoomId",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<MrSpOrder> searchSpOrderByMeettingRoomId( @RequestParam("meettingRoomId") Integer meettingRoomId, @RequestParam("startdate")String startdate){
 		List<MrSpOrder> mrSpOrders = mrSpOrderMapper.selectByMeettingRoomId(meettingRoomId,startdate);
-		System.out.println(meettingRoomId);
-		System.out.println(startdate);
-		System.out.println("mrSpOrders");
 		return mrSpOrders;
 	}
 	//查询所有的会议记录
-	@RequestMapping(value="/searchAllSpOrder/{userId}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchAllSpOrder/{userId}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public MrUserT searchAllSpOrder(@PathVariable("userId") Integer userId){
-		System.out.println("进入searchAllSpOrder");
+	public List<MrSpOrder> searchAllSpOrder(@PathVariable("userId") Integer userId,@RequestParam("page") Integer page){
 		MrUserT mrUserT = mrUserTMapper.selectByPrimaryKey(userId);
-		System.out.println("搜索searchAllSpOrder");
-		return mrUserT;
+		List<MrSpOrder> mrSporderList = mrUserT.getMrSporderList();
+		ArrayList<MrSpOrder> spOrderList = new ArrayList<>();
+		int size = mrSporderList.size();
+		if(size%10==0){
+			for(int j=page;j<=size/10;j++){
+				for(int i=(j-1)*10;i<=j*10-1;i++){
+					MrSpOrder mrSpOrder = mrSporderList.get(i);
+					spOrderList.add(mrSpOrder);
+				}
+			}
+		}else{
+			for(int j=page;j<=size/10+1 ;j++){
+				if(j == size/10+1){
+					for(int i=(j-1)*10;i<=size-1;i++){
+						MrSpOrder mrSpOrder = mrSporderList.get(i);
+						spOrderList.add(mrSpOrder);
+					}
+				}else{
+					for(int i=(j-1)*10+1;i<=j*10-1;i++){
+						MrSpOrder mrSpOrder = mrSporderList.get(i);
+						spOrderList.add(mrSpOrder);
+					}
+				}
+			}
+		}
+		return spOrderList;
 	}
 	//删除会议记录
-	@RequestMapping(value="/deleteSpOrderByIds",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/deleteSpOrderByIds",method=RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody 
 	public ResponseEntity<Void> deleteSpOrderByIds(@RequestBody ArrayList<Integer> ids) {
 		for (Integer integer : ids) {
 			if(integer!=null&&integer!=0){
+				mrSpOrderMapper.deleteByPrimaryKey(integer);
 				List<MrMeettingEmployee> list = MMEMapper.selectBymeettingId(integer);
-				if(list.size()==0){
-					mrSpOrderMapper.deleteByPrimaryKey(integer);
-					System.out.println("哈哈删除成功");
-				}	
+				for (MrMeettingEmployee mrMeettingEmployee : list) {
+					MMEMapper.deleteByUserIdAndMid(mrMeettingEmployee.getEmployeeId(), integer);
+				}
 			}
 		}
-		System.out.println("有数据不能删除");
 		HttpHeaders headers = new HttpHeaders();
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}
 	//按id查询会议记录
-	@RequestMapping(value="/searchSpOrderById/{id}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchSpOrderById/{id}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody 
 	public MrSpOrder searchSpOrderById(@PathVariable("id") Integer id) {
-		System.out.println(id);
 		MrSpOrder mrSpOrder = mrSpOrderMapper.selectByPrimaryKey(id);
-		System.out.println("查询searchSpOrderById成功");
 		return mrSpOrder;
 	}
 	//按日期查询会议记录
-	@RequestMapping(value="/searchSpOrderByDate/{startDate}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchSpOrderByDate/{startDate}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody 
 	public List<MrSpOrder> searchSpOrderByDate(@PathVariable("startDate") String startDate) {
-		System.out.println(startDate);
 		List<MrSpOrder> mrSpOrderDate = mrSpOrderMapper.selectByStartDate(startDate);
-		System.out.println("查询searchSpOrderByDate成功");
 		return mrSpOrderDate;
 	}
 	//查询最后一条会议记录	
-		@RequestMapping(value="/searchLastSpOrder",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchLastSpOrder",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody 
 		public MrSpOrder searchLastSpOrder() {
 			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectLastMrSpOrder();
-			System.out.println("查询searchLastSpOrder成功");
 			return mrSpOrder;
 		}
 	//查询上一条会议记录
-		@RequestMapping(value="/searchbeforSpOrder/{timeAndMe}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchbeforSpOrder/{timeAndMe}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody 
 		public MrSpOrder searchafterSpOrder(@PathVariable("timeAndMe") String  dateAndMe) {
-			System.out.println(dateAndMe);
 			String[] strings = dateAndMe.split(":");
 			Integer  id = Integer.parseInt(strings[0]);
 			Integer  MeId = Integer.parseInt(strings[1]);
 			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectBefor(strings[0],MeId);
-			System.out.println("查询searchbeforSpOrder成功");
 			return mrSpOrder;
 		}
 	//查询下一条会议记录
-		@RequestMapping(value="/searchafterSpOrder/{timeAndMe}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+		@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchafterSpOrder/{timeAndMe}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody 
 		public MrSpOrder searchbeforSpOrder(@PathVariable("timeAndMe") String dateAndMe) {
-			System.out.println(dateAndMe);
 			String[] strings = dateAndMe.split(":");
 			Integer  id = Integer.parseInt(strings[0]);
 			Integer  MeId = Integer.parseInt(strings[1]);
 			 MrSpOrder mrSpOrder = mrSpOrderMapper.selectNext(strings[0],MeId);
-			System.out.println("查询searchafterSpOrder成功");
 			return mrSpOrder;
 		}
 	//修改会议室预订信息
-		@RequestMapping(value = "/updateSpOrder", method = RequestMethod.PUT)
+		@RequestMapping(value = "/mis-rest/rest/service/meettingroom/updateSpOrder", method = RequestMethod.PUT)
 		@ResponseBody 
 	    public void updateSpOrder(@RequestBody MrSpOrder mrSpOrder) {
 			Integer id = mrSpOrder.getId();
@@ -154,6 +164,14 @@ public class SpOrderService {
 			}
 	       
 	    }
+		
+	//按员工id查询会议的总条数
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchbeSpOrderCounts/{userId}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody 
+	public Integer searchbeSpOrderCounts(@PathVariable("userId") Integer  userId) {
+		Integer conuts = mrSpOrderMapper.selectSporderCounts(userId);
+		return conuts;
+	}
 	public MrSpOrderMapper getMrSpOrderMapper() {
 		return mrSpOrderMapper;
 	}

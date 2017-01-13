@@ -80,7 +80,8 @@
       This element was generated on Tue Dec 06 16:40:32 CST 2016.
     -->
     <result column="User_Description" jdbcType="LONGVARCHAR" property="userDescription" />
-    <collection property="mrSporderList" column="User_ID" ofType="rest.mybatis.model.meettingroom.MrSpOrder" select="selectMrSpordersByUserId"></collection>
+    <collection property="mrSporderList" column="User_ID" ofType="rest.mybatis.model.meettingroom.MrSpOrder" select="selectMrSpordersByUserId">
+    </collection>
   </resultMap>
   <sql id="Base_Column_List">
     <!--

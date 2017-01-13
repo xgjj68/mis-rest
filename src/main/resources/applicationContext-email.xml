@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+     "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host">
+			<value>smtp.dayang.com.cn</value>
+		</property>
+		<property name="username">
+			<value>dayang_erp@dayang.com.cn</value>
+		</property>
+		<property name="password">
+			<value>81418puppyli</value>
+		</property>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">25000</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from">
+			<value>dayang_erp@dayang.com.cn</value>
+		</property>
+		<property name="subject">
+			<value>电子信息平台(EIP)通知</value>
+		</property>
+	</bean>
+
+	<bean id="mailManager" class="com.dayang.common.util.MailManagerImp">
+		<property name="mailsender">
+			<ref bean="mailSender" />
+		</property>
+		<property name="message">
+			<ref bean="mailMessage" />
+		</property>
+	</bean>
+
+</beans>

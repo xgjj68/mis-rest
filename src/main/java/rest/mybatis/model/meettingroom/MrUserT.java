@@ -5,14 +5,13 @@ import java.util.List;
 
 public class MrUserT {
 	private MrDepartment mrDepartment;
-	private List<MrUserT> mrSporderList;
-   
-
-	public List<MrUserT> getMrSporderList() {
+	private List<MrSpOrder> mrSporderList;
+ 
+	public List<MrSpOrder> getMrSporderList() {
 		return mrSporderList;
 	}
 
-	public void setMrSporderList(List<MrUserT> mrSporderList) {
+	public void setMrSporderList(List<MrSpOrder> mrSporderList) {
 		this.mrSporderList = mrSporderList;
 	}
 

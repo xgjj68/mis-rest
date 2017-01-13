@@ -12,20 +12,36 @@
 
 <!-- 可选的Bootstrap主题文件（一般不用引入） -->
 <link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
-
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script type="text/javascript" src="js/jquery.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script  type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+<script  type="text/javascript" src="js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
 <script type="text/javascript" src="js/interface.js"></script>
+<!-- <script type="text/javascript" src="js/interface2.js"></script> -->
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
 		
 		window.onload=function(){
-			
+			//日期格式化函数初始化日期
+			 var str3 = new Date().getFullYear();
+			 var str4 = new Date().getMonth()+1;
+			 var str5 = new Date().getDate(); 
+			var str2="";
+			 if(str4-10 >=0 && str5-10 >=0){
+				str2 = str3+"-"+str4+"-"+str5;
+			}else if(str4-10 <=0 && str5-10 <=0){
+				str2 = str3+"-0"+str4+"-0"+str5;
+			}else if(str4-10 >=0 && str5-10 <=0){
+				str2 = str3+"-"+str4+"-0"+str5;
+			}else if(str4-10 <=0 && str5-10 >=0){
+				str2 = str3+"-0"+str4+"-"+str5;
+			}
 		      var tijiao = document.getElementById('tijiaoform');
-		      var bumen = document.getElementById('bumen');
+		      var department = document.getElementById('department');
 		      var zuzhiren = document.getElementById('zuzhiren');
 		      var huiyi = document.getElementById('huiyi');
 		      var mettingroom = document.getElementById('mettingroom');
@@ -61,6 +77,16 @@
 								//contentType: "application/json",
 								data: {meettingRoomId:id,startdate:date},
 								success:function(msg54){
+									if(str2==  date){
+										alert(str2);
+										var myDate = new Date();
+										var mytime=myDate.getHours();
+										alert(mytime);
+										for(i=0;i<=mytime;i++){
+											starttimes[i].disabled="disabled";
+											endtimes[i].disabled="disabled";
+										}
+									}
 									//alert(msg54.length);
 									for( i=0 ;i<starttimes.length;i++){
 										   for(j=0;j<msg54.length;j++){
@@ -68,11 +94,10 @@
 											   var arr1 = msg54[j].startTime.split(":");
 											   //alert("来不");
 											   var arr2 = msg54[j].endTime.split(":");
-											   if(arr2[0]>=i & i>=arr1[0]){
-												   
+											   if(((arr2[0]-0)+2)>=i & i>=arr1[0]){
 												   starttimes[i].disabled="disabled";
 												   endtimes[i].disabled="disabled";
-											   }
+										  		 }
 										   }
 									   }  	
 								}
@@ -81,6 +106,9 @@
 			}
 			  startDate.onchange=function(){
 				//alert("kkk");
+				starttimes.value="0:00";
+				endtimes.value="0:00";
+				xiandingshunxu();
 				  var endDate = document.getElementById('endDate');
 				  endDate.value = startDate.value;
 				  for( i=0 ;i<starttimes.length;i++){
@@ -101,6 +129,16 @@
 								//contentType: "application/json",
 								data: {meettingRoomId:id,startdate:date},
 								success:function(msg54){
+									if(str2 == date){
+										alert(str2);
+										var myDate = new Date();
+										var mytime=myDate.getHours();
+										alert(mytime);
+										for(i=0;i<=mytime;i++){
+											starttimes[i].disabled="disabled";
+											endtimes[i].disabled="disabled";
+										}
+									}
 									//alert(msg54.length);
 									for( i=0 ;i<starttimes.length;i++){
 										   for(j=0;j<msg54.length;j++){
@@ -118,14 +156,91 @@
 								}
 							});
 			         } 
-		      } 
+		      }
+			  //会议室填充
+			    function getParameter(param)
+			   {
+			   var query = window.location.search;
+			   var iLen = param.length;
+			   var iStart = query.indexOf(param);
+			   if (iStart == -1)
+			   　	return "";
+			   iStart += iLen + 1;
+			   var iEnd = query.indexOf("&", iStart);
+			   if (iEnd == -1)
+			   　return query.substring(iStart);
+			   return query.substring(iStart, iEnd);
+			   }
+			   //alert(getParameter("meettingroomname"));
+			   var meettingroomname = getParameter("meettingroomname");
+			   var meettingroomid = getParameter("meettingId");
+			   var morentishi = document.getElementById('morentishi');
+			   if(meettingroomname != ""){
+				   //alert(meettingroomid);
+				   $(morentishi).after("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+meettingroomname+"</option>");
+				   morentishi.removeAttribute("selected");
+				   var xinzeng = $("#xinzeng");
+				   mettingroom.onmousedown=function(){
+					   $(xinzeng).remove();
+				   }
+			   } 
+				//限定会议室，日期，时间的选择顺序
+			  if(mettingroom.value == "请选择视频会议室"){
+				  var endDate = document.getElementById('endDate');
+					startDate.disabled="disabled";
+					endDate.disabled="disabled";
+					starttimes.disabled="disabled";
+					endtimes.disabled="disabled";
+					
+				}else{
+					 var endDate = document.getElementById('endDate');
+					if(startDate.disabled){
+						startDate.removeAttribute("disabled");
+					}
+					if(endDate.disabled){
+						endDate.removeAttribute("disabled");
+					}
+					if(startDate.value==""){
+						starttimes.disabled="disabled";
+						endtimes.disabled="disabled";
+					}else{
+						starttimes.removeAttribute("disabled");
+						endtimes.removeAttribute("disabled");
+					}
+				}	
+		function xiandingshunxu(){
+				if(mettingroom.value == "请选择视频会议室"){
+					startDate.disabled="disabled";
+					endDate.disabled="disabled";
+					starttimes.disabled="disabled";
+					endtimes.disabled="disabled";
+					
+				}else{
+					if(startDate.disabled){
+						startDate.removeAttribute("disabled");
+					}
+					if(endDate.disabled){
+						endDate.removeAttribute("disabled");
+					}
+					if(startDate.value == ""){
+						starttimes.disabled="disabled";
+						endtimes.disabled="disabled";
+					}else{
+						starttimes.removeAttribute("disabled");
+						endtimes.removeAttribute("disabled");
+					}
+				}	
+			}		
+			mettingroom.onchange=function(){
+				xiandingshunxu();
+			}
 			//表单信息验证
 		      tijiao.onclick=function(){
 		    	  var arr1 = starttimes.value.split(":");
 		    	  
 			      var arr2 = endtimes.value.split(":");
-			      
-		    	  if(bumen.value =="请选择部门"){
+			      var endDate = document.getElementById('endDate');
+		    	  if(department.value =="请重新选择部门"){
 			    	  alert("部门不能为空");
 			    	  return;
 		         }else if (zuzhiren.value == ""){
@@ -140,7 +255,14 @@
 		         }else if(arr1[0] - arr2[0]>=0){
 		        	 alert("请选择正确的结束时间");
 		        	 return;
-		         }
+		         }else {
+		        	 for( i=arr1[0];i<=arr2[0];i++){
+			        		if(starttimes[i].disabled){
+			        			alert("所选时间段已有会议存在，请重新选择时间");
+					        	 return; 	
+			        		} 
+			        	 }
+			         }
 		    	 /*  alert(bumen.value);
 		    	  alert(zuzhiren.value);
 		    	  alert(yuangongid.value);
@@ -157,7 +279,7 @@
 		    	  alert(weixin1.checked); */
 		    	  var mrSpOrder =
 		    			  {		id:id,
-				    		    department: bumen.value,
+				    		    department: department.value,
 				    		    organization: zuzhiren.value,
 				    		    meettingName: huiyi.value,
 				    		    peopleNumbers: renshu.value,
@@ -176,7 +298,6 @@
 				    success:function(msg54){
 				    	//alert(ids+yuangongid.value);
 				    	var eids = (ids+id).split(":");
-				    	alert(eids);
 				    	//alert(eids.length); 
 				    	$.ajax({
 							type: "POST",
@@ -184,7 +305,25 @@
 							contentType: "application/json", 
 							data: JSON.stringify(eids),
 						    success:function(msg54){
-						    	
+						    	var youjian = $("input[name=youjian]:checked");
+						    	if($(youjian).val()=="yes"){
+						    		 $.ajax({
+											type: "get",
+											url:MeettingRoominterfaces.Var_sendMailetoEmployee,
+											//contentType: "application/json", 
+											//data: {spOrderId:67},
+										    success:function(msg54){
+								        		}
+										});
+						    	}
+						    	 $.ajax({
+										type: "get",
+										url:MeettingRoominterfaces.Var_sendMaileToAdmin,
+										//contentType: "application/json", 
+										//data: {spOrderId:67},
+									    success:function(msg54){
+							        		}
+									});
 						    	window.location.href='myreserve.html';
 				        		}
 						});
@@ -193,33 +332,6 @@
 				});
 					//alert(mrSpOrder.department);
 			}	  
-		   //会议室填充
-		    function getParameter(param)
-		   {
-		   var query = window.location.search;
-		   var iLen = param.length;
-		   var iStart = query.indexOf(param);
-		   if (iStart == -1)
-		   　	return "";
-		   iStart += iLen + 1;
-		   var iEnd = query.indexOf("&", iStart);
-		   if (iEnd == -1)
-		   　return query.substring(iStart);
-		   return query.substring(iStart, iEnd);
-		   }
-		   //alert(getParameter("meettingroomname"));
-		   var meettingroomname = getParameter("meettingroomname");
-		   var meettingroomid = getParameter("meettingId");
-		   var morentishi = document.getElementById('morentishi');
-		   if(meettingroomname != ""){
-			   //alert(meettingroomid);
-			   $(morentishi).before("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+meettingroomname+"</option>");
-			   morentishi.removeAttribute("selected");
-			   var xinzeng = document.getElementById('xinzeng');
-			   mettingroom.onclick=function(){
-				   xinzeng.hidden=true;
-			   }
-		   } 
 		 };
 </script>
 </head>
@@ -251,20 +363,29 @@
 					<h3 class="panel-title">必填信息</h3>
 				</div>
 				<div class="panel-body" >
-					<div>
-						<div  ng-controller="myCtrl" style="margin-left: 302px; float: left;">
-							<strong>部门:</strong> <select id="bumen" style="margin-left: 20px; width: 185px; height: 40px;color: teal;">
-								<option selected="selected">请重新选择部门</option>
-								<option ng-repeat="department in departments">{{department.departmentName}}</option>
-								</select>
-						</div>
-						<div style="margin-left: 197px; float: left;">
+				<div>
+							<div style="float: left;">
+								<div style="margin-left: 302px;">
+									<strong>部门:</strong> <input id="department" placeholder="必填"
+										style="margin-left: 20px; width: 185px; height: 40px" value="{{mrSpOrder.department}}"/>
+								</div>
+								<div ng-controller="myCtrl" style="z-index: 20;position:absolute;">
+									<select id="bumen"
+										style="margin-left:360px; width: 185px;  width: 185px; color: teal;" hidden="true" size="10">
+										<option selected="selected">请选择部门</option>
+										<option ng-repeat="department in departments" value="{{department.departmentId}}">{{department.departmentName}}</option>
+									</select>
+								</div>
+							</div>
+							
+
+							<div style="margin-left: 197px; float: left;">
 							<strong>组织人:</strong> <input  id="zuzhiren"  placeholder="必填" style="margin-left: 20px; width: 185px; height: 40px" value="{{mrSpOrder.organization}}"/>
-													<input id="yuangongid" type="text" hidden="true" name="employeeId" value="">
+													<input id="yuangongid" type="text" hidden="true" name="employeeId">
 						</div>
-						<div ng-controller="zuzhirenCtrl">
+						<div ng-controller="zuzhirenCtrl" style="z-index: 20;position:absolute;">
 						<strong>
-							<select id="zuhzirenleibaio" style="margin-left: 815px; width: 185px;color: teal;"   size="10" hidden="true">
+							<select id="zuhzirenleibaio" style="margin-left: 815px;margin-top:40px; width: 185px;color: teal;"   size="10" hidden="true">
 								<option selected="selected">请选择</option>
 								<option ng-repeat="zuhziren  in zuzhirens" value="{{zuhziren.userId}}">{{zuhziren.userName+"--"+zuhziren.mrDepartment.departmentName}}</option>
 							</select>
@@ -313,7 +434,7 @@
 					<div style="height: 40px;"></div>
 					<div>
 						<div style="margin-left: 280px; float: left;">
-							<strong>开始日期:</strong><input id="startDate"  type="date"
+							<strong>开始日期:</strong><input id="startDate" value="" type="text" placeholder="选择日期"
 								style="margin-left: 20px; width: 200px; height: 40px" />
 						</div>
 						<div style="margin-left: 270px; float: left;">
@@ -349,7 +470,7 @@
 						<div style="height: 60px;"></div>
 
 						<div style="margin-left: 280px; float: left;">
-							<strong>结束日期:</strong><input id="endDate" type="date" 
+							<strong>结束日期:</strong><input id="endDate" type="text" placeholder="选择日期"
 								style="margin-left: 20px; width: 200px; height: 40px" readonly="readonly" />
 						</div>
 						<div style="margin-left: 270px; float: left;">
@@ -432,8 +553,8 @@
 															 <input id="youjian2"type="radio" style="margin-left: 20px" name="youjian" value="no"/><strong>否</strong>
 								</div>
 								<div style="margin-left: 180px; float: left;">
-									<strong>微信通知:</strong> <input id="weixin1" type="radio" style="margin-left: 20px" name="weixing" value="yes"/><strong>是</strong> 
-															 <input id="weixin2" type="radio" style="margin-left: 20px" name="weixing" value="no"/><strong>否</strong>
+									<strong>微信通知:</strong> <input id="weixin1" type="radio" style="margin-left: 20px" name="weixing" value="yes" disabled="disabled"/><strong>是</strong> 
+															 <input id="weixin2" type="radio" style="margin-left: 20px" name="weixing" value="no" disabled="disabled"/><strong>否</strong>
 								</div>
 							</div>
 						</div>
@@ -457,17 +578,52 @@
 		 var app = angular.module('myApp', []);
 		//加载部门
 		 app.controller('myCtrl', function($scope,$http) {
-			 var url=MeettingRoominterfaces.Var_departments;
-				 $http.get(url).success( function(response) {
-	                 $scope.departments = response;
-	              });
+				 var department = document.getElementById('department');
+				 department.onkeyup=function(){
+					 //alert(department.value);
+					  var url=MeettingRoominterfaces.Var_departmentsByName+department.value+"?"+Math.random();
+						 $http.get(url).success( function(response) {
+			                 $scope.departments = response;
+			              });
+					  var bumen = document.getElementById('bumen');
+					  bumen.removeAttribute("hidden");
+					  bumen.onchange=function(){
+						  var hide = $scope.departments;
+						  for(i=0;i<hide.length;i++){
+							  if(hide[i].departmentId == bumen.value){
+								  department.value = hide[i].departmentName;
+							  }
+						  }
+						  bumen.hidden=true;
+					  }
+					  bumen.onblur =function(){
+						  var result=false;
+						  var hide = $scope.departments;
+						  if(hide==null||hide==""){
+							  department.value = null;
+						  }else{
+							  for(i=0;i<hide.length;i++){
+								  if(hide[i].departmentName == department.value){
+									  result=true;
+									  department.value = hide[i].departmentName;
+									  return; 
+								  }	 
+							  } 							  
+						  }
+						  if(!result)
+							  {
+							  department.value = null;
+							  }
+						  bumen.hidden=true;
+					  }
+			      } 
 			});
 		 var yuangongid = document.getElementById('yuangongid');
 		//加载组织人
 		 app.controller('zuzhirenCtrl', function($scope,$http) {
 			 var zuzhiren = document.getElementById('zuzhiren');
 			  zuzhiren.onkeyup=function(){
-				  var url = MeettingRoominterfaces.Var_searchUserByName+zuzhiren.value;
+				  var url = MeettingRoominterfaces.Var_searchUserByName+zuzhiren.value+"?"+Math.random();
 					 $http.get(url).success( function(response) {
 		                 $scope.zuzhirens = response;
 		              });
@@ -484,6 +640,23 @@
 					  zuhzirenleibaio.hidden=true;
 				  }
 				  zuhzirenleibaio.onblur =function(){
+					  var result=false;
+					  var hike = $scope.zuzhirens;
+					  if(hike==null||hike==""){
+						  zuzhiren.value = null;
+					  }else{
+						  for(i=0;i<hike.length;i++){
+							  if(hike[i].userName == zuzhiren.value){
+								  result=true;
+								  zuzhiren.value = hike[i].userName;
+								  return;  
+							  }
+						  } 
+					  }
+					  if(!result)
+					  {
+						  zuzhiren.value = null;
+					  }
 					  zuhzirenleibaio.hidden=true; 
 				  }
 		      } 
@@ -491,7 +664,7 @@
 			}); 
 		 //加载会议室
 		 app.controller('meettingRoomCtrl', function($scope,$http) {
-			 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom;
+			 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
 				 $http.get(url).success( function(response) {
 	                 $scope.meettingRooms = response;
 	              });
@@ -505,7 +678,7 @@
 		 app.controller('canyurenCtrl', function($scope,$http) {
 			 var renyuan =  document.getElementById('renyuan');
 			 renyuan.onkeyup=function(){
-				 var url = MeettingRoominterfaces.Var_searchUserByName+renyuan.value;
+				 var url = MeettingRoominterfaces.Var_searchUserByName+renyuan.value+"?"+Math.random();
 				 $http.get(url).success( function(response) {
 	                 $scope.canyurens = response;
 	              });
@@ -528,7 +701,23 @@
 					      } 
 				  }
 				  renyunleibaio.onblur =function(){
-					 
+					  var result=false;
+					  var hike = $scope.canyurens;
+					  if(hike==null||hike==""){
+						  renyuan.value = null;
+					  }else{
+						  for(i=0;i<hike.length;i++){
+							  if(hike[i].userName == renyuan.value){
+								  result=true;
+								  renyuan.value = hike[i].userName;
+								  return;  
+							  }
+						  } 
+					  }
+					  if(!result)
+					  {
+						  renyuan.value = null;
+					  }
 					  renyunleibaio.hidden=true; 
 				  }
 		      } 
@@ -551,12 +740,26 @@
 		   var id = getParameter("id");
 		   //alert(id);
 		   app.controller('huixianCtrl', function($scope,$http) {
-		   var url=MeettingRoominterfaces.Var_searchSpOrderById+id;
+		   var url=MeettingRoominterfaces.Var_searchSpOrderById+id+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.mrSpOrder = response;
 	             //alert($scope.mrSpOrder.id);
 	          });
-		   }); 	 
+		   });
+		   $('#startDate').datetimepicker({
+		    	todayhighlight: true,
+		        format: "yyyy-mm-dd",
+		        autoclose: true,
+		        minView: "month",  
+		        language: 'zh-CN',
+		    });
+		/*  $('#endDate').datetimepicker({
+		    	todayhighlight: true,
+		        format: "yyyy-mm-dd",
+		        autoclose: true,
+		        minView: "month",  
+		        language: 'zh-CN'
+		    }); */
 	</script>
 </body>
 </html>

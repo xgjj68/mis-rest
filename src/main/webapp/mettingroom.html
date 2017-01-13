@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html >
 <head>
@@ -13,40 +12,60 @@
 
 <!-- 可选的Bootstrap主题文件（一般不用引入） -->
 <link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
-
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script type="text/javascript" src="js/jquery.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script  type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+<script  type="text/javascript" src="js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
 <script type="text/javascript" src="js/interface.js"></script>
+<!-- <script type="text/javascript" src="js/interface2.js"></script> -->
 <script src="js/angular/controller.js"></script>
+<script type="text/javascript">
+	if(window.localStorage){
+		 alert('This browser supports localStorage');
+		}else{
+		 alert('This browser does NOT support localStorage');
+		}
+	var storage = window.localStorage;
+	storage.setItem("userId","4");
+	storage.setItem("userName","李永葆");
+</script>
 <script type="text/javascript">
 angular.element(window).bind('load', function() { 
 	//日期格式化函数初始化日期
-	 var str1 = new Date().toLocaleDateString();
-	var arr1 = str1.split("/");
+	 var str3 = new Date().getFullYear();
+	 var str4 = new Date().getMonth()+1;
+	 var str5 = new Date().getDate(); 
 	var str2="";
-	if(arr1[1]-10 >=0 && arr1[2]-10 >=0){
-		str2 = arr1[0]+"-"+arr1[1]+"-"+arr1[2];
-	}else if(arr1[1]-10 <=0 && arr1[2]-10 <=0){
-		str2 = arr1[0]+"-0"+arr1[1]+"-0"+arr1[2];
-	}else if(arr1[1]-10 >=0 && arr1[2]-10 <=0){
-		str2 = arr1[0]+"-"+arr1[1]+"-0"+arr1[2];
-	}else if(arr1[1]-10 <=0 && arr1[2]-10 >=0){
-		str2 = arr1[0]+"-0"+arr1[1]+"-"+arr1[2];
+	 if(str4-10 >=0 && str5-10 >=0){
+		str2 = str3+"-"+str4+"-"+str5;
+	}else if(str4-10 <=0 && str5-10 <=0){
+		str2 = str3+"-0"+str4+"-0"+str5;
+	}else if(str4-10 >=0 && str5-10 <=0){
+		str2 = str3+"-"+str4+"-0"+str5;
+	}else if(str4-10 <=0 && str5-10 >=0){
+		str2 = str3+"-0"+str4+"-"+str5;
 	}
 	
     var time = document.getElementById('time');
     time.value = str2; 
-    
+    $('#time').datetimepicker({
+    	todayhighlight: true,
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        minView: "month",  
+        language: 'zh-CN'
+    });
 });
 
 	//加载会议室
 	var app = angular.module('myApp', []);
 	//加载部门
 	 app.controller('myCtrl', function($scope,$http) {
-		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom;
+		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.meettingRooms = response;
 	             //alert(response.length);
@@ -60,25 +79,39 @@ angular.element(window).bind('load', function() {
 		              }); 
 	             }; 
 	          });
+			 var url=MeettingRoominterfaces.Var_downloads+"?"+Math.random();
+			 $http.get(url).success( function(response) {
+	             $scope.downloads = response;
+	          });
 			//点击子级预定按钮
-			 $scope.p_yuding = function(){
-					var chuanzhi = document.getElementById("chuanzhi");
+			 $scope.p_yuding = function(name,id){
+					//var chuanzhi = document.getElementById("chuanzhi");
 					
-			    	window.location.href='allreserve.html?meettingroomname='+chuanzhi.name+"&meettingId="+chuanzhi.value;  
+			    	window.location.href='allreserve.html?meettingroomname='+name+"&meettingId="+id;  
 			    };
+			    
+				//文件下载
+				 $scope.wendangDownlaod = function(filePath){
+					 window.location.href = MeettingRoominterfaces.Var_downlaod+"?filePath="+filePath;
+						/* alert(filePath);
+						 var url=MeettingRoominterfaces.Var_downlaod+"?filePath="+filePath;
+						 $http.get(url).success( function(response) {
+							 alert(response);
+				          }); */
+				    };
 		});
 	 app.controller('timeCtrl', function($scope,$http) {
 		var chaxunBytime = $("#chaxunBytime");
 		//点击查询按时间查询会议室
 		chaxunBytime.click(function(){
-			var url=MeettingRoominterfaces.Var_searchSpOrderByDate+time.value;
+			var url=MeettingRoominterfaces.Var_searchSpOrderByDate+time.value+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 				 var alltimediv = $('div[id="alltime"]');
             	 for(l=0;l<alltimediv.length;l++){
             		 var alltime = $(alltimediv).children();
             		 for(k=0;k<alltime.length;k++){
 	            		 $(alltime[k]).attr("class","progress-bar progress-bar-default");
-	            		 $(alltime[k]).popover('hide');
+	            		 $(alltime[k]).popover('destroy');
 	            	 } 
             	 }
 	             //alert(response.length);
@@ -92,7 +125,7 @@ angular.element(window).bind('load', function() {
 						    	 if(arr2[0]>=j & j>=arr1[0]){
 									   $(H[j]).attr("class","progress-bar progress-bar-warning");
 									   $(H[j]).attr("data-content","当前时间段"+response[i].startTime+"点到"+response[i].endTime+"点已有会议预定:“"+response[i].meettingName+"”");
-									   $(H[j]).on('.popover');
+									  
 									   $(H[j]).popover({trigger: 'hover'});
 								   }							     
 						     }
@@ -101,7 +134,7 @@ angular.element(window).bind('load', function() {
 	             }
 	          });
 		});
-		 var url= MeettingRoominterfaces.Var_searchSpOrderByDate + time.value;
+		 var url= MeettingRoominterfaces.Var_searchSpOrderByDate + time.value+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             //alert(response.length);
 	             for(i=0;i<response.length;i++){
@@ -127,7 +160,7 @@ angular.element(window).bind('load', function() {
 <body ng-app="myApp" >
 	<div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;width: 100%">
 		<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 50px;padding-left: 35%;width: 100%">
-				<h1>欢迎使用视频会议室预定系统</h1>
+				<h1>欢迎使用视频会议室系统</h1>
 		</div>		 
 	</div> 
     <div class="panel panel-default" style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size: 100%;">
@@ -138,7 +171,7 @@ angular.element(window).bind('load', function() {
 	        	<div style="margin-left: 350px;margin-top: 30px;width:100%" >
 	        		
 	        		<div style="margin-left: 40px;float: left;">
-		        	<input id="time" type="date" />
+		        	<input id="time" type="text" style="height: 45px" placeholder="选择日期"/>
 			        </div>
 			        	
 		        	<div style="margin-left: 1px;float: left;" >
@@ -273,22 +306,21 @@ angular.element(window).bind('load', function() {
 									</div>
 								</div>
 								<div style="margin-left: 20px;float: left;">
-									      <button id="p_yuding" class="btn btn-lg btn-info" type="button"  style="height: 40px" ng-click="p_yuding()">预定</button>
+									      <button id="p_yuding" class="btn btn-lg btn-info" type="button"  style="height: 40px" ng-click="p_yuding(meettingRoom.meetingRoomName,meettingRoom.id)">预定</button>
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 					<div style="height: 50px"></div>
-					<h4 style="color: black; text-decoration: none">视频会议室app下载:&nbsp&nbsp&nbsp&nbsp<a class="" href=""  style="color: blue;"><u>视频会议室下载链接</u></a></h4>
-					<h4 style="color: black; text-decoration: none">视频会议室使用说明文档下载:&nbsp&nbsp&nbsp&nbsp<a class="" href="" style="color: blue;"> <u>视频会议室使用说明文档下载链接</u></a></h4>
+					<h4 style="color: black; text-decoration: none" ng-repeat=" download in downloads">{{download.download}}:&nbsp&nbsp&nbsp&nbsp<a class="" href="" ng-click="wendangDownlaod(download.instructions)" style="color: blue;"><u>{{download.instructions}}</u></a></h4>
 				</div>
           </div>
 		        	
           <div style="height: 50px"></div>
           <div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;">
 				<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 50px;padding-left: 35%;">
-					<div style="margin-top: 50px;margin-left: 70%">
+					<div style="margin-top: 50px;margin-left: 60%">
 						<h5>质量管理与信息化办公室 制作 版权所有 2016</h5>
 						<h5>MIS仅提供相关工具 所有具体内容均需按照公司制度执行 </h5>
 					</div>

@@ -166,6 +166,13 @@
     from SP_ORDER order by START_TIME ) t
     where  START_TIME > #{time,jdbcType=VARCHAR} and MEETTING_ROOM_ID = #{MeId,jdbcType=INTEGER} limit 1
   </select>
+ <!-- 根据员工id 查询会议记录条数 -->
+  <select id="selectSporderCounts" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+	select
+	count(*) from SP_ORDER so join MEETTING_EMPLOYEE me
+	on so.ID = me.MEETTING_ID
+	where EMPLOYEE_ID = #{userId,jdbcType=INTEGER}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     <!--
       WARNING - @mbggenerated

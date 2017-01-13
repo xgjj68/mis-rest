@@ -11,22 +11,55 @@
 
 <!-- 可选的Bootstrap主题文件（一般不用引入） -->
 <link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
-
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script type="text/javascript" src="js/jquery.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
+<!-- <script type="text/javascript" src="js/interface2.js"></script> -->
 <script src="js/angular/controller.js"></script>
+<style type="text/css">
+        .current a {
+            font-size: 20px;
+        }
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		var myDate = new Date();
-		myDate.toLocaleDateString(); //获取当前日期
-		$("#input1").prop("value", "hjjh");
-		//alert(myDate.toLocaleDateString());
-	});
-</script>
+        .over {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f5f5f5;
+            opacity:0.5;
+            z-index: 1000;
+        }
+
+        .layout {
+            display: none;
+            position: absolute;
+            top: 40%;
+            left: 40%;
+            width: 100px;
+            height: 80px;
+            z-index: 1001;
+            text-align:center;
+            background-color:white;
+        }
+         .success2 {
+            display: none;
+            position: absolute;
+            top: 40%;
+            left: 40%;
+            width: 150px;
+            height: 60px;
+            z-index: 1001;
+            text-align:center;
+            background-color: white;
+        }
+</style>
 <!---->
 <script>
 	window.onload = function() {
@@ -46,34 +79,222 @@
 				;
 			}
 		};
-
-		var Check1 = document.getElementById('Getpassword1');
-		Check1.onclick = function() {
-			alert("hjhj");
-			$.ajax({
-				type : "post",
-				url : "${pageContext.request.contextPath}/json/fast54",
-				data : "name=c54",
-				success : function(msg54) {
-					console.log(msg54.length);
-					$("tbody>tr:gt(0)").remove();
-					for (var i = 0; i < msg54.length; i++) {
-						var id = msg54[i].id;
-						var name = msg54[i].name;
-						var gender = msg54[i].birth;
-						$("tbody").append(
-								"<tr>" + "<td>" + id + " " + (sig++) + "</td>"
-										+ "<td>" + name + "</td>" + "<td>"
-										+ gender + "</td>" + "</tr>");
-					}
-				},
-				dataType : "json"
-			});
-		};
+		
+		 //上传文件
+	      $("#upload").click(function(){
+			    var uploadPath=$("#uploadPath");
+				 if($(uploadPath).val()==""){
+					alert("请选择上传文件");
+				 }else{
+					//form提交进行文件上传
+					    var uploadfile = new FormData($('#form1')[0]);
+					    document.getElementById("over").style.display = "block";
+					    document.getElementById("layout").style.display = "block";
+					  $.ajax({
+						  	url: MeettingRoominterfaces.Var_upload,
+	 						type: "post",
+	 						data: uploadfile,
+	 						enctype: 'multipart/form-data',
+	 						processData: false,
+	 						contentType: false,
+	 					    success:function(data){
+	 					    	 if(data=="success"){
+	 					    		closeLoading();
+	 					    		$("#uploadPath").val("");
+	 					    	 }else{
+	 					    		 alert("上传失败，请确定文件是否存在？");
+	 					    	 } 
+	 			        		} 
+					 });
+				 } 
+		 });
+	 //上传提示
+		 function closeLoading()
+         {
+             document.getElementById("over").style.display = "none";
+             document.getElementById("layout").style.display = "none";
+             document.getElementById("success").style.display = "block";
+             window.setTimeout(close,2000);
+         }
+         function close()
+         {
+         	 document.getElementById("success").style.display = "none";
+         }
 	};
+	//操作员工信息
+	var storage = window.localStorage;
+	var userId = storage.getItem("userId");
+	var userName =storage.getItem("userName"); 
+	//加载会议室
+	var app = angular.module('myApp', []);
+	//加载部门
+	 app.controller('myCtrl', function($scope,$http) {
+		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
+			 $http.get(url).success( function(response) {
+	             $scope.meettingRooms = response;
+	          });
+			 var url=MeettingRoominterfaces.Var_downloads+"?"+Math.random();
+			 $http.get(url).success( function(response) {
+	             $scope.downloads = response;
+	          });
+			 $scope.addhuiyishi = function(){
+				 var bumen=$("#add_meetingRoomName");
+				 var zhanghu=$("#add_roomAccount");
+				 var mima=$("#add_password");
+				 if($(bumen).val()==""){
+					 alert("会议室名称不能为空");
+			    	  return;
+				 }else if($(zhanghu).val()==""){
+					 alert("账户不能为空");
+			    	 return; 
+				 }else if($(mima).val()==""){
+					 alert("密码不能为空");
+			    	 return;  
+				 }
+				 var meettingRoom =
+	  			  {
+						 meetingRoomName: $(bumen).val(),
+						 roomAccount: $(zhanghu).val(),
+						 password: $(mima).val(),
+			    		  } ;
+				 $.ajax({
+						type: "POST",
+						url: MeettingRoominterfaces.Var_addMeettingRoom,
+						contentType: "application/json", 
+						data: JSON.stringify(meettingRoom),
+					    success:function(msg54){
+					    	location.reload(true); 
+			        		}
+					});
+			 };
+			 $scope.shanchu = function(id){
+				 if(confirm("确认删除？")){
+					 $.ajax({
+							type: "get",
+							url: MeettingRoominterfaces.Var_deleteMeettingRoom + id+"?"+Math.random(),
+							//contentType: "application/json", 
+							//data: JSON.stringify(meettingRoom),
+						    success:function(msg54){
+						    	location.reload(true); 
+				        		}
+						}); 
+				 }
+				
+			 };
+			 var id=null;
+			 $scope.update = function(code){
+				 id = code;
+				 //是否能够修改判断
+				//日期格式化函数初始化日期
+				 var str3 = new Date().getFullYear();
+				 var str4 = new Date().getMonth()+1;
+				 var str5 = new Date().getDate(); 
+				var str2="";
+				 if(str4-10 >=0 && str5-10 >=0){
+					str2 = str3+"-"+str4+"-"+str5;
+				}else if(str4-10 <=0 && str5-10 <=0){
+					str2 = str3+"-0"+str4+"-0"+str5;
+				}else if(str4-10 >=0 && str5-10 <=0){
+					str2 = str3+"-"+str4+"-0"+str5;
+				}else if(str4-10 <=0 && str5-10 >=0){
+					str2 = str3+"-0"+str4+"-"+str5;
+				}
+				  $.ajax({
+								type:"post",
+								url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
+								data: {meettingRoomId:id,startdate:str2},
+								success:function(msg54){
+									var myDate = new Date();
+									 var mytime=myDate.getHours();
+										   for(j=0;j<msg54.length;j++){
+											  //alert(msg54.length);
+											   var arr1 = msg54[j].startTime.split(":");
+											   //alert("来不");
+											   var arr2 = msg54[j].endTime.split(":");
+											   if((arr2[0]-0)+1>=mytime & mytime>=(arr1[0]-0)-1){
+												   //$(function () { $('#myModal').modal('hide')});
+												   alert("当前有会议正在进行中，无法进行修改操作，请稍后重试！");
+												   return;
+											   }
+										   }
+										 //修改会议室时信息回显
+											  var url = MeettingRoominterfaces.Var_searchMeettingRoomById + id +"?"+Math.random();
+								            	 $http.get(url).success( function(response) {
+								            		 var bumen=$("#update_meetingRoomName");
+								        			 var zhanghu=$("#update_roomAccount");
+								        			 var mima=$("#update_password");
+													 $(bumen).val(response.meetingRoomName);
+													 $(zhanghu).val(response.roomAccount);
+													 $(mima).val(response.password);
+									              });
+								            	  $('#myModal4').modal('show');
+								            	  	 var bumen=$("#update_meetingRoomName");
+								        			 var zhanghu=$("#update_roomAccount");
+								        			 var mima=$("#update_password");
+								            	 $scope.xuigaihuiyishi = function(){
+								    				 if($(bumen).val()==""){
+								    					 alert("会议室名称不能为空");
+								    			    	  return;
+								    				 }else if($(zhanghu).val()==""){
+								    					 alert("账户不能为空");
+								    			    	 return; 
+								    				 }else if($(mima).val()==""){
+								    					 alert("密码不能为空");
+								    			    	 return;  
+								    				 }
+								    				 var meettingRoom =
+								    				  {		 id:id,
+								    						 meetingRoomName: $(bumen).val(),
+								    						 roomAccount: $(zhanghu).val(),
+								    						 password: $(mima).val(),
+								    						 changeTime:myDate,
+						    					    		 who:userName,
+								    			    		  } ;
+								    				  $.ajax({
+								    						type: "PUT",
+								    						url: MeettingRoominterfaces.Var_updateMeettingRoom,
+								    						contentType: "application/json", 
+								    						data: JSON.stringify(meettingRoom),
+								    					    success:function(msg54){
+								    					    	location.reload(true); 
+								    			        		}
+								    					}); 
+								    				
+								    			 };   
+								}
+							});
+			 };
+			 //修改链接
+			 var xzid="";
+			 $scope.xuigailianjie = function(id){
+				 var dizhi=$("#xuigaidizhi");
+				 xzid = id;
+			 };
+			 $scope.tijiaowendang = function(){
+				 var lianjie=$("#xinlianjie");
+				 if($(lianjie).val()==""){
+					 alert("请输入新的链接地址");
+				 }else{
+					 var mrSpDownload = 
+					 {		id:xzid,
+							instructions:$(lianjie).val()
+				    		  } ;
+					 $.ajax({
+ 						type: "PUT",
+ 						url: MeettingRoominterfaces.Var_updateSpdownload,
+ 						contentType: "application/json", 
+ 						data: JSON.stringify(mrSpDownload),
+ 					    success:function(msg54){
+ 					    	location.reload(true); 
+ 			        		}
+ 					});  
+				 }
+			 };
+	});
+	
 </script>
 </head>
-<body
+<body ng-app="myApp" ng-controller="myCtrl"
 	style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 150%;">
 	<!-- 预定列表 -->
 	<div class="panel panel-success"
@@ -100,7 +321,7 @@
 							<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal3" style="height: 40px;">添加</button>
 						</div>
 					</div>
-					<div style="width: 90%">
+					<div style="width: 90%"  >
 						<table id="table" class="table">
 							<thead>
 								<tr class="success">
@@ -114,47 +335,24 @@
 									<td></td>
 								</tr>
 							</thead>
-							<tr class="success">
-								<td><input id="All" type="text" hidden="true" name="" /></td>
-								<td>adx视频会议室</td>
-								<td>78jgjh</td>
-								<td>6576576</td>
-								<td>xxxx</td>
-								<td>xxxx</td>
+							<tr class="success" ng-repeat="meettingRoom in meettingRooms">
+								<td><input id="id" type="text" hidden="true" value="{{meettingRoom.id}}" /></td>
+								<td>{{meettingRoom.meetingRoomName}}</td>
+								<td>{{meettingRoom.roomAccount}}</td>
+								<td>{{meettingRoom.password}}</td>
+								<td>{{meettingRoom.changeTime | date:'yyyy-MM-dd hh:mm'}} </td>
+								<td>{{meettingRoom.who}}</td>
 								<td>
 									<div style="height: 50px;">
 										<div style="margin-left: 0px; float: left;">
-											<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal4" style="height: 40px; margin-left: 60px;">修改</button>
+											<button class="btn btn-lg btn-info"  data-target="#myModal4" style="height: 40px; margin-left: 60px;" ng-click="update(meettingRoom.id)">修改</button>
 										</div>
 									</div>
 								</td>
 								<td>
 									<div style="height: 50px;">
 										<div style="margin-left: 0px; float: left;">
-											<a class="btn btn-lg btn-info" href="#" role="button"
-												style="height: 40px;">删除</a>
-										</div>
-									</div>
-								</td>
-							</tr>
-							<tr class="success">
-								<td><input id="All" type="text" hidden="true" name="" /></td>
-								<td>cdx视频会议室</td>
-								<td>7879iuhh</td>
-								<td>6576575</td>
-								<td>xxxx</td>
-								<td>xxxx</td>
-								<td>
-									<div style="height: 50px;">
-										<div style="margin-left: 0px; float: left;">
-											<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal4" style="height: 40px; margin-left: 60px;">修改</button>
-										</div>
-									</div>
-								</td>
-								<td>
-									<div style="height: 50px;">
-										<div style="margin-left: 0px; float: left;">
-											<a class="btn btn-lg btn-info" href="#" role="button"
+											<a class="btn btn-lg btn-info"  ng-click="shanchu(meettingRoom.id)" role="button"
 												style="height: 40px;">删除</a>
 										</div>
 									</div>
@@ -171,23 +369,38 @@
 					<h3 class="panel-title">链接管理</h3>
 				</div>
 				<div class="panel-body">
-
-					<div style="height: 100px; float: left;">
-						<strong>视频会议室app下载：&nbsp&nbsp&nbsp</strong> <a
-							style="color: purple; font-weight: bold;"><u>gf77sfy的感觉会更好gyhg</u></a>
+					<div ng-repeat="downlaod in downloads">
+						<div style="height: 100px; float: left;">
+							<input id="xuigaidizhi" type="text" value="{{downlaod.id}}" hidden="true"/>
+							<strong>{{downlaod.download}}：&nbsp&nbsp&nbsp</strong> <a
+								style="color: purple; font-weight: bold;"><u>{{downlaod.instructions}}</u></a>
+						</div>
+						<div style="height: 100px; margin-left: 80px;">
+							<!-- 按钮触发模态框 -->
+							<button class="btn btn-lg btn-info" data-toggle="modal"
+								data-target="#myModal1"
+								style="height: 40px; margin-left: 80px;" ng-click="xuigailianjie(downlaod.id)">修改</button>
+						</div>
 					</div>
-					<div style="height: 100px; margin-left: 80px;">
-						<!-- 按钮触发模态框 -->
-						<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal1" style="height: 40px; margin-left: 100px;">修改</button>
+					<div style="height: 50px; ">
+						<div style="float: left;">
+							<strong>&nbsp&nbsp&nbsp&nbsp文件上传：</strong>
+						</div>
+						<form id="form1">
+								<input id="uploadPath" type="file" name="file" style="height: 40px; float: left; margin-right: 10px"/>
+									<input class="btn btn-lg btn-info"  id="upload" type="button" value="上传"/> 	
+						</form> 
+						<div id="over" class="over"></div>
+						<div id="layout" class="layout">
+							<img src="/mis-rest/image/loading3.gif" />
+						</div>
+						<div id="success" class="success2" style="height: 30px; width: 150px">
+							<strong><img
+								src="/mis-rest/image/success.png"
+								style="height: 30px; width: 40px" />上传成功！</strong>
+						</div>
 					</div>
-
-					<div style="height: 100px; float: left;">
-						<strong>视频会议室使用说明文档下载：&nbsp&nbsp&nbsp</strong> <a
-							style="color: purple; font-weight: bold;"><u>sdfhfhfg黄金古神东莞房价估计很贵hhh</u></a>
-					</div>
-					<div style="height: 100px; margin-left: 80px;">
-						<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal2" style="height: 40px; margin-left: 100px;">修改</button>
-					</div>
+					
 				</div>
 			</div>
 		</div>
@@ -201,35 +414,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">修改视频会议室app下载链接</h4>
+                <h4 class="modal-title" id="myModalLabel">修改下载链接</h4>
             </div>
             <div class="modal-body">
-				输入新的链接：<input id="" type="text" name="" style="width: 500px" required="required"/>
+				输入新的链接：<input id="xinlianjie" type="text" name="" style="width: 500px" required="required"/>
 			</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button id="tijiao1" type="submit" class="btn btn-primary">提交更改</button>
-            </div>
-        </div>
-     </form>   
-    </div>
-</div>
-<!-- 修改下载使用文档链接 -->
-<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-		style="margin-top: 400px;" data-backdrop="false">
-    <div class="modal-dialog">
-    <form action="" class="" >
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">修改使用文档下载链接</h4>
-            </div>
-            <div class="modal-body">
-				输入新的链接：<input id="" type="text" name="" style="width: 500px"/>
-			</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button id="tijiao2" type="submit" class="btn btn-primary">提交更改</button>
+                <button id="tijiaoApp" type="button" class="btn btn-primary" ng-click="tijiaowendang()">提交更改</button>
             </div>
         </div>
      </form>   
@@ -244,7 +436,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">添加视频会议室</h4>
             </div>
-            <form action="" class="" style="">
+            <form  >
 	            <div class="modal-body">
 						<div class="panel panel-primary" style="width: 500px;height: 300px;margin-left: 40px">
 							<div class="panel-heading">
@@ -253,15 +445,15 @@
 							<div class="panel-body">
 								<div>
 									<div style="margin-left:20px;margin-top: 20px;">
-										会议室名称: <input type="text"
+										会议室名称: <input type="text" id="add_meetingRoomName"
 											style="width: 185px; height: 40px; margin-left: 20px" />
 									</div>
 									<div style="margin-left:60px;margin-top: 20px">
-										账户: <input type="text"
+										账户: <input type="text" id="add_roomAccount"
 											style="width: 185px; height: 40px; margin-left: 20px" />
 									</div>
 									<div style="margin-left: 60px;margin-top: 20px">
-										密码: <input type="text"
+										密码: <input type="text" id="add_password" 
 											style="width: 185px; height: 40px; margin-left: 20px" />
 									</div>
 								</div>
@@ -271,7 +463,7 @@
 				</div>
 	            <div class="modal-footer">
 	                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-	                <button id="tijiao3" type="submit" class="btn btn-primary">提交</button>
+	                <button id="tijiaohuiyishi" type="button" ng-click="addhuiyishi()" class="btn btn-primary">提交</button>
 	            </div>
             </form>
         </div>
@@ -279,13 +471,13 @@
 </div>
 <!-- 修改室视频会议室会信息-->
 <div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-		style="margin-top: 100px;" data-backdrop="false"
+		data-show="false"style="margin-top: 100px;" data-backdrop="false"
 		>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">修改室视频会议室会信息</h4>
+                <h4 class="modal-title" id="myModalLabel">修改视频会议室信息</h4>
             </div>
             <form action="" class="form-horizontal" style="">
             <div class="control-group">
@@ -298,25 +490,25 @@
 								<div>
 									<div style="margin-left:20px;margin-top: 20px;">
 										<label class="control-label">会议室名称:</label> <input type="text" class="uneditable-input"
-											style="width: 185px; height: 40px; margin-left: 20px;" disabled="disabled" />
+											id="update_meetingRoomName"style="width: 185px; height: 40px; margin-left: 20px;" disabled="disabled" />
 											
 									</div>
 									<div style="margin-left: 65px;margin-top: 20px">
 										<label class="control-label">账户:</label> <input type="text"
-											style="width: 185px; height: 40px; margin-left: 20px;" />
+											id="update_roomAccount"style="width: 185px; height: 40px; margin-left: 20px;" />
 									</div>
 									<div style="margin-left: 65px;margin-top: 20px">
 										<label class="control-label">密码:</label> <input type="text"
-											style="width: 185px; height: 40px; margin-left: 20px;" />
+											id="update_password"style="width: 185px; height: 40px; margin-left: 20px;" />
 									</div>
 								</div>
 
 							</div>
-						</div>
+				</div>
 			</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button id="tijiao4" type="button" class="btn btn-primary">提交更改</button>
+                <button id="xuigaihuiyishi" type="button" class="btn btn-primary" ng-click="xuigaihuiyishi()">提交更改</button>
             </div>
             </div>
             </form>

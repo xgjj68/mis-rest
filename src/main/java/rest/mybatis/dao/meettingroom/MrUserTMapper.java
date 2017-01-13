@@ -2,6 +2,8 @@ package rest.mybatis.dao.meettingroom;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import rest.mybatis.model.meettingroom.MrDepartmentWithBLOBs;
 import rest.mybatis.model.meettingroom.MrUserT;
 
@@ -36,7 +38,7 @@ public interface MrUserTMapper {
      *
      * @mbggenerated Tue Dec 06 16:40:32 CST 2016
      */
-    MrUserT selectByPrimaryKey(Integer userId);
+    MrUserT selectByPrimaryKey(@Param(value="userId")Integer userId);
     List<MrUserT> selectByName(String userName);
     MrDepartmentWithBLOBs selectDepartmentByID(Integer departmentId);
     /**

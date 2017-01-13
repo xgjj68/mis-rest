@@ -21,10 +21,9 @@ public class UserService {
 	private MrUserTMapper mruserTMapper;
 	
 	  //根据名称模糊查询员工
-	@RequestMapping(value="/searchUserByName/{userName}",method=RequestMethod.GET,produces =MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchUserByName/{userName}",method=RequestMethod.GET,produces =MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<MrUserT> searchUserByName(@PathVariable("userName") String userName){
-		System.out.println(userName);
 		List<MrUserT> users = mruserTMapper.selectByName(userName+"%");
 		return users;
 	}
