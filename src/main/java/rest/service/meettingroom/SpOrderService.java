@@ -1,6 +1,8 @@
 package rest.service.meettingroom;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -93,10 +95,23 @@ public class SpOrderService {
 	public ResponseEntity<Void> deleteSpOrderByIds(@RequestBody ArrayList<Integer> ids) {
 		for (Integer integer : ids) {
 			if(integer!=null&&integer!=0){
-				mrSpOrderMapper.deleteByPrimaryKey(integer);
-				List<MrMeettingEmployee> list = MMEMapper.selectBymeettingId(integer);
-				for (MrMeettingEmployee mrMeettingEmployee : list) {
-					MMEMapper.deleteByUserIdAndMid(mrMeettingEmployee.getEmployeeId(), integer);
+				MrSpOrder mrSpOrder = mrSpOrderMapper.selectByPrimaryKey(integer);
+				String startTime = mrSpOrder.getStartTime();
+				String[] split = startTime.split(":");
+				int startparseInt = Integer.parseInt(split[0]);
+				String endTime = mrSpOrder.getEndTime();
+				String[] split1 = endTime.split(":");
+				int endparseInt = Integer.parseInt(split1[0]);
+				Calendar c = Calendar.getInstance();//可以对每个时间域单独修改
+				int hour = c.get(Calendar.HOUR_OF_DAY); 
+				System.out.println(hour);
+				if(startparseInt<=hour&&hour<endparseInt+1){
+				}else{
+					mrSpOrderMapper.deleteByPrimaryKey(integer);
+					List<MrMeettingEmployee> list = MMEMapper.selectBymeettingId(integer);
+					for (MrMeettingEmployee mrMeettingEmployee : list) {
+						MMEMapper.deleteByUserIdAndMid(mrMeettingEmployee.getEmployeeId(), integer);
+					}
 				}
 			}
 		}

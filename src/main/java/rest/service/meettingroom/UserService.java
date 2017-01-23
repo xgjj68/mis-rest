@@ -27,6 +27,20 @@ public class UserService {
 		List<MrUserT> users = mruserTMapper.selectByName(userName+"%");
 		return users;
 	}
+	//根据员工id查询员工信息
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchUserByUserId/{userId}",method=RequestMethod.GET,produces =MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public MrUserT searchUserByUserId(@PathVariable("userId") Integer userId){
+		MrUserT userT = mruserTMapper.selectByPrimaryKey(userId);
+		return userT;
+	}
+	//查询所有员工信息
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchUsers",method=RequestMethod.GET,produces =MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<MrUserT> searchUsers(){
+		List<MrUserT> users = mruserTMapper.selectUsers();
+		return users;
+	}
 	public MrUserTMapper getMruserTMapper() {
 		return mruserTMapper;
 	}

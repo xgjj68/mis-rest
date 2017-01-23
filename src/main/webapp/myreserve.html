@@ -47,34 +47,34 @@
   	//获取员工id
  	var storage = window.localStorage;
 	var userId = storage.getItem("userId");
-	var userName =storage.getItem("userName"); 
+	var userName =storage.getItem("userName");
     //删除会议预定
     var yudingshanchu = document.getElementById('yudingshanchu');
     	yudingshanchu.onclick = function(){
     		var idInputs = $(":checked");
-    		for(i=0;i<idInputs.length;i++){
- 
-    			if(userName == idInputs[i].name ){
-    				var pids = idInputs[i].value.split(":")[0] + ":";
-    	    		var spids = pids.split(":");
-    	    		if(idInputs.length == 0){
-    	    			alert("请勾选操作项");
-    	    		}else{
-    	    			if(confirm("确认删除？")){
-    	    				//删除员工会议及关系记录
-    	    				 $.ajax({
-    	    					type: "post",
-    	    					url: MeettingRoominterfaces.Var_deleteSpOrderByIds,
-    	    					contentType: "application/json", 
-    	    					data: JSON.stringify(spids),
-    	    				    success:function(msg54){
-    	    	    				window.location.href='myreserve.html';
-    	    		        		}
-    	    				}); 
-    	    			};
-    	    			
+    		if(idInputs.length == 0){
+    			alert("请勾选操作项");
+    		}else{
+    			if(confirm("确认删除？")){
+    				var pids ="";
+    				for(i=0;i<idInputs.length;i++){
+    	    			if(userName == idInputs[i].name ){
+    	    				pids = pids+idInputs[i].value.split(":")[0] + ":";
+    	    			}
     	    		}
-    			}
+    				var spids = pids.split(":");
+    				//删除员工会议及关系记录
+    				 $.ajax({
+    					type: "post",
+    					url: MeettingRoominterfaces.Var_deleteSpOrderByIds,
+    					contentType: "application/json", 
+    					data: JSON.stringify(spids),
+    				    success:function(msg54){
+    	    				window.location.href='myreserve.html';
+    		        		}
+    				}); 
+    			};
+    			
     		}
     		
     	};
@@ -89,12 +89,18 @@
 	//加载会议列表
 	 app.controller('myCtrl', function($scope,$http) {
 		 
-		 $scope.checked = function(){
+		 $scope.checked = function(starttime,endtime){
+			 yudingshanchu.disabled="";
 		    	var idInputs = $(":checked");
-			
+		    	var start = starttime.split(":")[0];
+		    	var end = endtime.split(":")[0];
+		    	var nowtime = new Date().getHours();
 		    	for(i=0;i<idInputs.length;i++){
+		    		
+		    		if(start<=nowtime&&nowtime<=end){
+		    			yudingshanchu.disabled="disabled";
+		    		}
 		    		if(userName == idInputs[i].name ){
-		    			yudingshanchu.removeAttribute("disabled");
 		    		}else{
 		    			yudingshanchu.disabled="disabled";
 		    		}
@@ -304,6 +310,7 @@
 		});
 	//展示预定详情
 	 app.controller('xiangqingCtrl', function($scope,$http) {
+		
 		 $scope.changeStatus = function(prop){
 			 //alert(prop);
 			 var trs = document.getElementsByTagName('tr');
@@ -388,6 +395,7 @@
 									<td>结束时间</td>
 									<td>组织人</td>
 									<td>账户</td>
+									<td>日期</td>
 									<td></td>
 								</tr>
 							</thead>
@@ -396,7 +404,7 @@
 								ng-click="changeStatus($index)" id="success">
 								<td><input id="meetting_id" type="checkbox"
 									value="{{mrSpOrder.id}}:{{mrSpOrder.startDate}}:{{mrSpOrder.startTime}}"
-									name="{{mrSpOrder.organization}}" ng-click="checked()"/></td>
+									name="{{mrSpOrder.organization}}" ng-click="checked(mrSpOrder.startTime,mrSpOrder.endTime)"/></td>
 								<td>{{mrSpOrder.department}}</td>
 								<td>{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</td>
 								<td>{{mrSpOrder.meettingName}}</td>
@@ -404,6 +412,7 @@
 								<td>{{mrSpOrder.endTime}}</td>
 								<td>{{mrSpOrder.organization}}</td>
 								<td>{{mrSpOrder.mrMeettingRoom.roomAccount}}</td>
+								<td>{{mrSpOrder.startDate}}</td>
 								<td>
 									<div style="height: 50px;">
 										<div style="margin-left: 0px; float: left;">

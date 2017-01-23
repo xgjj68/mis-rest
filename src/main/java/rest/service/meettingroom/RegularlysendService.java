@@ -42,7 +42,7 @@ public class RegularlysendService {
 		 int minute = c.get(Calendar.MINUTE); 
 		 //int second = c.get(Calendar.SECOND); 
 		 System.out.println(hour); 
-
+		 System.out.println(minute);
 		 int bighour = -1;
 		 for (MrSpOrder mrSpOrder : mrSpOrderDate) {
 			 String endTime = mrSpOrder.getEndTime();
@@ -53,8 +53,9 @@ public class RegularlysendService {
 				bighour = parseInt;
 			 }
 		}
-		 if( hour-bighour>=0&&hour-bighour<=1){
-			 if(minute<=10){
+		 System.out.println(bighour);
+		 if( hour-bighour==0){
+			 if(minute<10){
 				 this.sendMaileToAdmin(); 
 			 }
 		 }

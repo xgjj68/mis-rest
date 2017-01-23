@@ -54,23 +54,48 @@
 			  var huiyijianyao = document.getElementById('huiyijianyao');
 			  var youjian1 = document.getElementById('youjian1');
 			  var weixin1 = document.getElementById('weixin1');
+			//获取修改会议的原始时间
+				function getParameter(param)
+					   {
+					   var query = window.location.search;
+					   var iLen = param.length;
+					   var iStart = query.indexOf(param);
+					   if (iStart == -1)
+					   　	return "";
+					   iStart += iLen + 1;
+					   var iEnd = query.indexOf("&", iStart);
+					   if (iEnd == -1)
+					   　return query.substring(iStart);
+					   return query.substring(iStart, iEnd);
+					   }
+					   var theid = getParameter("id");
+					  var theSporder=null;
+				 $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_searchSpOrderById+theid+"?"+Math.random(),
+					    success:function(msg54){
+					    	theSporder = msg54;
+			        		}
+					});
 			//初始化结束时间
+			  mettingroom.onclick=function(){
+				  $("#morentishi").remove();
+			};
 			  mettingroom.onchange=function(){
-				  //alert("及爱好");
+				  xiandingshunxu();
 				  var endDate = document.getElementById('endDate');
 				  endDate.value = startDate.value;
 				  for( i=0 ;i<starttimes.length;i++){
 					   starttimes[i].removeAttribute("disabled");   
 					   endtimes[i].removeAttribute("disabled");  
 					   }
-				   //alert("上个");
 			    	 if(mettingroom.value == "请选择视频会议室"){
 			         }else{
 			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
-			        	 var stringObj = startDate.value; */  
+			        	 var stringObj = startDate.value; */ 
+			        	 
 			        	 var date=startDate.value;  
 			        	 var id = mettingroom.value  
-			        	
 			        	 $.ajax({
 								type:"post",
 								url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
@@ -78,34 +103,34 @@
 								data: {meettingRoomId:id,startdate:date},
 								success:function(msg54){
 									if(str2==  date){
-										alert(str2);
 										var myDate = new Date();
 										var mytime=myDate.getHours();
-										alert(mytime);
 										for(i=0;i<=mytime;i++){
 											starttimes[i].disabled="disabled";
 											endtimes[i].disabled="disabled";
 										}
 									}
-									//alert(msg54.length);
 									for( i=0 ;i<starttimes.length;i++){
 										   for(j=0;j<msg54.length;j++){
-											  //alert(msg54.length);
 											   var arr1 = msg54[j].startTime.split(":");
-											   //alert("来不");
 											   var arr2 = msg54[j].endTime.split(":");
 											   if(((arr2[0]-0)+2)>=i & i>=arr1[0]){
 												   starttimes[i].disabled="disabled";
 												   endtimes[i].disabled="disabled";
 										  		 }
 										   }
+										   var thestart = theSporder.startTime.split(":")[0];
+										   var theend = theSporder.endTime.split(":")[0];
+										   if(((theend-0)+2)>=i & i>=thestart){
+											   starttimes[i].removeAttribute("disabled");   
+											   endtimes[i].removeAttribute("disabled");  
+									   }
 									   }  	
 								}
 							});
 			         } 
 			}
 			  startDate.onchange=function(){
-				//alert("kkk");
 				starttimes.value="0:00";
 				endtimes.value="0:00";
 				xiandingshunxu();
@@ -115,7 +140,6 @@
 					   starttimes[i].removeAttribute("disabled");   
 					   endtimes[i].removeAttribute("disabled");  
 					   }
-				   //alert("popop");
 			    	 if(mettingroom.value == "请选择视频会议室"){
 			         }else{
 			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
@@ -130,27 +154,30 @@
 								data: {meettingRoomId:id,startdate:date},
 								success:function(msg54){
 									if(str2 == date){
-										alert(str2);
+							
 										var myDate = new Date();
 										var mytime=myDate.getHours();
-										alert(mytime);
+									
 										for(i=0;i<=mytime;i++){
 											starttimes[i].disabled="disabled";
 											endtimes[i].disabled="disabled";
 										}
 									}
-									//alert(msg54.length);
 									for( i=0 ;i<starttimes.length;i++){
 										   for(j=0;j<msg54.length;j++){
-											  //alert(msg54.length);
 											   var arr1 = msg54[j].startTime.split(":");
-											   //alert("来不");
+											   
 											   var arr2 = msg54[j].endTime.split(":");
 											   if(((arr2[0]-0)+2)>=i & i>=arr1[0]){
-												   
 												   starttimes[i].disabled="disabled";
-												   endtimes[i].disabled="disabled";
+												   endtimes[i].disabled="disabled"; 
 											   }
+										   }
+										   var thestart = theSporder.startTime.split(":")[0];
+										   var theend = theSporder.endTime.split(":")[0];
+										   if(((theend-0)+2)>=i & i>=thestart){
+											   starttimes[i].removeAttribute("disabled");
+											   endtimes[i].removeAttribute("disabled");  
 										   }
 									   }  	
 								}
@@ -171,12 +198,12 @@
 			   　return query.substring(iStart);
 			   return query.substring(iStart, iEnd);
 			   }
-			   //alert(getParameter("meettingroomname"));
+			  
 			   var meettingroomname = getParameter("meettingroomname");
 			   var meettingroomid = getParameter("meettingId");
 			   var morentishi = document.getElementById('morentishi');
 			   if(meettingroomname != ""){
-				   //alert(meettingroomid);
+				 
 				   $(morentishi).after("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+meettingroomname+"</option>");
 				   morentishi.removeAttribute("selected");
 				   var xinzeng = $("#xinzeng");
@@ -231,15 +258,46 @@
 					}
 				}	
 			}		
-			mettingroom.onchange=function(){
-				xiandingshunxu();
-			}
 			//表单信息验证
+			 var departments =null;
+			      $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_departments,
+					    success:function(msg54){
+					    	departments = msg54;
+			        		}
+					});
+			      var employments =null;
+			      $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_searchUsers,
+					    success:function(msg54){
+					    	employments = msg54;
+			        		}
+					});
 		      tijiao.onclick=function(){
 		    	  var arr1 = starttimes.value.split(":");
 		    	  
 			      var arr2 = endtimes.value.split(":");
 			      var endDate = document.getElementById('endDate');
+			      var result1 =null;
+			      var result2 =null;
+			      if(department.value!=""){
+			    	  for(i=0;i<departments.length;i++){
+				    	  if(department.value ==departments[i].departmentName){
+				    		  result1 =true ;
+				    		  break;
+				    	  }
+				      } 
+			      }
+			      if(zuzhiren.value!=""){
+			    	  for(i=0;i<employments.length;i++){
+				    	  if(zuzhiren.value == employments[i].userName){
+				    		  result2 =true ;
+				    		  break;
+				    	  }
+				      }   
+			      }
 		    	  if(department.value =="请重新选择部门"){
 			    	  alert("部门不能为空");
 			    	  return;
@@ -252,31 +310,23 @@
 		         }else if(mettingroom.value == "请选择视频会议室"){
 		        	 alert("请选择会议室");
 		        	 return;
+		         }else if(!result1){
+		        	 alert("部门不存在");
+		        	 return; 
+		         }else if(!result2){
+		        	 alert("人员不存在");
+		        	 return;
 		         }else if(arr1[0] - arr2[0]>=0){
 		        	 alert("请选择正确的结束时间");
 		        	 return;
 		         }else {
 		        	 for( i=arr1[0];i<=arr2[0];i++){
-			        		if(starttimes[i].disabled){
-			        			alert("所选时间段已有会议存在，请重新选择时间");
-					        	 return; 	
-			        		} 
-			        	 }
-			         }
-		    	 /*  alert(bumen.value);
-		    	  alert(zuzhiren.value);
-		    	  alert(yuangongid.value);
-		    	  alert(huiyi.value);
-		    	  alert(renshu.value);
-		    	  alert(huiyijianyao.value);
-		    	  alert(mettingroom.value);
-		    	  alert(startDate.value);
-		    	  alert(endDate.value);
-		    	  alert(starttimes.value);
-		    	  alert(endtimes.value);
-		    	  alert(ids);
-		    	  alert(youjian1.checked);
-		    	  alert(weixin1.checked); */
+		        		if(starttimes[i].disabled){
+		        			alert("所选时间段已有会议存在，请重新选择时间");
+				        	 return; 	
+		        		} 
+		        	 }
+		         }
 		    	  var mrSpOrder =
 		    			  {		id:id,
 				    		    department: department.value,
@@ -296,9 +346,9 @@
 					contentType: "application/json", 
 					data: JSON.stringify(mrSpOrder),
 				    success:function(msg54){
-				    	//alert(ids+yuangongid.value);
+				    	
 				    	var eids = (ids+id).split(":");
-				    	//alert(eids.length); 
+				    	 
 				    	$.ajax({
 							type: "POST",
 							url: MeettingRoominterfaces.Var_InsertMrMeettingEmploye,
@@ -327,10 +377,10 @@
 						    	window.location.href='myreserve.html';
 				        		}
 						});
-				    	//window.location.href='myreserve.html';
+				    	
 		        		}
 				});
-					//alert(mrSpOrder.department);
+					
 			}	  
 		 };
 </script>
@@ -412,7 +462,7 @@
 						<div style="margin-left: 275px; float: left;">
 							<div style="float: left;"><strong>会议简要:</strong></div>
 							<div style="float: left;">
-								<textarea id="huiyijianyao"rows="4" cols="102" style="margin-left: 20px" >{{mrSpOrder.meettingTitle}}</textarea>
+								<textarea id="huiyijianyao"rows="4" cols="102" style="margin-left: 20px;width: 640" >{{mrSpOrder.meettingTitle}}</textarea>
 							</div>
 
 						</div>
@@ -424,7 +474,7 @@
 						<div  ng-controller="meettingRoomCtrl" style="margin-left: 260px; float: left;">
 							<input id="meettingRoomId" type="text" hidden="true" name="meettingRoomId"  />
 							<strong>视频会议室:</strong> <select id="mettingroom" 
-								style="margin-left: 20px; width: 420px; height: 40px" name="meettingRoomId">
+								style="margin-left: 20px; width: 200px; height: 40px" name="meettingRoomId">
 								<option id="morentishi" selected="selected" value="{{mrSpOrder.mrMeettingRoom.id}}">{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</option>
 								<option ng-repeat="meettingRoom in meettingRooms" value="{{meettingRoom.id}}">{{meettingRoom.meetingRoomName}}</option>
 							</select>
@@ -434,7 +484,7 @@
 					<div style="height: 40px;"></div>
 					<div>
 						<div style="margin-left: 280px; float: left;">
-							<strong>开始日期:</strong><input id="startDate" value="" type="text" placeholder="选择日期"
+							<strong>开始日期:</strong><input id="startDate" value="" type="text" readonly="readonly" placeholder="选择日期"
 								style="margin-left: 20px; width: 200px; height: 40px" />
 						</div>
 						<div style="margin-left: 270px; float: left;">
@@ -464,6 +514,7 @@
 								<option>21:00</option>
 								<option>22:00</option>
 								<option>23:00</option>
+								<option>24:00</option>
 							</select>
 						</div>
 
@@ -476,7 +527,7 @@
 						<div style="margin-left: 270px; float: left;">
 							<strong>结束时间:</strong> <select id="endtime"
 								style="margin-left: 20px; width: 80px; height: 40px">
-								<option >0:00</option>
+								<option>0:00</option>
 								<option>1:00</option>
 								<option>2:00</option>
 								<option>3:00</option>
@@ -500,6 +551,7 @@
 								<option>21:00</option>
 								<option>22:00</option>
 								<option>23:00</option>
+								<option>24:00</option>
 							</select>
 						</div>
 					</div>
@@ -524,7 +576,7 @@
 						</div>
 					</div>
 					<div style="margin-left: 100px; float: left;">
-						<a class="btn btn-lg btn-info" id="ry_tianjia" role="button"
+						<a class="btn btn-lg btn-info" id="ry_tianjia" role="button" data-content="此人员不存在！" data-original-title="信息提示"
 							style="height: 40px; margin-left: 40px">添加</a>
 					</div>
 
@@ -534,7 +586,7 @@
 						<div style="margin-left: 270px; float: left;">
 							<div style="float: left;"><strong>人员列表:</strong></div>
 							<div style="float: left;">
-								<textarea id="renyuanzhanshi" rows="4" cols="102" style="margin-left: 20px" readonly="readonly"></textarea>
+								<textarea id="renyuanzhanshi" rows="4" cols="102" style="margin-left: 20px;width: 640px" readonly="readonly"></textarea>
 							</div>
 
 						</div>
@@ -547,12 +599,12 @@
 					<h3 class="panel-title">可选信息</h3>
 				</div>
 						<div class="panel-body" style="width: 100%">
-							<div style="width: 800px">
+							<div style="width: 1000px">
 								<div style="margin-left: 275px; float: left;">
 									<strong>邮件通知:</strong> <input id="youjian1"type="radio" style="margin-left: 20px" name="youjian" value="yes" checked="checked"/><strong>是</strong> 
 															 <input id="youjian2"type="radio" style="margin-left: 20px" name="youjian" value="no"/><strong>否</strong>
 								</div>
-								<div style="margin-left: 180px; float: left;">
+								<div style="margin-left: 350px; float: left;">
 									<strong>微信通知:</strong> <input id="weixin1" type="radio" style="margin-left: 20px" name="weixing" value="yes" disabled="disabled"/><strong>是</strong> 
 															 <input id="weixin2" type="radio" style="margin-left: 20px" name="weixing" value="no" disabled="disabled"/><strong>否</strong>
 								</div>
@@ -580,7 +632,7 @@
 		 app.controller('myCtrl', function($scope,$http) {
 				 var department = document.getElementById('department');
 				 department.onkeyup=function(){
-					 //alert(department.value);
+					 
 					  var url=MeettingRoominterfaces.Var_departmentsByName+department.value+"?"+Math.random();
 						 $http.get(url).success( function(response) {
 			                 $scope.departments = response;
@@ -682,6 +734,10 @@
 				 $http.get(url).success( function(response) {
 	                 $scope.canyurens = response;
 	              });
+				 var url2 = MeettingRoominterfaces.Var_searchUsers;
+				 $http.get(url2).success( function(response) {
+	                 $scope.renyuanss = response;
+	              });
 				  var renyunleibaio = document.getElementById('renyunleibaio');
 				  renyunleibaio.removeAttribute("hidden");
 				  renyunleibaio.onchange=function(){
@@ -693,12 +749,29 @@
 					  }
 					  renyunleibaio.hidden=true;
 					  ry_tianjia.onclick=function(){
-								  ids=ids+renyunleibaio.value+":";
-							 var renyuanzhanshi = document.getElementById('renyuanzhanshi');
-							 liebiao=liebiao+renyuan.value+"；";
-							 renyuanzhanshi.value =liebiao;
-							 renyuan.value ="";
-					      } 
+						   var result3 =null;
+						  if(renyuan.value!=""){
+					    	  for(i=0;i<$scope.renyuanss.length;i++){
+						    	  if(renyuan.value == $scope.renyuanss[i].userName){
+						    		  result3 =true ;
+						    	  }
+						      }
+					    	  if(result3){
+					    		  ids=ids+renyunleibaio.value+":";
+									 var renyuanzhanshi = document.getElementById('renyuanzhanshi');
+									 liebiao=liebiao+renyuan.value+"；";
+									 renyuanzhanshi.value =liebiao;
+									 renyuan.value ="";
+					    	  }else{
+					    		  $("#ry_tianjia").popover('show');
+					    	  }
+					      }else{
+					    	  $("#ry_tianjia").popover('show');
+					      }
+					     } 
+				  }
+				  renyuan.onfocus = function(){
+					  $("#ry_tianjia").popover('destroy');
 				  }
 				  renyunleibaio.onblur =function(){
 					  var result=false;
@@ -738,14 +811,15 @@
 		   return query.substring(iStart, iEnd);
 		   }
 		   var id = getParameter("id");
-		   //alert(id);
 		   app.controller('huixianCtrl', function($scope,$http) {
 		   var url=MeettingRoominterfaces.Var_searchSpOrderById+id+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.mrSpOrder = response;
-	             //alert($scope.mrSpOrder.id);
 	          });
 		   });
+		   $('#startDate').click(function(){
+				 $('#startDate').datetimepicker('show');
+			 });
 		   $('#startDate').datetimepicker({
 		    	todayhighlight: true,
 		        format: "yyyy-mm-dd",

@@ -118,7 +118,7 @@
 			         }else{
 			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
 			        	 var stringObj = startDate.value; */  
-			        	 var date=startDate.value;  
+			        	 var date= startDate.value;  
 			        	 var id = mettingroom.value  
 			        	
 			        	 $.ajax({
@@ -228,11 +228,45 @@
 				}	
 			}		
 			//表单信息验证
+			 	  var departments =null;
+			      $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_departments,
+					    success:function(msg54){
+					    	departments = msg54;
+			        		}
+					});
+			      var employments =null;
+			      $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_searchUsers,
+					    success:function(msg54){
+					    	employments = msg54;
+			        		}
+					});
 		      tijiao.onclick=function(){
 		    	  var arr1 = starttimes.value.split(":");
 		    	  
 			      var arr2 = endtimes.value.split(":");
 			      var endDate = document.getElementById('endDate');
+			      var result1 =null;
+			      var result2 =null;
+			      if(department.value!=""){
+			    	  for(i=0;i<departments.length;i++){
+				    	  if(department.value ==departments[i].departmentName){
+				    		  result1 =true ;
+				    		  break;
+				    	  }
+				      } 
+			      }
+			      if(zuzhiren.value!=""){
+			    	  for(i=0;i<employments.length;i++){
+				    	  if(zuzhiren.value == employments[i].userName){
+				    		  result2 =true ;
+				    		  break;
+				    	  }
+				      }   
+			      }
 		    	  if(department.value ==""){
 			    	  alert("部门不能为空");
 			    	  return;
@@ -245,6 +279,12 @@
 		         }else if(mettingroom.value == "请选择视频会议室"){
 		        	 alert("请选择会议室");
 		        	 return;
+		         }else if(!result1){
+		        	 alert("部门不存在");
+		        	 return; 
+		         }else if(!result2){
+		        	 alert("人员不存在");
+		        	 return;
 		         }else if(arr1[0] - arr2[0]>=0){
 		        	 alert("请选择正确的结束时间");
 		        	 return;
@@ -256,20 +296,6 @@
 		        		} 
 		        	 }
 		         }
-		    	 /*  alert(bumen.value);
-		    	  alert(zuzhiren.value);
-		    	  alert(yuangongid.value);
-		    	  alert(huiyi.value);
-		    	  alert(renshu.value);
-		    	  alert(huiyijianyao.value);
-		    	  alert(mettingroom.value);
-		    	  alert(startDate.value);
-		    	  alert(endDate.value);
-		    	  alert(starttimes.value);
-		    	  alert(endtimes.value);
-		    	  alert(ids);
-		    	  alert(youjian1.checked);
-		    	  alert(weixin1.checked); */
 		    	  var mrSpOrder =
 		    			  {
 				    		    department: department.value,
@@ -370,7 +396,6 @@
 									</select>
 								</div>
 							</div>
-							
 
 							<div style="margin-left: 197px; float: left;">
 							<strong>组织人:</strong> <input  id="zuzhiren"  placeholder="必填" style="margin-left: 20px; width: 185px; height: 40px"/>
@@ -405,7 +430,7 @@
 						<div style="margin-left: 275px; float: left;">
 							<div style="float: left;"><strong>会议简要:</strong></div>
 							<div style="float: left;">
-								<textarea id="huiyijianyao"rows="4" cols="102" style="margin-left: 20px" ></textarea>
+								<textarea id="huiyijianyao"rows="4" cols="102" style="margin-left: 20px;width: 640px" ></textarea>
 							</div>
 
 						</div>
@@ -417,7 +442,7 @@
 						<div  ng-controller="meettingRoomCtrl" style="margin-left: 260px; float: left;">
 							<input id="meettingRoomId" type="text" hidden="true" name="meettingRoomId"  />
 							<strong>视频会议室:</strong> <select id="mettingroom" 
-								style="margin-left: 20px; width: 420px; height: 40px" name="meettingRoomId">
+								style="margin-left: 20px; width: 200px; height: 40px" name="meettingRoomId">
 								<option id="morentishi" selected="selected" >请选择视频会议室</option>
 								<option ng-repeat="meettingRoom in meettingRooms" value="{{meettingRoom.id}}">{{meettingRoom.meetingRoomName}}</option>
 							</select>
@@ -427,7 +452,7 @@
 					<div style="height: 40px;"></div>
 					<div>
 						<div style="margin-left: 280px; float: left;">
-							<strong>开始日期:</strong><input id="startDate" value="" type="text" placeholder="选择日期"
+							<strong>开始日期:</strong><input id="startDate" value="" type="text" readonly="readonly" placeholder="选择日期" 
 								style="margin-left: 20px; width: 200px; height: 40px" />
 						</div>
 						<div style="margin-left: 270px; float: left;">
@@ -457,6 +482,7 @@
 								<option>21:00</option>
 								<option>22:00</option>
 								<option>23:00</option>
+								<option>24:00</option>
 							</select>
 						</div>
 
@@ -493,6 +519,7 @@
 								<option>21:00</option>
 								<option>22:00</option>
 								<option>23:00</option>
+								<option>24:00</option>
 							</select>
 						</div>
 					</div>
@@ -518,7 +545,7 @@
 					</div>
 					<div style="margin-left: 100px; float: left;">
 						<a class="btn btn-lg btn-info" id="ry_tianjia" role="button"
-							style="height: 40px; margin-left: 40px">添加</a>
+							style="height: 40px; margin-left: 40px" data-content="此人员不存在！" data-original-title="信息提示">添加</a>
 					</div>
 
 					<div style="height: 60px;"></div>
@@ -527,7 +554,7 @@
 						<div style="margin-left: 270px; float: left;">
 							<div style="float: left;"><strong>人员列表:</strong></div>
 							<div style="float: left;">
-								<textarea id="renyuanzhanshi" rows="4" cols="102" style="margin-left: 20px" readonly="readonly"></textarea>
+								<textarea id="renyuanzhanshi" rows="4" cols="102" style="margin-left: 20px;width: 640px" readonly="readonly"></textarea>
 							</div>
 
 						</div>
@@ -540,12 +567,12 @@
 					<h3 class="panel-title">可选信息</h3>
 				</div>
 						<div class="panel-body" style="width: 100%">
-							<div style="width: 800px">
+							<div style="width: 1000px">
 								<div style="margin-left: 275px; float: left;">
 									<strong>邮件通知:</strong> <input type="radio" style="margin-left: 20px" name="youjian" value="yes" checked="checked"/><strong>是</strong> 
 															 <input type="radio" style="margin-left: 20px" name="youjian" value="no"/><strong>否</strong>
 								</div>
-								<div style="margin-left: 180px; float: left;">
+								<div style="margin-left: 350px; float: left;">
 									<strong>微信通知:</strong> <input  type="radio" style="margin-left: 20px" name="weixing" value="yes" disabled="disabled"/><strong>是</strong> 
 															 <input  type="radio" style="margin-left: 20px" name="weixing" value="no" disabled="disabled"/><strong>否</strong>
 								</div>
@@ -675,6 +702,10 @@
 				 $http.get(url).success( function(response) {
 	                 $scope.canyurens = response;
 	              });
+				 var url2 = MeettingRoominterfaces.Var_searchUsers;
+				 $http.get(url2).success( function(response) {
+	                 $scope.renyuanss = response;
+	              });
 				  var renyunleibaio = document.getElementById('renyunleibaio');
 				  renyunleibaio.removeAttribute("hidden");
 				  renyunleibaio.onchange=function(){
@@ -686,12 +717,29 @@
 					  }
 					  renyunleibaio.hidden=true;
 					  ry_tianjia.onclick=function(){
-								  ids=ids+renyunleibaio.value+":";
-							 var renyuanzhanshi = document.getElementById('renyuanzhanshi');
-							 liebiao=liebiao+renyuan.value+"；";
-							 renyuanzhanshi.value =liebiao;
-							 renyuan.value ="";
-					      } 
+						   var result3 =null;
+						  if(renyuan.value!=""){
+					    	  for(i=0;i<$scope.renyuanss.length;i++){
+						    	  if(renyuan.value == $scope.renyuanss[i].userName){
+						    		  result3 =true ;
+						    	  }
+						      }
+					    	  if(result3){
+					    		  ids=ids+renyunleibaio.value+":";
+									 var renyuanzhanshi = document.getElementById('renyuanzhanshi');
+									 liebiao=liebiao+renyuan.value+"；";
+									 renyuanzhanshi.value =liebiao;
+									 renyuan.value ="";
+					    	  }else{
+					    		  $("#ry_tianjia").popover('show');
+					    	  }
+					      }else{
+					    	  $("#ry_tianjia").popover('show');
+					      }
+					     } 
+				  }
+				  renyuan.onfocus = function(){
+					  $("#ry_tianjia").popover('destroy');
 				  }
 				  renyunleibaio.onblur =function(){
 					  var result=false;
@@ -716,6 +764,9 @@
 		      } 
 			 
 			});
+		 $('#startDate').click(function(){
+			 $('#startDate').datetimepicker('show');
+		 });
 		 $('#startDate').datetimepicker({
 		    	todayhighlight: true,
 		        format: "yyyy-mm-dd",
@@ -724,13 +775,13 @@
 		        language: 'zh-CN',
 		        pickdate:true,
 		    });
-		/*  $('#endDate').datetimepicker({
+		 /*  $('#endDate').datetimepicker({
 		    	todayhighlight: true,
 		        format: "yyyy-mm-dd",
 		        autoclose: true,
 		        minView: "month",  
 		        language: 'zh-CN'
-		    }); */
+		    });  */
 		 
 	</script>
 </body>

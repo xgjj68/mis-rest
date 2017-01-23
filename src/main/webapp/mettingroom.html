@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html >
-<head>
 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:th="http://www.thymeleaf.org">
+<head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,14 +25,86 @@
 <!-- <script type="text/javascript" src="js/interface2.js"></script> -->
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
-	if(window.localStorage){
-		 alert('This browser supports localStorage');
-		}else{
-		 alert('This browser does NOT support localStorage');
+	String.prototype.getQuery = function(name) {  
+		　　var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		　　var r = this.substr(this.indexOf("/?")+1).match(reg);
+		　　if (r!=null) return unescape(r[2]); 
+		   return null;  
 		}
+	var strHref = window.location.href; 
 	var storage = window.localStorage;
-	storage.setItem("userId","4");
-	storage.setItem("userName","李永葆");
+	var huserId = strHref.getQuery("userId");
+	if(huserId!=null){
+		
+		storage.setItem("userId",strHref.getQuery("userId"));
+		$.ajax({
+			url:MeettingRoominterfaces.Var_getAdmin,
+			type:"get",
+			 success:function(msg54){
+					 if(msg54 == huserId){
+						 $("#gunlihuiyishi").prop("hidden",false);
+						 $("#quanxianguanli").prop("hidden",false);
+						}else{
+							$.ajax({
+								url:MeettingRoominterfaces.Var_searchUserByUserId+huserId,
+								type:"get",
+								 success:function(msg54){
+									 var userName = msg54.userName;;
+									storage.setItem("userName",userName);
+										$.ajax({
+											url:MeettingRoominterfaces.Var_loadUserByUserId+huserId,
+											type:"get",
+											 success:function(msg54){
+												  if(msg54==""){
+												 }else{
+													 if(msg54.userRole =="ADMIN"){
+														 $("#gunlihuiyishi").prop("hidden",false);
+													 }
+												 } 
+									        		}
+										});
+						        		}
+							});
+						}
+	        		}
+		});
+	}else{
+		if(storage.getItem("userId")==null){
+			window.location.href="http://mis.dayang.com"; 
+	}else{
+		$.ajax({
+			url:MeettingRoominterfaces.Var_getAdmin,
+			type:"get",
+			 success:function(msg54){
+					 if(msg54 == storage.getItem("userId")){
+						 $("#gunlihuiyishi").prop("hidden",false);
+						 $("#quanxianguanli").prop("hidden",false);
+						}else{
+							$.ajax({
+								url:MeettingRoominterfaces.Var_searchUserByUserId+storage.getItem("userId"),
+								type:"get",
+								 success:function(msg54){
+									 var userName = msg54.userName;;
+									storage.setItem("userName",userName);
+										$.ajax({
+											url:MeettingRoominterfaces.Var_loadUserByUserId+storage.getItem("userId"),
+											type:"get",
+											 success:function(msg54){
+												  if(msg54==""){
+												 }else{
+													 if(msg54.userRole =="ADMIN"){
+														 $("#gunlihuiyishi").prop("hidden",false);
+													 }
+												 } 
+									        		}
+										});
+						        		}
+							});
+						}
+	        		}
+		});
+	}
+}		
 </script>
 <script type="text/javascript">
 angular.element(window).bind('load', function() { 
@@ -63,6 +136,9 @@ angular.element(window).bind('load', function() {
 
 	//加载会议室
 	var app = angular.module('myApp', []);
+	 app.controller('userCtrl', function($scope,$http) {
+		 $scope.user = storage.getItem("userName");
+	 });
 	//加载部门
 	 app.controller('myCtrl', function($scope,$http) {
 		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
@@ -146,7 +222,7 @@ angular.element(window).bind('load', function() {
 					    	 
 					    	 if(arr2[0]>=j & j>=arr1[0]){
 								   $(H[j]).attr("class","progress-bar progress-bar-warning");
-								   $(H[j]).attr("data-content","当前时间段"+response[i].startTime+"点到"+response[i].endTime+"点已有会议预定:“"+response[i].meettingName+"”");
+								   $(H[j]).attr("data-content","当前时间段"+response[i].startTime+"点到"+((arr2[0]-0)+1)+":00点已有会议预定:“"+response[i].meettingName+"”");
 								   $(H[j]).popover({trigger: 'hover'});
 							   }
 					     };
@@ -154,28 +230,27 @@ angular.element(window).bind('load', function() {
 	             }; 
 	          });
 		});
-	
 </script>
 </head>
-<body ng-app="myApp" >
+<body ng-app="myApp">
 	<div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;width: 100%">
 		<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 50px;padding-left: 35%;width: 100%">
 				<h1>欢迎使用视频会议室系统</h1>
 		</div>		 
 	</div> 
     <div class="panel panel-default" style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size: 100%;">
-            <div class="panel-heading">
-              <h1 class="panel-title" style="color:purple; text-decoration: none"><strong>视频会议室列表</strong></h1>
+            <div class="panel-heading" ng-controller="userCtrl">
+              <h1 class="panel-title" style="color:purple; text-decoration: none"><strong>视频会议室列表</strong> </h1>
             </div>
 	        <div class="panel-body">
-	        	<div style="margin-left: 350px;margin-top: 30px;width:100%" >
+	        	<div style="margin-left: 350px;margin-top: 30px;width: 100%" >
 	        		
 	        		<div style="margin-left: 40px;float: left;">
-		        	<input id="time" type="text" style="height: 45px" placeholder="选择日期"/>
+		        	<input id="time" type="text" style="height: 45px" readonly="readonly" placeholder="选择日期"/>
 			        </div>
 			        	
 		        	<div style="margin-left: 1px;float: left;" >
-		        		<button id="chaxunBytime" class="btn btn-lg btn-danger" type="button"><span class="glyphicon glyphicon-calendar"></span>查询</button>
+		        		<button id="chaxunBytime" class="btn btn-lg btn-success" type="button"><span class="glyphicon glyphicon-calendar"></span>查询</button>
 		        	</div>
 			        <div style="margin-left: 40px;float: left;">
 			        	<a class="btn btn-lg btn-info" href="allreserve.html" role="button"
@@ -185,13 +260,17 @@ angular.element(window).bind('load', function() {
 			        	<a class="btn btn-lg btn-warning" href="myreserve.html" role="button"
 												>我的预定</a>
 			        </div>
-			        <div style="margin-left: 40px;margin-right: 40px;float: left;">
-			        	<a class="btn btn-lg btn-primary" href="management.html" role="button"
+			        <div id= "gunlihuiyishi" style="margin-left: 40px;float: left;" hidden="true">
+			        	<a class="btn btn-lg btn-primary" href="management.html" role="button" 
 												>管理会议室</a>
+			        </div>
+			         <div id="quanxianguanli"  style="margin-left: 40px; margin-right:40px; float: left;" hidden="true">
+							<a class="btn btn-lg btn-danger" href="authority.html" role="button"
+												>权限管理</a>
 			        </div>
 	        	</div>
 	        	<div style="height: 40px"></div>
-				<div ng-controller="myCtrl" class="container" style="margin-top: 40px">
+				<div ng-controller="myCtrl" class="container" style="margin-top: 40px;">
 					<table class="table table-condensed" >
 						<tbody>
 							<tr ng-repeat="meettingRoom in meettingRooms" class="active">
@@ -327,5 +406,5 @@ angular.element(window).bind('load', function() {
 				</div>
 		 </div> 
      </div>
-</body>   
+</body> 
 </html>

@@ -2,7 +2,10 @@ package rest.service.meettingroom;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
@@ -40,17 +43,17 @@ public class MeettingEmployeeService {
 			MrSpOrder mrSpOrder = mrSpOrderMapper.selectLastMrSpOrder();
 			Integer spid = mrSpOrder.getId();
 			MrMeettingEmployee mrMeettingEmployee = new MrMeettingEmployee();
-			for(int i=0;i<ids.size();i++){
-				for(int j=i+1;j<ids.size();j++){
-					if(ids.get(i)==ids.get(j)){
-						ids.remove(i);
-					}
-				}
-			}
-			for (int i=0;i<ids.size();i++) {
-				if(ids.get(i)!=null){
+			Set<Integer> set = new HashSet<Integer>();
+	        List<Integer> newList = new ArrayList<Integer>();
+	        for (Iterator<Integer> iter = ids.iterator(); iter.hasNext();) {
+	            Integer element = (Integer) iter.next();
+	            if (set.add(element))
+	                newList.add(element);
+	        }
+			for (int i=0;i<newList.size();i++) {
+				if(newList.get(i)!=null){
 					mrMeettingEmployee.setMeettingId(spid);
-					mrMeettingEmployee.setEmployeeId(ids.get(i));
+					mrMeettingEmployee.setEmployeeId(newList.get(i));
 					mrMeettingEmployeeMapper.insertSelective(mrMeettingEmployee);
 				}
 			}
@@ -71,6 +74,7 @@ public class MeettingEmployeeService {
 			}
 		}
 		for (int i=0;i<ids.size()-1;i++) {
+			System.out.println(ids.get(i));
 			if(ids.get(i)!=null){
 				mrMeettingEmployee.setMeettingId(spid);
 				mrMeettingEmployee.setEmployeeId(ids.get(i));

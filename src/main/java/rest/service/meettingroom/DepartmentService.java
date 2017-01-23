@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import rest.mybatis.dao.meettingroom.MrDepartmentMapper;
-import rest.mybatis.model.meettingroom.MrDepartment;
 import rest.mybatis.model.meettingroom.MrDepartmentWithBLOBs;
 
 
