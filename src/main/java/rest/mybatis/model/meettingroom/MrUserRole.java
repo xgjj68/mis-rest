@@ -3,7 +3,7 @@ package rest.mybatis.model.meettingroom;
 public class MrUserRole {
 	private Integer id;
 
-	private String userId;
+	private Integer userId;
 
 	private String userRole;
 	
@@ -16,11 +16,12 @@ public class MrUserRole {
 		this.id = id;
 	}
 
-	public String getUserId() {
+
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 

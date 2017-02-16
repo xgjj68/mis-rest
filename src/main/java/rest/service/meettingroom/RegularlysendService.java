@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import rest.mybatis.dao.meettingroom.MrSpOrderMapper;
 import rest.mybatis.model.meettingroom.MrMeettingRoom;
 import rest.mybatis.model.meettingroom.MrSpOrder;
+import rest.mybatis.model.meettingroom.MrUserRole;
+import rest.mybatis.model.meettingroom.MrUserT;
 
 @Component 
 public class RegularlysendService {
@@ -27,6 +29,10 @@ public class RegularlysendService {
     private JavaMailSender mailSender;
 	@Autowired
 	private MrSpOrderMapper mrSpOrderMapper;
+	@Autowired
+	private UserRoleService userRoleService ;
+	@Autowired
+	private UserService userService;
 	@Scheduled(fixedRate=600000)  
 	public void testTasks() throws Exception {      
 		 System.out.println("=====每隔10分钟执行一次=====");
@@ -78,19 +84,23 @@ public class RegularlysendService {
 				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 				helper.setFrom("dayang_erp@dayang.com.cn");
 				//helper.setTo("zhangpeng@dayang.com.cn");
-				String ids [] = {"zhangpeng@dayang.com.cn","yangbowen@dayang.com.cn"};
-				helper.setTo(ids);
-				helper.setSubject("系统自动通知邮件-视频会议结束提示");
-				helper.setText("<html><body>&nbsp&nbsp&nbsp您好！<br>"
-						+"<br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp会议议题："+meettingName
-						+"<br><br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp组织人："+organization
-						+"<br><br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp所在会议室："+meetingRoomName
-						+ "<br><br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp开始时间："+startDate+"&nbsp&nbsp"+startTime
-						+"<br><br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp结束时间："+endDate+"&nbsp&nbsp"+endTime
-						+"<br><br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"+"\""+meettingName+"\""+"此会议已结束"
-						+"<br><br><br><br>&nbsp&nbsp&nbsp北京中科大洋电子信息平台<br><br>&nbsp&nbsp&nbsp<strong>Email:dayang_erp@dayang.com.cn</strong></body></html>", true);
-				mailSender.send(mimeMessage);
-
+				//String ids [] = {"zhangpeng@dayang.com.cn","yangbowen@dayang.com.cn"};
+				List<MrUserRole> seachAllUserRole = userRoleService.seachAllUserRole();
+				for (MrUserRole mrUserRole : seachAllUserRole) {
+					MrUserT userT = userService.searchUserByUserId(mrUserRole.getUserId());
+					String userEmail = userT.getUserEmail();
+					helper.setTo(userEmail);
+					helper.setSubject("系统自动通知邮件-视频会议结束提示");
+					helper.setText("<html><body>&nbsp&nbsp&nbsp您好！<br>"
+							+"<br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp会议议题："+meettingName
+							+"<br><br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp组织人："+organization
+							+"<br><br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp所在会议室："+meetingRoomName
+							+ "<br><br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp开始时间："+startDate+"&nbsp&nbsp"+startTime
+							+"<br><br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp结束时间："+endDate+"&nbsp&nbsp"+endTime
+							+"<br><br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"+"\""+meettingName+"\""+"此会议已结束"
+							+"<br><br><br><br>&nbsp&nbsp&nbsp北京中科大洋电子信息平台<br><br>&nbsp&nbsp&nbsp<strong>Email:dayang_erp@dayang.com.cn</strong></body></html>", true);
+					mailSender.send(mimeMessage);
+				}
 			}
 
 			public MrSpOrderMapper getMrSpOrderMapper() {

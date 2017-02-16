@@ -24,6 +24,24 @@
 <!-- <script type="text/javascript" src="js/interface2.js"></script> -->
 <script src="js/angular/controller.js"></script>
 <script type="text/javascript">
+String.prototype.getQuery = function(name) {  
+	　　var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	　　var r = this.substr(this.indexOf("/?")+1).match(reg);
+	　　if (r!=null) return unescape(r[2]); 
+	   return null;  
+	}
+var strHref = window.location.href;
+var storage = window.localStorage;
+var huserId = strHref.getQuery("userId");
+if(huserId!=null){
+	
+}else{
+	if(storage.getItem("userId")==null){
+		window.location.href="http://mis.dayang.com"; 
+	}
+}
+</script>
+<script type="text/javascript">
 		
 		window.onload=function(){
 			//日期格式化函数初始化日期
@@ -103,7 +121,6 @@
 			         } 
 			}
 			  startDate.onchange=function(){
-				//alert("kkk");
 				starttimes.value="0:00";
 				endtimes.value="0:00";
 				xiandingshunxu();
@@ -113,7 +130,6 @@
 					   starttimes[i].removeAttribute("disabled");   
 					   endtimes[i].removeAttribute("disabled");  
 					   }
-				   //alert("popop");
 			    	 if(mettingroom.value == "请选择视频会议室"){
 			         }else{
 			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
@@ -173,7 +189,40 @@
 			   var morentishi = document.getElementById('morentishi');
 			   if(meettingroomname != ""){
 				   //alert(meettingroomid);
-				   $(morentishi).after("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+meettingroomname+"</option>");
+				   
+				   $.ajax({
+					   type: "get",
+					   url: MeettingRoominterfaces.Var_searchMeettingRoomById+meettingroomid,
+					   success:function(msg54){
+						   $(morentishi).after("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+msg54.meetingRoomName+"</option>");
+						 //限定会议室，日期，时间的选择顺序
+							  if(mettingroom.value == "请选择视频会议室"){
+								  
+								  var endDate = document.getElementById('endDate');
+									startDate.disabled="disabled";
+									endDate.disabled="disabled";
+									starttimes.disabled="disabled";
+									endtimes.disabled="disabled";
+									
+								}else{
+									
+									 var endDate = document.getElementById('endDate');
+									if(startDate.disabled){
+										startDate.removeAttribute("disabled");
+									}
+									if(endDate.disabled){
+										endDate.removeAttribute("disabled");
+									}
+									if(startDate.value==""){
+										starttimes.disabled="disabled";
+										endtimes.disabled="disabled";
+									}else{
+										starttimes.removeAttribute("disabled");
+										endtimes.removeAttribute("disabled");
+									}
+								}	
+					   }
+				   });
 				   morentishi.removeAttribute("selected");
 				   var xinzeng = $("#xinzeng");
 				   mettingroom.onmousedown=function(){
@@ -182,6 +231,7 @@
 			   } 
 			//限定会议室，日期，时间的选择顺序
 			  if(mettingroom.value == "请选择视频会议室"){
+				  
 				  var endDate = document.getElementById('endDate');
 					startDate.disabled="disabled";
 					endDate.disabled="disabled";
@@ -189,6 +239,7 @@
 					endtimes.disabled="disabled";
 					
 				}else{
+					
 					 var endDate = document.getElementById('endDate');
 					if(startDate.disabled){
 						startDate.removeAttribute("disabled");
@@ -355,243 +406,271 @@
 </script>
 </head>
 <body  ng-app="myApp"  style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size:150%;">
-	<div class="jumbotron" style="background-image:url('image/beijing5.jpg'); width: 1400px;margin-left: 13%;">
-		<h3 style="color: blue;">预定提示:</h3>
-		<p style="color: blue;">
-				&nbsp&nbsp1.会议室的使用时间，是在预定的会议结束时间上顺延一个小时。
-		</p>
-		<p style="color: blue;">
-				&nbsp&nbsp2.上个会议室使用时间结束后的一小时和下个会议开始前的一小时之间，会由管理员对会议室进行维护，此时间段无法使用会议室。
-		</p>
+	<div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;width: 1900px">
+		<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 20px;padding-left:;width: 100%">
+			<h3 style="color: orange;">预定提示:</h3>
+			<h4 style="color: orange;">&nbsp&nbsp1.会议室的使用时间，是在预定的会议结束时间上顺延一个小时。
+			</h4>
+			<h4 style="color: orange;">
+				&nbsp&nbsp2.上个会议室使用时间结束后的一小时，会由管理员对会议室进行维护，此时间段无法使用会议室。
+			</h4>
+		</div>		 
 	</div>
-	<form action="myapp" name="form1" >
-		<!-- 必填信息模块 -->
-	<div class="panel panel-primary" style="width: 1400px;margin-left: 13%;">
+	<div class="panel panel-default" style="width: 1900px">
 		<div class="panel-heading">
-			<div style="float: left;">
-			<h3 class="panel-title"><strong>视频会议室预定</strong></h3>
-			</div>
-			<div style="" align="right">
-				<a href="mettingroom.html" class="btn btn-lg btn-info" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
+			<div style="" align="left">
+				<a href="mettingroom.html" class="btn btn-lg btn-primary" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
 			</div>
 		</div>
-		
-		<div class="panel-body">
-			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
-				<div class="panel-heading">
-					<h3 class="panel-title">必填信息</h3>
-				</div>
-				<div class="panel-body" >
-					<div>
-							<div style="float: left;">
-								<div style="margin-left: 302px;">
-									<strong>部门:</strong> <input id="department" placeholder="必填"
-										style="margin-left: 20px; width: 185px; height: 40px" />
-								</div>
-								<div ng-controller="myCtrl" style="z-index: 20;position:absolute;">
-									<select id="bumen" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
-										style="margin-left:360px; width: 185px; color: teal;" hidden="true" size="10">
-										<option selected="selected">请选择部门</option>
-										<option ng-repeat="department in departments" value="{{department.departmentId}}">{{department.departmentName}}</option>
-									</select>
-								</div>
-							</div>
+	</div>
 
-							<div style="margin-left: 197px; float: left;">
-							<strong>组织人:</strong> <input  id="zuzhiren"  placeholder="必填" style="margin-left: 20px; width: 185px; height: 40px"/>
-													<input id="yuangongid" type="text" hidden="true" name="employeeId">
+	<form action="myapp" name="form1" >
+		<!-- 必填信息模块 -->
+			<div class="panel panel-primary" style="width: 1400px; margin-left: 15%;">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>视频会议室预定</strong></h3>
+					
+				</div>
+			<div class="panel-body">
+				<div>
+					<div style="float: left;">
+						<div style="margin-left: 302px;">
+							<strong>部门:</strong> <input id="department" placeholder="必填"
+								style="margin-left: 20px; width: 185px; height: 40px" />
 						</div>
-						<div ng-controller="zuzhirenCtrl" style="z-index: 20;position:absolute;">
-						<strong>
-							<select id="zuhzirenleibaio" style="margin-left: 815px;margin-top:40px; width: 185px;color: teal;"   size="10" hidden="true">
-								<option selected="selected">请选择</option>
-								<option ng-repeat="zuhziren  in zuzhirens" value="{{zuhziren.userId}}">{{zuhziren.userName+"--"+zuhziren.mrDepartment.departmentName}}</option>
+						<div ng-controller="myCtrl"
+							style="z-index: 20; position: absolute;">
+							<select id="bumen" data-content="为我的网站创建一个提示框如此简单！"
+								data-original-title="信息提示"
+								style="margin-left: 360px; width: 185px; color: teal;"
+								hidden="true" size="10">
+								<option selected="selected">请选择部门</option>
+								<option ng-repeat="department in departments"
+									value="{{department.departmentId}}">{{department.departmentName}}</option>
 							</select>
+						</div>
+					</div>
+
+					<div style="margin-left: 197px; float: left;">
+						<strong>组织人:</strong> <input id="zuzhiren" placeholder="必填"
+							style="margin-left: 20px; width: 185px; height: 40px" /> <input
+							id="yuangongid" type="text" hidden="true" name="employeeId">
+					</div>
+						
+					<div ng-controller="zuzhirenCtrl"
+						style="z-index: 20; position: absolute;">
+						<strong> <select id="zuhzirenleibaio"
+							style="margin-left: 815px; margin-top: 40px; width: 185px; color: teal;"
+							size="10" hidden="true">
+								<option selected="selected">请选择</option>
+								<option ng-repeat="zuhziren  in zuzhirens"
+									value="{{zuhziren.userId}}">{{zuhziren.userName+"--"+zuhziren.mrDepartment.departmentName}}</option>
+						</select>
 						</strong>
-						</div>
 					</div>
+				</div>
 
-					<div style="height: 60px;width: 80%"></div>
+				<div style="height: 60px; width: 80%"></div>
 
-					<div>
-						<div style="margin-left: 275px; float: left;">
-							<strong>会议议题:</strong> <input type="text" id="huiyi"
-								style="width: 185px; height: 40px; margin-left: 20px" placeholder="必填"/>
+				<div>
+					<div style="margin-left: 275px; float: left;">
+						<strong>会议议题:</strong> <input type="text" id="huiyi"
+							style="width: 185px; height: 40px; margin-left: 20px"
+							placeholder="必填" />
+					</div>
+					<div style="margin-left: 180px; float: left;">
+						<strong>参与人数:</strong> <input type="text" id="renshu"
+							style="width: 185px; height: 40px; margin-left: 20px"
+							onkeyup="this.value=this.value.replace(/\D/g,'')" />
+					</div>
+				</div>
+
+				<div style="height: 60px;"></div>
+
+				<div style="height: 60px">
+					<div style="margin-left: 275px; float: left;">
+						<div style="float: left;">
+							<strong>会议简要:</strong>
 						</div>
-						<div style="margin-left: 180px; float: left;">
-							<strong>参与人数:</strong> <input type="text" id="renshu"
-								style="width: 185px; height: 40px; margin-left: 20px" onkeyup="this.value=this.value.replace(/\D/g,'')" />
+						<div style="float: left;">
+							<textarea id="huiyijianyao" rows="4" cols="102"
+								style="margin-left: 20px; width: 640px"></textarea>
 						</div>
+
+					</div>
+				</div>
+
+			<div style="height: 50px;"></div>
+
+				<div style="height: 50px;">
+					<div ng-controller="meettingRoomCtrl"
+						style="margin-left: 260px; float: left;">
+						<input id="meettingRoomId" type="text" hidden="true"
+							name="meettingRoomId" /> <strong>视频会议室:</strong> <select
+							id="mettingroom"
+							style="margin-left: 20px; width: 200px; height: 40px"
+							name="meettingRoomId">
+							<option id="morentishi" selected="selected">请选择视频会议室</option>
+							<option ng-repeat="meettingRoom in meettingRooms"
+								value="{{meettingRoom.id}}">{{meettingRoom.meetingRoomName}}</option>
+						</select>
+					</div>
+				</div>
+
+			<div style="height: 20px;"></div>
+			
+				<div>
+					<div style="margin-left: 280px; float: left;">
+						<strong>开始日期:</strong><input id="startDate" value="" type="text"
+							readonly="readonly" placeholder="选择日期"
+							style="margin-left: 20px; width: 200px; height: 40px" />
+					</div>
+					<div style="margin-left: 270px; float: left;">
+						<strong>开始时间:</strong><select id="starttime"
+							style="margin-left: 20px; width: 80px; height: 40px">
+
+							<option>0:00</option>
+							<option>1:00</option>
+							<option>2:00</option>
+							<option>3:00</option>
+							<option>4:00</option>
+							<option>5:00</option>
+							<option>6:00</option>
+							<option>7:00</option>
+							<option>8:00</option>
+							<option>9:00</option>
+							<option>10:00</option>
+							<option>11:00</option>
+							<option>12:00</option>
+							<option>13:00</option>
+							<option>14:00</option>
+							<option>15:00</option>
+							<option>16:00</option>
+							<option>17:00</option>
+							<option>18:00</option>
+							<option>19:00</option>
+							<option>20:00</option>
+							<option>21:00</option>
+							<option>22:00</option>
+							<option>23:00</option>
+							<option>24:00</option>
+						</select>
 					</div>
 
 					<div style="height: 60px;"></div>
 
-					<div style="height: 60px">
-						<div style="margin-left: 275px; float: left;">
-							<div style="float: left;"><strong>会议简要:</strong></div>
-							<div style="float: left;">
-								<textarea id="huiyijianyao"rows="4" cols="102" style="margin-left: 20px;width: 640px" ></textarea>
-							</div>
-
-						</div>
+					<div style="margin-left: 280px; float: left;">
+						<strong>结束日期:</strong><input id="endDate" type="text"
+							placeholder="选择日期"
+							style="margin-left: 20px; width: 200px; height: 40px"
+							readonly="readonly" />
 					</div>
-
-					<div style="height: 50px;"></div>
-
-					<div style="height: 50px;">
-						<div  ng-controller="meettingRoomCtrl" style="margin-left: 260px; float: left;">
-							<input id="meettingRoomId" type="text" hidden="true" name="meettingRoomId"  />
-							<strong>视频会议室:</strong> <select id="mettingroom" 
-								style="margin-left: 20px; width: 200px; height: 40px" name="meettingRoomId">
-								<option id="morentishi" selected="selected" >请选择视频会议室</option>
-								<option ng-repeat="meettingRoom in meettingRooms" value="{{meettingRoom.id}}">{{meettingRoom.meetingRoomName}}</option>
-							</select>
-						</div>
+					<div style="margin-left: 270px; float: left;">
+						<strong>结束时间:</strong> <select id="endtime"
+							style="margin-left: 20px; width: 80px; height: 40px">
+							<option>0:00</option>
+							<option>1:00</option>
+							<option>2:00</option>
+							<option>3:00</option>
+							<option>4:00</option>
+							<option>5:00</option>
+							<option>6:00</option>
+							<option>7:00</option>
+							<option>8:00</option>
+							<option>9:00</option>
+							<option>10:00</option>
+							<option>11:00</option>
+							<option>12:00</option>
+							<option>13:00</option>
+							<option>14:00</option>
+							<option>15:00</option>
+							<option>16:00</option>
+							<option>17:00</option>
+							<option>18:00</option>
+							<option>19:00</option>
+							<option>20:00</option>
+							<option>21:00</option>
+							<option>22:00</option>
+							<option>23:00</option>
+							<option>24:00</option>
+						</select>
 					</div>
+				</div>
 
-					<div style="height: 40px;"></div>
+				<!-- 参会人员模块 -->
+				<div style="height: 60px;"></div>
+				<div style="margin-left: 276px; float: left;" class="input-group">
 					<div>
-						<div style="margin-left: 280px; float: left;">
-							<strong>开始日期:</strong><input id="startDate" value="" type="text" readonly="readonly" placeholder="选择日期" 
-								style="margin-left: 20px; width: 200px; height: 40px" />
-						</div>
-						<div style="margin-left: 270px; float: left;">
-							<strong>开始时间:</strong><select id="starttime" style="margin-left: 20px; width: 80px; height: 40px">
-								
-								<option>0:00</option>
-								<option>1:00</option>
-								<option>2:00</option>
-								<option>3:00</option>
-								<option>4:00</option>
-								<option>5:00</option>
-								<option>6:00</option>
-								<option>7:00</option>
-								<option>8:00</option>
-								<option>9:00</option>
-								<option>10:00</option>
-								<option>11:00</option>
-								<option>12:00</option>
-								<option>13:00</option>
-								<option>14:00</option>
-								<option>15:00</option>
-								<option>16:00</option>
-								<option>17:00</option>
-								<option>18:00</option>
-								<option>19:00</option>
-								<option>20:00</option>
-								<option>21:00</option>
-								<option>22:00</option>
-								<option>23:00</option>
-								<option>24:00</option>
-							</select>
-						</div>
+						<strong>参与人员:</strong> <input id="renyuan"
+							placeholder="输入姓名"
+							style="margin-left: 20px; width: 420px; height: 40px" />
+					</div>
+					<div ng-controller="canyurenCtrl">
+						<select id="renyunleibaio"
+							style="margin-left: 88px; width: 420px; color: teal;"
+							hidden="true" size="10">
+							<option selected="selected">请选择</option>
+							<option ng-repeat="canyuren  in canyurens"
+								value="{{canyuren.userId}}">{{canyuren.userName+"--"+canyuren.mrDepartment.departmentName}}</option>
+						</select>
+					</div>
+				</div>
+				<div style="margin-left: 100px; float: left;">
+					<a class="btn btn-lg btn-primary" id="ry_tianjia" role="button"
+						style="height: 40px; margin-left: 40px" data-content="此人员不存在！"
+						data-original-title="信息提示">添加</a>
+				</div>
 
-						<div style="height: 60px;"></div>
+				<div style="height: 60px;"></div>
 
-						<div style="margin-left: 280px; float: left;">
-							<strong>结束日期:</strong><input id="endDate" type="text" placeholder="选择日期"
-								style="margin-left: 20px; width: 200px; height: 40px" readonly="readonly"/>
+				<div style="">
+				 <div style="float: left;margin-left: 276px">
+							<strong>人员列表:</strong>
+				 </div>
+					<div style="margin-left: 276px; margin-top:10px; float: left;">
+						<!-- <div style="float: left;">
+							<textarea id="renyuanzhanshi" rows="4" cols="102"
+								style="margin-left: 20px; width: 640px" readonly="readonly"></textarea>
+						</div> -->
+						
+						<div style="width: 940px;margin-left: 20px;">
+							<div id="firststart"></div>
+							
 						</div>
-						<div style="margin-left: 270px; float: left;">
-							<strong>结束时间:</strong> <select id="endtime"
-								style="margin-left: 20px; width: 80px; height: 40px">
-								<option >0:00</option>
-								<option>1:00</option>
-								<option>2:00</option>
-								<option>3:00</option>
-								<option>4:00</option>
-								<option>5:00</option>
-								<option>6:00</option>
-								<option>7:00</option>
-								<option>8:00</option>
-								<option>9:00</option>
-								<option>10:00</option>
-								<option>11:00</option>
-								<option>12:00</option>
-								<option>13:00</option>
-								<option>14:00</option>
-								<option>15:00</option>
-								<option>16:00</option>
-								<option>17:00</option>
-								<option>18:00</option>
-								<option>19:00</option>
-								<option>20:00</option>
-								<option>21:00</option>
-								<option>22:00</option>
-								<option>23:00</option>
-								<option>24:00</option>
-							</select>
-						</div>
+						
+					</div>
+				</div>
+				<div style="height: 60px;"></div>
+				<!-- 信息通知模块 -->
+				<div style="width: 1000px">
+					<div style="margin-left: 276px; float: left;">
+						<strong>邮件通知:</strong> <input type="radio"
+							style="margin-left: 20px" name="youjian" value="yes"
+							checked="checked" /><strong>是</strong> <input type="radio"
+							style="margin-left: 20px" name="youjian" value="no" /><strong>否</strong>
+					</div>
+					<div style="margin-left: 351px; float: left;">
+						<strong>微信通知:</strong> <input type="radio"
+							style="margin-left: 20px" name="weixing" value="yes"
+							disabled="disabled" /><strong>是</strong> <input type="radio"
+							style="margin-left: 20px" name="weixing" value="no"
+							disabled="disabled" /><strong>否</strong>
 					</div>
 				</div>
 			</div>
-			<!-- 参会人员模块 -->
-			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
-				<div class="panel-heading">
-					<h3 class="panel-title">参与人员</h3>
-				</div>
-				<div class="panel-body">
-					<div style="margin-left: 270px; float: left;" class="input-group" >
-						<div>
-							<strong>参与人员:</strong> <input id="renyuan" placeholder="输入姓名。。。。。。" 
-						 style="margin-left: 20px; width: 420px; height: 40px" />
-						</div>
-						<div ng-controller="canyurenCtrl">
-							<select id="renyunleibaio" style="margin-left: 88px; width: 420px;color: teal;" hidden="true" size="10">
-								<option selected="selected">请选择</option>
-								<option ng-repeat="canyuren  in canyurens" value="{{canyuren.userId}}">{{canyuren.userName+"--"+canyuren.mrDepartment.departmentName}}</option>
-							</select>
-						</div>
-					</div>
-					<div style="margin-left: 100px; float: left;">
-						<a class="btn btn-lg btn-info" id="ry_tianjia" role="button"
-							style="height: 40px; margin-left: 40px" data-content="此人员不存在！" data-original-title="信息提示">添加</a>
-					</div>
-
-					<div style="height: 60px;"></div>
-
-					<div style="height: 60px">
-						<div style="margin-left: 270px; float: left;">
-							<div style="float: left;"><strong>人员列表:</strong></div>
-							<div style="float: left;">
-								<textarea id="renyuanzhanshi" rows="4" cols="102" style="margin-left: 20px;width: 640px" readonly="readonly"></textarea>
-							</div>
-
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- 信息通知模块 -->
-			<div class="panel panel-primary" style="width: 1250px; margin-left: 5%;">
-				<div class="panel-heading">
-					<h3 class="panel-title">可选信息</h3>
-				</div>
-						<div class="panel-body" style="width: 100%">
-							<div style="width: 1000px">
-								<div style="margin-left: 275px; float: left;">
-									<strong>邮件通知:</strong> <input type="radio" style="margin-left: 20px" name="youjian" value="yes" checked="checked"/><strong>是</strong> 
-															 <input type="radio" style="margin-left: 20px" name="youjian" value="no"/><strong>否</strong>
-								</div>
-								<div style="margin-left: 350px; float: left;">
-									<strong>微信通知:</strong> <input  type="radio" style="margin-left: 20px" name="weixing" value="yes" disabled="disabled"/><strong>是</strong> 
-															 <input  type="radio" style="margin-left: 20px" name="weixing" value="no" disabled="disabled"/><strong>否</strong>
-								</div>
-							</div>
-						</div>
-			</div>
+		</div>
 			<!--提交按钮 -->
 			<div style="margin-left: 500px">
-				<div style="margin-left: 40px; float: left;">
-					<button id="tijiaoform" type="button" class="btn btn-lg btn-info">提交</button>
+				<div style="margin-left: 250px; float: left;">
+					<button id="tijiaoform" type="button" class="btn btn-lg btn-primary">提交</button>
 				</div>
 				
 				<div style="margin-left: 200px; float: left;">
-					<a class="btn btn-lg btn-info" href="mettingroom.html" role="button"
+					<a class="btn btn-lg btn-primary" href="mettingroom.html" role="button"
 												>取消</a>
 				</div>
 			</div>
-		</div>
-	</div>
+			<div style="height: 60px;"></div>
 	</form>
 	<script type="text/javascript">
 		//部门初始化
@@ -725,10 +804,22 @@
 						    	  }
 						      }
 					    	  if(result3){
+					    		  $("#firststart").after("<div style=\"float: left;margin-left: 10px;\"><div id="+renyunleibaio.value+" class=\"alert alert-info alert-dismissable\"style=\"width: 150px; height: 40px;\">"
+					    					+"<button type=\"button\" class=\"close\" data-dismiss=\"alert\"aria-hidden=\"true\">&times;</button>"+
+					    					renyuan.value+"</div></div>");
+
 					    		  ids=ids+renyunleibaio.value+":";
-									 var renyuanzhanshi = document.getElementById('renyuanzhanshi');
-									 liebiao=liebiao+renyuan.value+"；";
-									 renyuanzhanshi.value =liebiao;
+					    		  $("#"+renyunleibaio.value).bind('closed.bs.alert', function () {
+					    			     arrIds = ids.split(":");
+					    			     ids ="";
+					    			     for(i=0;i<arrIds.length;i++){
+					    			    	 if(arrIds[i]==renyunleibaio.value){
+					    			    		 
+					    			    	 }else if(arrIds[i]!=""){
+					    			    		 ids = ids+arrIds[i]+":";
+					    			    	 } 
+					    			     }
+					    		    });
 									 renyuan.value ="";
 					    	  }else{
 					    		  $("#ry_tianjia").popover('show');
@@ -762,8 +853,7 @@
 					  renyunleibaio.hidden=true; 
 				  }
 		      } 
-			 
-			});
+			}); 
 		 $('#startDate').click(function(){
 			 $('#startDate').datetimepicker('show');
 		 });

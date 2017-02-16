@@ -52,9 +52,27 @@
     insert into USER_ROLE (ID, USERID, USERROLE,USER_NAME)
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{userRole,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR})
   </insert>
+  <!-- 查询所有 -->
   <select id="selectUserRole" resultMap="BaseResultMap">
   	 select 
     <include refid="Base_Column_List" />
     from USER_ROLE
+  </select>
+  <!-- 查询分页 -->
+   <select id="seachUserRoleByPage" parameterType="java.lang.Integer" resultMap="BaseResultMap" >
+    <bind name="offset" value="(page-1)*10"/>
+  	 select 
+    <include refid="Base_Column_List" />
+    from USER_ROLE limit ${offset},10
+  </select>
+  <!-- 查询总数 -->
+   <select id="selectUserRoleCounts" resultType="java.lang.Integer">
+  	 select count(*) from USER_ROLE 
+  </select>
+  <!-- 根据名字模糊查 -->
+  <select id="selectUserRoleByName" parameterType="java.lang.String" resultMap="BaseResultMap" >
+  	 select 
+    <include refid="Base_Column_List" />
+    from USER_ROLE where USER_NAME like #{userName}
   </select>
 </mapper>

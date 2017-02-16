@@ -24,10 +24,17 @@ public class MettingRoomServie {
 	@Autowired
 	private MrMeettingRoomMapper mrmeettingRommMapper;
 	
-	//查询出所有的会议室
+	//分页查询出所有的会议室
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchAllMeettingRoomByPage/{page}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<MrMeettingRoom> searchAllMeettingRoomByPage(@PathVariable("page") Integer page ){
+		List<MrMeettingRoom> meettingRooms = mrmeettingRommMapper.selectAllMeettingRoomByPage(page);
+		return meettingRooms;
+	}
+	//查询所有会议室
 	@RequestMapping(value="/mis-rest/rest/service/meettingroom/searchAllMeettingRoom",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public List<MrMeettingRoom> searchAllMeettingRoom(){
+	public List<MrMeettingRoom> searchAllMeettingRoom( ){
 		List<MrMeettingRoom> meettingRooms = mrmeettingRommMapper.selectAllMeettingRoom();
 		return meettingRooms;
 	}
@@ -58,6 +65,13 @@ public class MettingRoomServie {
 	@ResponseBody
 	public void updateMeettingRoom(@RequestBody MrMeettingRoom mrMeettingRoom){
 		mrmeettingRommMapper.updateByPrimaryKeySelective(mrMeettingRoom);
+	}
+	//查询会议室总数
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/selectMeettingRoomCounts",method=RequestMethod.GET)
+	@ResponseBody
+	public Integer selectMeettingRoomCounts(){
+		Integer counts = mrmeettingRommMapper.selectMeettingRoomCounts();
+		return counts;
 	}
 	public MrMeettingRoomMapper getMrmeettingRommMapper() {
 		return mrmeettingRommMapper;

@@ -61,6 +61,24 @@
         }
 </style>
 <!---->
+<script type="text/javascript">
+String.prototype.getQuery = function(name) {  
+	　　var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	　　var r = this.substr(this.indexOf("/?")+1).match(reg);
+	　　if (r!=null) return unescape(r[2]); 
+	   return null;  
+	}
+var strHref = window.location.href;
+var storage = window.localStorage;
+var huserId = strHref.getQuery("userId");
+if(huserId!=null){
+	
+}else{
+	if(storage.getItem("userId")==null){
+		window.location.href="http://mis.dayang.com"; 
+	}
+}
+</script>
 <script>
 	window.onload = function() {
 		var CheckAll = document.getElementById('All');
@@ -124,15 +142,123 @@
 	//操作员工信息
 	var storage = window.localStorage;
 	var userId = storage.getItem("userId");
-	var userName = storage.getItem("userName");;
+	var userName = storage.getItem("userName");
+	//日期格式化函数初始化日期
+	 var str3 = new Date().getFullYear();
+	 var str4 = new Date().getMonth()+1;
+	 var str5 = new Date().getDate(); 
+	var str2="";
+	 if(str4-10 >=0 && str5-10 >=0){
+		str2 = str3+"-"+str4+"-"+str5;
+	}else if(str4-10 <=0 && str5-10 <=0){
+		str2 = str3+"-0"+str4+"-0"+str5;
+	}else if(str4-10 >=0 && str5-10 <=0){
+		str2 = str3+"-"+str4+"-0"+str5;
+	}else if(str4-10 <=0 && str5-10 >=0){
+		str2 = str3+"-0"+str4+"-"+str5;
+	}
 	//加载会议室
 	var app = angular.module('myApp', []);
-	//加载部门
 	 app.controller('myCtrl', function($scope,$http) {
-		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
+		 var pages = 1;
+		 if(pages==1){
+			 $("#befor").attr("hidden",true);
+		 }else{
+			 document.getElementById('befor').removeAttribute("hidden");
+		 }
+		 //分页控制
+		 var page = 1;
+		 showBypage(page)
+			//首页
+		 	$scope.first = function(){
+				
+				pages = page;
+				if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+				 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+				 showBypage(page)
+			};
+			//上一页
+		 	$scope.befor = function(){
+		 		var page = pages-1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+		 		 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		 		showBypage(page)
+			};
+			//下一页
+		 	$scope.next = function(){
+		 		var page = pages+1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+
+			   if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+			   showBypage(page)
+			};
+			//获取总条数
+			var url = MeettingRoominterfaces.Var_selectMeettingRoomCounts+"?"+Math.random();
+			 var number = 0;
+			 $http.get(url).success( function(response) {
+	             $scope.meettingRoomCounts = response;
+	             if(response%6 == 0){
+					 number = response/6;
+					 //alert("除尽"+number+response%6);
+				 }else{
+					 number = (response-response%6)/6+1;
+					 //alert("除不尽"+number+"ghg"+response%6);
+				 }
+				  if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+				  //alert(number);
+				//最后一页
+				 $scope.last = function(){
+				 		pages = number;
+				 		if(pages==1){
+							 $("#befor").attr("hidden",true);
+						 }else{
+							 document.getElementById('befor').removeAttribute("hidden");
+						 }
+				 		 if(pages == number){
+							 $("#next").attr("hidden",true);
+						 }else{
+							 document.getElementById("next").removeAttribute("hidden");
+						 }
+				 showBypage(number);
+				};
+	          });
+		 //分页方法
+				function showBypage(page) {
+			var url=MeettingRoominterfaces.Var_searchAllMeettingRoomByPage+page+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.meettingRooms = response;
 	          });
+		}
 			 var url=MeettingRoominterfaces.Var_downloads+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.downloads = response;
@@ -151,36 +277,67 @@
 					 alert("密码不能为空");
 			    	 return;  
 				 }
-				 var meettingRoom =
-	  			  {
-						 meetingRoomName: $(bumen).val(),
-						 roomAccount: $(zhanghu).val(),
-						 password: $(mima).val(),
-			    		  } ;
-				 $.ajax({
-						type: "POST",
-						url: MeettingRoominterfaces.Var_addMeettingRoom,
-						contentType: "application/json", 
-						data: JSON.stringify(meettingRoom),
-					    success:function(msg54){
-					    	location.reload(true); 
-			        		}
-					});
-			 };
-			 $scope.shanchu = function(id){
-				 if(confirm("确认删除？")){
+				 //会议室信息重复判断
+				 var url = MeettingRoominterfaces.Var_searchAllMeettingRoom +"?"+Math.random();
+	        	 $http.get(url).success( function(response) {
+	        		 $scope.roomList = response;
+	        		 for(i=0;i<response.length;i++){
+							if(response[i].meetingRoomName==$(bumen).val()||response[i].roomAccount==$(zhanghu).val()){
+								alert("会议信息与已存在会议室信息冲突，请重新设定。");
+								return;
+							} 
+						 }
+	        		 var meettingRoom =
+		  			  {
+							 meetingRoomName: $(bumen).val(),
+							 roomAccount: $(zhanghu).val(),
+							 password: $(mima).val(),
+				    		  } ;
 					 $.ajax({
-							type: "get",
-							url: MeettingRoominterfaces.Var_deleteMeettingRoom + id+"?"+Math.random(),
-							//contentType: "application/json", 
-							//data: JSON.stringify(meettingRoom),
+							type: "POST",
+							url: MeettingRoominterfaces.Var_addMeettingRoom,
+							contentType: "application/json", 
+							data: JSON.stringify(meettingRoom),
 						    success:function(msg54){
 						    	location.reload(true); 
 				        		}
-						}); 
-				 }
-				
+						});
+	              });
+	        	
 			 };
+			//删除会议室
+			 $scope.shanchu = function(id){
+				 $.ajax({
+						type:"post",
+						url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
+						//contentType: "application/json",
+						data: {meettingRoomId:id,startdate:str2},
+						success:function(msg54){
+							 for(i=0;i<msg54.length;i++){
+								 var myDate = new Date();
+								 var mytime=myDate.getHours();
+								  var arr1 = msg54[i].startTime.split(":");
+								   //alert("来不");
+								   var arr2 = msg54[i].endTime.split(":");
+								   if(((arr2[0]-0))>=mytime & mytime>=arr1[0]-1){
+									   alert("有会议正在进行或即将开始，无法删除该会议室。");
+									   return;
+								   }
+							 }
+							 if(confirm("确认删除？")){
+								 $.ajax({
+										type: "get",
+										url: MeettingRoominterfaces.Var_deleteMeettingRoom + id+"?"+Math.random(),
+										//contentType: "application/json", 
+										//data: JSON.stringify(meettingRoom),
+									    success:function(msg54){
+									    	location.reload(true); 
+							        		}
+									}); 
+							 }
+						}
+			 });
+		};
 			 var id=null;
 			 $scope.update = function(code){
 				 id = code;
@@ -296,21 +453,31 @@
 </head>
 <body ng-app="myApp" ng-controller="myCtrl"
 	style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 150%;">
-	<!-- 预定列表 -->
-	<div class="panel panel-success"
-		style="width: 1400px; margin-left: 13%;margin-top: 5%">
+	<div data-options="disabled:true,region:'north'"
+		style="height: 150px; background-color: purple; width: 100%">
+		<div
+			style="color: orange; text-decoration: none; font-style: italic; padding-top: 20px; padding-left:; width: 100%">
+			
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<div style="" align="left">
+				<a href="mettingroom.html" class="btn btn-lg btn-primary" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-primary"
+		style="width: 1400px; margin-left: 13%;">
 		<div class="panel-heading">
 			<div>
 				<h3 class="panel-title">
 					<strong>会议室管理</strong>
 				</h3>
 			</div>
-			<div style="" align="right">
-				<a href="mettingroom.html" class="btn btn-lg btn-info" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
-			</div>
 		</div>
 		<div class="panel-body">
-			<div class="panel panel-success" style="width: 90%; margin-left: 5%;">
+			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
 				<div class="panel-heading">
 					<h3 class="panel-title">会议室列表</h3>
 				</div>
@@ -318,24 +485,23 @@
 
 					<div style="height: 50px;">
 						<div style="margin-left: 0px; float: left;">
-							<button class="btn btn-lg btn-info" data-toggle="modal" data-target="#myModal3" style="height: 40px;">添加</button>
+							<button class="btn btn-lg btn-primary" data-toggle="modal" data-target="#myModal3" style="height: 40px;">添加</button>
 						</div>
 					</div>
 					<div style="width: 90%"  >
 						<table id="table" class="table">
 							<thead>
-								<tr class="success">
+								<tr class="active">
 									<td><input id="All" type="text" hidden="true" name="" /></td>
-									<td>会议名称</td>
-									<td>账户</td>
-									<td>密码</td>
-									<td>密码修改时间</td>
-									<td>修改人</td>
-									<td></td>
-									<td></td>
+									<td style="width: 220px;"><strong>会议室名称</strong></td>
+									<td style="width: 220px;"><strong>账户</strong></td>
+									<td style="width: 220px;"><strong>密码</strong></td>
+									<td style="width: 220px;"><strong>密码修改时间</strong></td>
+									<td style="width: 200px;"><strong>修改人</strong></td>
+									<td style="width: 280px;"><strong>操作</strong></td>
 								</tr>
 							</thead>
-							<tr class="success" ng-repeat="meettingRoom in meettingRooms">
+							<tr class="default" ng-repeat="meettingRoom in meettingRooms">
 								<td><input id="id" type="text" hidden="true" value="{{meettingRoom.id}}" /></td>
 								<td>{{meettingRoom.meetingRoomName}}</td>
 								<td>{{meettingRoom.roomAccount}}</td>
@@ -343,16 +509,14 @@
 								<td>{{meettingRoom.changeTime | date:'yyyy-MM-dd hh:mm'}} </td>
 								<td>{{meettingRoom.who}}</td>
 								<td>
-									<div style="height: 50px;">
-										<div style="margin-left: 0px; float: left;">
-											<button class="btn btn-lg btn-info"  data-target="#myModal4" style="height: 40px; margin-left: 60px;" ng-click="update(meettingRoom.id)">修改</button>
+									<div style="height: 50px;float: left;">
+										<div style="margin-left: 0px;">
+											<button class="btn btn-lg btn-primary"  data-target="#myModal4" style="height: 40px;" ng-click="update(meettingRoom.id)">修改密码</button>
 										</div>
 									</div>
-								</td>
-								<td>
-									<div style="height: 50px;">
-										<div style="margin-left: 0px; float: left;">
-											<a class="btn btn-lg btn-info"  ng-click="shanchu(meettingRoom.id)" role="button"
+									<div style="height: 50px;margin-left:120px;">
+										<div style="margin-left: 0px;">
+											<a class="btn btn-lg btn-primary"  ng-click="shanchu(meettingRoom.id)" role="button"
 												style="height: 40px;">删除</a>
 										</div>
 									</div>
@@ -362,9 +526,37 @@
 					</div>
 				</div>
 			</div>
+			<div align="center" style="margin-left: 38%">
+				<div id="first" style="float: left;">
+					<ul class="pagination" style="height: 40px; margin-right: 10px">
+						<li><a ng-click="first()">首页</a></li>
+					</ul>
+				</div>
 
+				<div id="befor" style="float: left;">
+					<ul class="pagination" style="height: 40px; margin-right: 10px">
+						<li><span class="glyphicon  glyphicon-backward"
+							ng-click="befor()"></span></li>
+					</ul>
+				</div>
+
+				<div id="next" style="float: left;">
+					<ul class="pagination" style="height: 40px; margin-right: 10px">
+						<li><span class="glyphicon  glyphicon-forward"
+							ng-click="next()"></span></li>
+					</ul>
+				</div>
+
+				<div id="last" style="float: left;">
+					<ul class="pagination" style="height: 40px; margin-right: 10px">
+						<li><span ng-click="last()">最后一页</span></li>
+					</ul>
+				</div>
+
+			</div>
 			<!-- 链接管理 -->
-			<div class="panel panel-success" style="width: 90%; margin-left: 5%;">
+			<HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3>
+			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;">
 				<div class="panel-heading">
 					<h3 class="panel-title">链接管理</h3>
 				</div>
@@ -377,7 +569,7 @@
 						</div>
 						<div style="height: 100px; margin-left: 80px;">
 							<!-- 按钮触发模态框 -->
-							<button class="btn btn-lg btn-info" data-toggle="modal"
+							<button class="btn btn-lg btn-primary" data-toggle="modal"
 								data-target="#myModal1"
 								style="height: 40px; margin-left: 80px;" ng-click="xuigailianjie(downlaod.id)">修改</button>
 						</div>
@@ -388,7 +580,7 @@
 						</div>
 						<form id="form1">
 								<input id="uploadPath" type="file" name="file" style="height: 40px; float: left; margin-right: 10px"/>
-									<input class="btn btn-lg btn-info"  id="upload" type="button" value="上传"/> 	
+									<input class="btn btn-lg btn-primary"  id="upload" type="button" value="上传"/> 	
 						</form> 
 						<div id="over" class="over"></div>
 						<div id="layout" class="layout">
@@ -449,12 +641,12 @@
 											style="width: 185px; height: 40px; margin-left: 20px" />
 									</div>
 									<div style="margin-left:60px;margin-top: 20px">
-										账户: <input type="text" id="add_roomAccount"
-											style="width: 185px; height: 40px; margin-left: 20px" />
+										账户: <input type="text" id="add_roomAccount" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" placeholder="请输入字母或数字"
+											style="width: 185px; height: 40px; margin-left: 20px" maxlength="12"/>
 									</div>
 									<div style="margin-left: 60px;margin-top: 20px">
-										密码: <input type="text" id="add_password" 
-											style="width: 185px; height: 40px; margin-left: 20px" />
+										密码: <input type="text" id="add_password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" placeholder="请输入字母或数字"
+											style="width: 185px; height: 40px; margin-left: 20px" maxlength="12"/>
 									</div>
 								</div>
 
@@ -494,12 +686,12 @@
 											
 									</div>
 									<div style="margin-left: 65px;margin-top: 20px">
-										<label class="control-label">账户:</label> <input type="text"
-											id="update_roomAccount"style="width: 185px; height: 40px; margin-left: 20px;" />
+										<label class="control-label">账户:</label> <input type="text" 
+											id="update_roomAccount"style="width: 185px; height: 40px; margin-left: 20px;" disabled="disabled"/>
 									</div>
 									<div style="margin-left: 65px;margin-top: 20px">
-										<label class="control-label">密码:</label> <input type="text"
-											id="update_password"style="width: 185px; height: 40px; margin-left: 20px;" />
+										<label class="control-label">密码:</label> <input type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" placeholder="请输入字母或数字" 
+											id="update_password"style="width: 185px; height: 40px; margin-left: 20px;" maxlength="12" />
 									</div>
 								</div>
 

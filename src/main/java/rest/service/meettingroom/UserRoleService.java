@@ -67,6 +67,27 @@ public class UserRoleService  {
 		String value = propertiesReader.getValue("userId");
 		return value;
 	    }
+	//分页获取权限人员
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/getUserRoleByPage/{page}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody 
+	public List<MrUserRole> getUserRoleByPage(@PathVariable("page")Integer page) throws Exception {
+		List<MrUserRole> list = userRoleMapper.seachUserRoleByPage(page);
+		return list;
+	}
+	//获取权限人员总数
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/getUserRoleCounts",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody 
+	public Integer getUserRoleCounts() throws Exception {
+		 Integer counts = userRoleMapper.selectUserRoleCounts();
+		return counts;
+	}
+	//名字模糊查询
+	@RequestMapping(value="/mis-rest/rest/service/meettingroom/getUserRoleByName/{userName}",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody 
+	public List<MrUserRole> getUserRoleByName(@PathVariable("userName")String userName) throws Exception {
+		 List<MrUserRole> list = userRoleMapper.selectUserRoleByName(userName+"%");
+		return list;
+	}
 	public MrUserRoleMapper getUserRoleMapper() {
 		return userRoleMapper;
 	}

@@ -108,7 +108,7 @@
   <!-- 子查询参会人员 -->
    <select id="selectMrUserTsByMeettingId" parameterType="java.lang.Integer" resultMap="rest.mybatis.dao.meettingroom.MrUserTMapper.BaseResultMap">
     select 
-     User_LoginName, User_Name,Department_ID,
+    User_ID,User_LoginName, User_Name,Department_ID,
      User_Email,me.EMPLOYEE_ID, me.MEETTING_ID
      from UserT user join MEETTING_EMPLOYEE me
      on user.User_ID = me.EMPLOYEE_ID 

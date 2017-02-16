@@ -173,6 +173,8 @@ public class SpOrderService {
 				 mrSpOrderMapper.updateByPrimaryKeySelective(mrSpOrder);
 				    mrMeettingEmployee.setMeettingId(id);
 					mrMeettingEmployee.setEmployeeId(userId);
+					System.out.println(userId);
+					System.err.println(id);
 					MMEMapper.insertSelective(mrMeettingEmployee);
 			}else{
 				System.out.println("User with id " + id + " not found");

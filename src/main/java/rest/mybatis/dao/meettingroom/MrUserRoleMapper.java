@@ -16,4 +16,10 @@ public interface MrUserRoleMapper {
 	int deleteUserRole(@Param("userId")Integer userId);
 	//获取所有
 	List<MrUserRole> selectUserRole();
+	//分页获取授权列表
+	List<MrUserRole> seachUserRoleByPage(@Param("page") Integer page);
+	//获取授权人员总数
+	Integer selectUserRoleCounts();
+	//根据名字模糊查询
+	List<MrUserRole> selectUserRoleByName(@Param("userName") String userName);
 }

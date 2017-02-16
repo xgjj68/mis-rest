@@ -16,9 +16,10 @@ MeettingRoominterfaces={
 	Var_searchUserByName:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/searchUserByName/',
 	//查询所有员工信息
 	Var_searchUsers:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/searchUsers',
-	//提取所有会议室接口
+	//分页提取会议室接口
+	Var_searchAllMeettingRoomByPage:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/searchAllMeettingRoomByPage/',
+	//提取所有会议室
 	Var_searchAllMeettingRoom:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/searchAllMeettingRoom',
-	
 	//修改会议室记录接口
 	Var_updateSpOrder:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/updateSpOrder',
 	
@@ -94,5 +95,13 @@ MeettingRoominterfaces={
 	//获取所有授权人员
 	Var_seachAllUserRole:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/seachAllUserRole',
 	//获取管理员权限
-	Var_getAdmin:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/getAdmin'	
+	Var_getAdmin:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/getAdmin',
+	//查询会议室总数
+	Var_selectMeettingRoomCounts:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/selectMeettingRoomCounts',
+    //分页获取权限人员
+	Var_getUserRoleByPage:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/getUserRoleByPage/',
+	//获取权限人员总数
+	Var_getUserRoleCounts:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/getUserRoleCounts',
+	//名字模糊查询授权人员
+	Var_getUserRoleByName:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/getUserRoleByName/',
 };

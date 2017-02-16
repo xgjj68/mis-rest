@@ -44,6 +44,14 @@
 					 if(msg54 == huserId){
 						 $("#gunlihuiyishi").prop("hidden",false);
 						 $("#quanxianguanli").prop("hidden",false);
+						 $.ajax({
+								url:MeettingRoominterfaces.Var_searchUserByUserId+huserId,
+								type:"get",
+								 success:function(msg54){
+									 var userName = msg54.userName;;
+									storage.setItem("userName",userName);
+						        		}
+							});
 						}else{
 							$.ajax({
 								url:MeettingRoominterfaces.Var_searchUserByUserId+huserId,
@@ -79,6 +87,14 @@
 					 if(msg54 == storage.getItem("userId")){
 						 $("#gunlihuiyishi").prop("hidden",false);
 						 $("#quanxianguanli").prop("hidden",false);
+						 $.ajax({
+								url:MeettingRoominterfaces.Var_searchUserByUserId+storage.getItem("userId"),
+								type:"get",
+								 success:function(msg54){
+									 var userName = msg54.userName;;
+									storage.setItem("userName",userName);
+						        		}
+							});
 						}else{
 							$.ajax({
 								url:MeettingRoominterfaces.Var_searchUserByUserId+storage.getItem("userId"),
@@ -141,7 +157,98 @@ angular.element(window).bind('load', function() {
 	 });
 	//加载部门
 	 app.controller('myCtrl', function($scope,$http) {
-		 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
+		 var pages = 1;
+		 if(pages==1){
+			 $("#befor").attr("hidden",true);
+		 }else{
+			 document.getElementById('befor').removeAttribute("hidden");
+		 }
+		 //分页控制
+		 var page = 1;
+		 showBypage(page)
+			//首页
+		 	$scope.first = function(){
+				
+				pages = page;
+				if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+				 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+				 showBypage(page)
+			};
+			//上一页
+		 	$scope.befor = function(){
+		 		var page = pages-1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+		 		 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		 		showBypage(page)
+			};
+			//下一页
+		 	$scope.next = function(){
+		 		var page = pages+1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+
+			   if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+			   showBypage(page)
+			};
+			//获取总条数
+			var url = MeettingRoominterfaces.Var_selectMeettingRoomCounts+"?"+Math.random();
+			 var number = 0;
+			 $http.get(url).success( function(response) {
+	             $scope.meettingRoomCounts = response;
+	             if(response%6==0){
+					 number = response/6;
+				 }else{
+					 number = (response-response%6)/6+1;
+				 }
+				  if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 } 
+				//最后一页
+				 $scope.last = function(){
+				 		pages = number;
+				 		if(pages==1){
+							 $("#befor").attr("hidden",true);
+						 }else{
+							 document.getElementById('befor').removeAttribute("hidden");
+						 }
+				 		 if(pages == number){
+							 $("#next").attr("hidden",true);
+						 }else{
+							 document.getElementById("next").removeAttribute("hidden");
+						 }
+				 showBypage(number);
+				};
+	          });
+			 
+		function showBypage(page){
+			 var url=MeettingRoominterfaces.Var_searchAllMeettingRoomByPage+page+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.meettingRooms = response;
 	             //alert(response.length);
@@ -155,6 +262,7 @@ angular.element(window).bind('load', function() {
 		              }); 
 	             }; 
 	          });
+		}	
 			 var url=MeettingRoominterfaces.Var_downloads+"?"+Math.random();
 			 $http.get(url).success( function(response) {
 	             $scope.downloads = response;
@@ -198,7 +306,7 @@ angular.element(window).bind('load', function() {
 						   //获得时间条数组
 						   var H = $('div[id='+response[i].mrMeettingRoom.meetingRoomName+']');
 						     for(j=0;j<H.length;j++){
-						    	 if(arr2[0]>=j & j>=arr1[0]){
+						    	 if(arr2[0]>j & j>=arr1[0]){
 									   $(H[j]).attr("class","progress-bar progress-bar-warning");
 									   $(H[j]).attr("data-content","当前时间段"+response[i].startTime+"点到"+response[i].endTime+"点已有会议预定:“"+response[i].meettingName+"”");
 									  
@@ -219,10 +327,9 @@ angular.element(window).bind('load', function() {
 					   //获得时间条数组
 					   var H = $('div[id='+response[i].mrMeettingRoom.meetingRoomName+']');
 					     for(j=0;j<H.length;j++){
-					    	 
-					    	 if(arr2[0]>=j & j>=arr1[0]){
+					    	 if(arr2[0]>j & j>=arr1[0]){
 								   $(H[j]).attr("class","progress-bar progress-bar-warning");
-								   $(H[j]).attr("data-content","当前时间段"+response[i].startTime+"点到"+((arr2[0]-0)+1)+":00点已有会议预定:“"+response[i].meettingName+"”");
+								   $(H[j]).attr("data-content","当前时间段"+response[i].startTime+"点到"+arr2[0]+":00点已有会议预定:“"+response[i].meettingName+"”"); 
 								   $(H[j]).popover({trigger: 'hover'});
 							   }
 					     };
@@ -239,11 +346,11 @@ angular.element(window).bind('load', function() {
 		</div>		 
 	</div> 
     <div class="panel panel-default" style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size: 100%;">
-            <div class="panel-heading" ng-controller="userCtrl">
+            <div class="panel-heading" ng-controller="userCtrl" style="width: 100%">
               <h1 class="panel-title" style="color:purple; text-decoration: none"><strong>视频会议室列表</strong> </h1>
             </div>
 	        <div class="panel-body">
-	        	<div style="margin-left: 350px;margin-top: 30px;width: 100%" >
+	        	<div style="margin-left: 350px;margin-top: 30px;width: 80%" >
 	        		
 	        		<div style="margin-left: 40px;float: left;">
 		        	<input id="time" type="text" style="height: 45px" readonly="readonly" placeholder="选择日期"/>
@@ -253,7 +360,7 @@ angular.element(window).bind('load', function() {
 		        		<button id="chaxunBytime" class="btn btn-lg btn-success" type="button"><span class="glyphicon glyphicon-calendar"></span>查询</button>
 		        	</div>
 			        <div style="margin-left: 40px;float: left;">
-			        	<a class="btn btn-lg btn-info" href="allreserve.html" role="button"
+			        	<a class="btn btn-lg btn-primary" href="allreserve.html" role="button"
 												>预定</a>
 			        </div>
 			        <div style="margin-left: 40px;float: left;">
@@ -261,7 +368,7 @@ angular.element(window).bind('load', function() {
 												>我的预定</a>
 			        </div>
 			        <div id= "gunlihuiyishi" style="margin-left: 40px;float: left;" hidden="true">
-			        	<a class="btn btn-lg btn-primary" href="management.html" role="button" 
+			        	<a class="btn btn-lg btn-info" href="management.html" role="button" 
 												>管理会议室</a>
 			        </div>
 			         <div id="quanxianguanli"  style="margin-left: 40px; margin-right:40px; float: left;" hidden="true">
@@ -385,17 +492,45 @@ angular.element(window).bind('load', function() {
 									</div>
 								</div>
 								<div style="margin-left: 20px;float: left;">
-									      <button id="p_yuding" class="btn btn-lg btn-info" type="button"  style="height: 40px" ng-click="p_yuding(meettingRoom.meetingRoomName,meettingRoom.id)">预定</button>
+									      <button id="p_yuding" class="btn btn-lg btn-primary" type="button"  style="height: 40px" ng-click="p_yuding(meettingRoom.meetingRoomName,meettingRoom.id)">预定</button>
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
-					<div style="height: 50px"></div>
+					<div align="center" style="margin-left: 38%">
+						<div id="first" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><a ng-click="first()">首页</a></li>
+							</ul>
+						</div>
+
+						<div id="befor" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><span class="glyphicon  glyphicon-backward"
+									ng-click="befor()"></span></li>
+							</ul>
+						</div>
+
+						<div id="next" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><span class="glyphicon  glyphicon-forward"
+									ng-click="next()"></span></li>
+							</ul>
+						</div>
+
+						<div id="last" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><span ng-click="last()">最后一页</span></li>
+							</ul>
+						</div>
+						
+					</div>
+					<div style="height: 60px;"></div>
+					<HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3>
 					<h4 style="color: black; text-decoration: none" ng-repeat=" download in downloads">{{download.download}}:&nbsp&nbsp&nbsp&nbsp<a class="" href="" ng-click="wendangDownlaod(download.instructions)" style="color: blue;"><u>{{download.instructions}}</u></a></h4>
 				</div>
-          </div>
-		        	
+          </div>   	
           <div style="height: 50px"></div>
           <div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;">
 				<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 50px;padding-left: 35%;">
