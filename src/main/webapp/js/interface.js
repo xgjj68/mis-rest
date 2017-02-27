@@ -59,15 +59,20 @@ MeettingRoominterfaces={
 	//修改会议室信息
 	Var_updateMeettingRoom:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/updateMeettingRoom',
 	
-	//获取所有的链接
+	//获取所有的文件信息
 	Var_downloads:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/downloads',
 	
 	//修改链接地址
 	Var_updateSpdownload:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/updateSpdownload',
-	
+	//插入文件信息
+	Var_insertSpdownload:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/insertSpdownload',
+	//删除文件信息
+	Var_deleteSpdownload:'http://192.168.6.190:8080	/mis-rest/rest/service/meettingroom/deleteSpdownload/',
+
 	//上传文件接口
 	Var_upload:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/upload',
-	
+	//删除文件接口
+	Var_deleteFile:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/deleteFile',
 	//下载文件
 	Var_downlaod:'http://192.168.6.190:8080/mis-rest/rest/service/meettingroom/Download',
 	

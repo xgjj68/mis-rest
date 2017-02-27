@@ -2,8 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>视频会议室 预定</title>
@@ -99,7 +101,7 @@ if(huserId!=null){
 					    	theSporder = msg54;
 			        		}
 					});
-			//初始化结束时间
+		
 			  mettingroom.onclick=function(){
 				  $("#morentishi").remove();
 			};
@@ -348,6 +350,16 @@ if(huserId!=null){
 				        	 return; 	
 		        		} 
 		        	 }
+					if(arr2[0]-0+1>=24){
+		        		 
+		        	 }else{
+		        		 for(i=arr2[0];i<=arr2[0]-0+2;i++){
+			        		 if(starttimes[i].disabled){
+				        			alert("会议延伸时间与已存在会议时间冲突，请重新选择");
+						        	 return; 	
+				        		}  
+			        	 }
+		        	 }	
 		         }
 		    	  var mrSpOrder =
 		    			  {		id:id,
@@ -405,19 +417,20 @@ if(huserId!=null){
 </script>
 </head>
 <body ng-app="myApp"
-	style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 150%;">
+	style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 100%;">
 	<div data-options="disabled:true,region:'north'"
-		style="height: 150px; background-color: purple; width: 1900px">
+		style="height: 150px; background-color: purple; width: 100%;">
 		<div
 			style="color: orange; text-decoration: none; font-style: italic; padding-top: 20px; padding-left:; width: 100%">
-			<h3 style="color: orange;">预定提示:</h3>
-			<h4 style="color: orange;">&nbsp&nbsp1.会议室的使用时间，是在预定的会议结束时间上顺延一个小时。
+			<h3 style="color: orange;"><strong>预定提示:</strong></h3>
+			<h4 style="color: orange;"><strong>&nbsp&nbsp1.会议室的使用时间，是在预定的会议结束时间上顺延一个小时。</strong>
 			</h4>
 			<h4 style="color: orange;">
-				&nbsp&nbsp2.上个会议室使用时间结束后的一小时，会由管理员对会议室进行维护，此时间段无法使用会议室。</h4>
+				<strong>&nbsp&nbsp2.上个会议室使用时间结束后的一小时，会由管理员对会议室进行维护，此时间段无法使用会议室。</strong>
+			</h4>
 		</div>
 	</div>
-	<div class="panel panel-default" style="width: 1900px;">
+	<div class="panel panel-default" style="width: 100%;">
 		<div class="panel-heading">
 			<div style="" align="left">
 				<a href="myreserve.html" class="btn btn-lg btn-primary" type="button"
@@ -428,7 +441,7 @@ if(huserId!=null){
 	</div>
 	<form action="myapp" name="form1" ng-controller="huixianCtrl">
 		<!-- 必填信息模块 -->
-		<div class="panel panel-primary" style="width: 1400px; margin-left: 15%;">
+		<div class="panel panel-primary" style="width: 70%; margin-left: 15%;">
 			<div class="panel-heading">
 				<div style="float: left;">
 					<h3 class="panel-title">
@@ -441,16 +454,15 @@ if(huserId!=null){
 			<div class="panel-body">
 				<div>
 					<div style="float: left;">
-						<div style="margin-left: 302px;">
+						<div style="margin-left: 252px;">
 							<strong>部门:</strong> <input id="department" placeholder="必填"
-								style="margin-left: 20px; width: 185px; height: 40px"
+								style="width: 185px; height: 40px"
 								value="{{mrSpOrder.department}}" />
 						</div>
 						<div ng-controller="myCtrl"
 							style="z-index: 20; position: absolute;">
 							<select id="bumen"
-								style="margin-left: 360px; width: 185px; width: 185px; color: teal;"
-								hidden="true" size="10">
+								style="width:  185px;margin-left: 290px; color: teal;display: none;" size="10">
 								<option selected="selected">请选择部门</option>
 								<option ng-repeat="department in departments"
 									value="{{department.departmentId}}">{{department.departmentName}}</option>
@@ -459,16 +471,16 @@ if(huserId!=null){
 					</div>
 
 
-					<div style="margin-left: 197px; float: left;">
+					<div style="margin-left: 80px; float: left;">
 						<strong>组织人:</strong> <input id="zuzhiren" placeholder="必填"
-							style="margin-left: 20px; width: 185px; height: 40px"
+							style=" width: 185px; height: 40px"
 							value="{{mrSpOrder.organization}}" /> <input id="yuangongid"
 							type="text" hidden="true" name="employeeId">
 					</div>
 					<div ng-controller="zuzhirenCtrl"
 						style="z-index: 20; position: absolute;">
 						<strong> <select id="zuhzirenleibaio"
-							style="margin-left: 815px; margin-top: 40px; width: 185px; color: teal;"
+							style=" margin-top: 40px; width: 225px; color: teal;"
 							size="10" hidden="true">
 								<option selected="selected">请选择</option>
 								<option ng-repeat="zuhziren  in zuzhirens"
@@ -481,15 +493,15 @@ if(huserId!=null){
 				<div style="height: 60px; width: 80%"></div>
 
 				<div>
-					<div style="margin-left: 275px; float: left;">
+					<div style="margin-left: 225px; float: left;">
 						<strong>会议议题:</strong> <input type="text" id="huiyi"
 							value="{{mrSpOrder.meettingName}}"
-							style="width: 185px; height: 40px; margin-left: 20px"
+							style="width: 185px; height: 40px;"
 							placeholder="必填" />
 					</div>
-					<div style="margin-left: 180px; float: left;">
+					<div style="margin-left: 66px; float: left;">
 						<strong>参与人数:</strong> <input type="text" id="renshu"
-							style="width: 185px; height: 40px; margin-left: 20px"
+							style="width: 185px; height: 40px;"
 							onkeyup="this.value=this.value.replace(/\D/g,'')"
 							value="{{mrSpOrder.peopleNumbers}}" />
 					</div>
@@ -497,14 +509,14 @@ if(huserId!=null){
 
 				<div style="height: 60px;"></div>
 
-				<div style="height: 60px">
-					<div style="margin-left: 275px; float: left;">
+				<div style="height: 60px;">
+					<div style="margin-left: 223px; float: left;width: 80%">
 						<div style="float: left;">
 							<strong>会议简要:</strong>
 						</div>
 						<div style="float: left;">
 							<textarea id="huiyijianyao" rows="4" cols="102"
-								style="margin-left: 20px; width: 640px">{{mrSpOrder.meettingTitle}}</textarea>
+								style="margin-left:5px; width:503px">{{mrSpOrder.meettingTitle}}</textarea>
 						</div>
 
 					</div>
@@ -514,11 +526,11 @@ if(huserId!=null){
 
 				<div style="height: 50px;">
 					<div ng-controller="meettingRoomCtrl"
-						style="margin-left: 260px; float: left;">
+						style="margin-left: 210px; float: left;width: 640px;">
 						<input id="meettingRoomId" type="text" hidden="true"
 							name="meettingRoomId" /> <strong>视频会议室:</strong> <select
 							id="mettingroom"
-							style="margin-left: 20px; width: 200px; height: 40px"
+							style="margin-left: ; width:180px; height: 40px"
 							name="meettingRoomId">
 							<option id="morentishi" selected="selected"
 								value="{{mrSpOrder.mrMeettingRoom.id}}">{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</option>
@@ -530,14 +542,14 @@ if(huserId!=null){
 
 				<div style="height: 20px;"></div>
 				<div>
-					<div style="margin-left: 280px; float: left;">
+					<div style="margin-left: 217px; float: left;width: 280px;">
 						<strong>开始日期:</strong><input id="startDate" value="" type="text"
 							readonly="readonly" placeholder="选择日期"
-							style="margin-left: 20px; width: 200px; height: 40px" />
+							style="margin-left:10px; width:180px; height: 40px" />
 					</div>
-					<div style="margin-left: 270px; float: left;">
+					<div style="margin-left: 50px; float: left;width: 280px;">
 						<strong>开始时间:</strong><select id="starttime"
-							style="margin-left: 20px; width: 80px; height: 40px">
+							style="margin-left: 10px; width: 180px; height: 40px">
 
 							<option>0:00</option>
 							<option>1:00</option>
@@ -569,15 +581,15 @@ if(huserId!=null){
 
 					<div style="height: 60px;"></div>
 
-					<div style="margin-left: 280px; float: left;">
+					<div style="margin-left: 217px; float: left;width: 280px;">
 						<strong>结束日期:</strong><input id="endDate" type="text"
 							placeholder="选择日期"
-							style="margin-left: 20px; width: 200px; height: 40px"
+							style="margin-left: 10px; width: 180px; height: 40px"
 							readonly="readonly" />
 					</div>
-					<div style="margin-left: 270px; float: left;">
+					<div style="margin-left: 50px; float: left;width: 280px;">
 						<strong>结束时间:</strong> <select id="endtime"
-							style="margin-left: 20px; width: 80px; height: 40px">
+							style="margin-left: 10px; width: 180px; height: 40px">
 							<option>0:00</option>
 							<option>1:00</option>
 							<option>2:00</option>
@@ -608,15 +620,15 @@ if(huserId!=null){
 				</div>
 				<!-- 参会人员模块 -->
 				<div style="height: 60px;"></div>
-				<div style="margin-left: 270px; float: left;" class="input-group">
+				<div style="margin-left: 215px; float: left;" class="input-group">
 					<div>
 						<strong>参与人员:</strong> <input id="renyuan"
 							placeholder="输入姓名。。。。。。"
-							style="margin-left: 20px; width: 420px; height: 40px" />
+							style="margin-left: 10px; width: 180px; height: 40px" />
 					</div>
-					<div ng-controller="canyurenCtrl">
+					<div ng-controller="canyurenCtrl" style="z-index: 20; position: absolute;">
 						<select id="renyunleibaio"
-							style="margin-left: 88px; width: 420px; color: teal;"
+							style="margin-left: 75px; width: 180px; color: teal;"
 							hidden="true" size="10">
 							<option selected="selected">请选择</option>
 							<option ng-repeat="canyuren  in canyurens"
@@ -624,39 +636,43 @@ if(huserId!=null){
 						</select>
 					</div>
 				</div>
-				<div style="margin-left: 100px; float: left;">
+				<div style="float: left;margin-left: 180px;">
 					<a class="btn btn-lg btn-primary" id="ry_tianjia" role="button"
 						data-content="此人员不存在！" data-original-title="信息提示"
-						style="height: 40px; margin-left: 40px">添加</a>
+						style="height: 40px;">添加</a>
 				</div>
 
 				<div style="height: 60px;"></div>
 
-				<div style="height: 60px">
-					<div style="margin-left: 270px; float: left;">
-						<div style="float: left;">
-							<strong>人员列表:</strong>
-						</div>
-						<div style="width: 640px;height: 60px;margin-left: 20px;float: left;">
-							<div id="firststart"></div>
-							
-						</div>
+				<div style="">
+
+					<div style="float: left; margin-left: 217px">
+						<strong>人员列表:</strong>
 					</div>
+					<div style="margin-top: 10px; float: left;">
+
+						<div style="width: 340px; margin-left: 20px">
+							<div id="firststart"></div>
+
+						</div>
+
+					</div>
+
 				</div>
 				<div style="height: 60px;"></div>
 				<!-- 信息通知模块 -->
-				<div style="width: 1000px">
-					<div style="margin-left: 276px; float: left;">
+				<div style="width: 80%">
+					<div style="margin-left: 217px; float: left;width: 20%;">
 						<strong>邮件通知:</strong> <input id="youjian1" type="radio"
-							style="margin-left: 20px" name="youjian" value="yes"
+							style="margin-left: 3%;" name="youjian" value="yes"
 							checked="checked" /><strong>是</strong> <input id="youjian2"
-							type="radio" style="margin-left: 20px" name="youjian" value="no" /><strong>否</strong>
+							type="radio" style="margin-left: 3%;" name="youjian" value="no" /><strong>否</strong>
 					</div>
-					<div style="margin-left: 351px; float: left;">
+					<div style="margin-left: 130px; float: left;width: 20%;">
 						<strong>微信通知:</strong> <input id="weixin1" type="radio"
-							style="margin-left: 20px" name="weixing" value="yes"
+							style="margin-left: 3%;" name="weixing" value="yes"
 							disabled="disabled" /><strong>是</strong> <input id="weixin2"
-							type="radio" style="margin-left: 20px" name="weixing" value="no"
+							type="radio" style="margin-left: 3%;" name="weixing" value="no"
 							disabled="disabled" /><strong>否</strong>
 					</div>
 				</div>
@@ -664,12 +680,12 @@ if(huserId!=null){
 			</div>
 		</div>
 		<!--提交按钮 -->
-				<div style="margin-left: 500px">
-					<div style="margin-left: 250px; float: left;">
+				<div style="margin-left: 220px">
+					<div style="margin-left: 15%; float: left;">
 						<button id="tijiaoform" type="button" class="btn btn-lg btn-primary">提交</button>
 					</div>
 
-					<div style="margin-left: 200px; float: left;">
+					<div style="margin-left: 30%; float: left;">
 						<a class="btn btn-lg btn-primary" href="myreserve.html" role="button">取消</a>
 					</div>
 				</div>
@@ -688,7 +704,7 @@ if(huserId!=null){
 			                 $scope.departments = response;
 			              });
 					  var bumen = document.getElementById('bumen');
-					  bumen.removeAttribute("hidden");
+					  bumen.style.display = "block";
 					  bumen.onchange=function(){
 						  var hide = $scope.departments;
 						  for(i=0;i<hide.length;i++){
@@ -696,7 +712,7 @@ if(huserId!=null){
 								  department.value = hide[i].departmentName;
 							  }
 						  }
-						  bumen.hidden=true;
+						  bumen.style.display = "none";
 					  }
 					  bumen.onblur =function(){
 						  var result=false;
@@ -716,7 +732,7 @@ if(huserId!=null){
 							  {
 							  department.value = null;
 							  }
-						  bumen.hidden=true;
+						  bumen.style.display = "none";
 					  }
 			      } 
 			});
@@ -730,7 +746,7 @@ if(huserId!=null){
 		                 $scope.zuzhirens = response;
 		              });
 				  var zuhzirenleibaio = document.getElementById('zuhzirenleibaio');
-				  zuhzirenleibaio.removeAttribute("hidden");
+				  zuhzirenleibaio.style.display="block";
 				  zuhzirenleibaio.onchange=function(){
 					  var hike = $scope.zuzhirens;
 					  for(i=0;i<hike.length;i++){
@@ -739,7 +755,7 @@ if(huserId!=null){
 							  zuzhiren.value = hike[i].userName; 
 						  }
 					  }
-					  zuhzirenleibaio.hidden=true;
+					  zuhzirenleibaio.style.display="none";
 				  }
 				  zuhzirenleibaio.onblur =function(){
 					  var result=false;
@@ -759,7 +775,7 @@ if(huserId!=null){
 					  {
 						  zuzhiren.value = null;
 					  }
-					  zuhzirenleibaio.hidden=true; 
+					  zuhzirenleibaio.style.display="none";
 				  }
 		      } 
 			 
@@ -789,7 +805,7 @@ if(huserId!=null){
 	                 $scope.renyuanss = response;
 	              });
 				  var renyunleibaio = document.getElementById('renyunleibaio');
-				  renyunleibaio.removeAttribute("hidden");
+				  renyunleibaio.style.display="block";
 				  renyunleibaio.onchange=function(){
 					  var hike = $scope.canyurens;
 					  for(i=0;i<hike.length;i++){
@@ -797,7 +813,7 @@ if(huserId!=null){
 							  renyuan.value = hike[i].userName; 
 						  }
 					  }
-					  renyunleibaio.hidden=true;
+					  renyunleibaio.style.display="none";
 					  ry_tianjia.onclick=function(){
 						   var result3 =null;
 						  if(renyuan.value!=""){
@@ -807,23 +823,21 @@ if(huserId!=null){
 						    	  }
 						      }
 					    	  if(result3){
-					    		  $("#firststart").after("<div style=\"float: left;margin-left: 10px;\"><div id="+renyunleibaio.value+" class=\"alert alert-info alert-dismissable\"style=\"width: 150px; height: 40px;\">"
-					    					+"<button type=\"button\" class=\"close\" data-dismiss=\"alert\"aria-hidden=\"true\">&times;</button>"+
+					    		  $("#firststart").after("<div style=\"float: left;margin-left: 10px;\"><div id=\"divfirst\"class=\"alert alert-info alert-dismissable\"style=\"width: 150px; height: 40px;\">"
+					    					+"<button id=\""+renyunleibaio.value+"\"type=\"button\" class=\"close\" data-dismiss=\"alert\"aria-hidden=\"true\">&times;</button>"+
 					    					renyuan.value+"</div></div>");
 
 					    		  ids=ids+renyunleibaio.value+":";
-					    		  $("#"+renyunleibaio.value).bind('closed.bs.alert', function () {
-					    			     arrIds = ids.split(":");
+					    		   $("#divfirst").bind('closed.bs.alert', function () {
+					    			  var divfirst = $(".close");
 					    			     ids ="";
-					    			     for(i=0;i<arrIds.length;i++){
-					    			    	 if(arrIds[i]==renyunleibaio.value){
-					    			    		 
-					    			    	 }else if(arrIds[i]!=""){
-					    			    		 ids = ids+arrIds[i]+":";
-					    			    	 } 
+					    			     for(i=0;i<divfirst.length;i++){
+					    			    	
+					    			    		 ids = ids+$(divfirst[i]).prop("id")+":";
 					    			     }
-					    			     alert(ids+"去除");
+					    			     alert(ids);
 					    		    });
+					    		   
 									 renyuan.value ="";
 									 
 					    	  }else{
@@ -855,7 +869,7 @@ if(huserId!=null){
 					  {
 						  renyuan.value = null;
 					  }
-					  renyunleibaio.hidden=true; 
+					  renyunleibaio.style.display="none";
 				  }
 		      } 
 			 
@@ -894,36 +908,34 @@ if(huserId!=null){
 	                 var organization = $scope.mrSpOrder.organization;
 	            	 var userid = $scope.mrSpOrder.mrUserTList[i].userId;
 	            	 if(username!=organization){
-	            		 $("#firststart").after("<div style=\"float: left;margin-left: 10px;\"><div id="+userid+" class=\"alert alert-info alert-dismissable\"style=\"width: 150px; height: 40px;\">"
-			    					+"<button type=\"button\" class=\"close\" data-dismiss=\"alert\"aria-hidden=\"true\">&times;</button>"+
+	            		 $("#firststart").after("<div style=\"float: left;margin-left: 10px;\"><div id=\"divfirst\"class=\"alert alert-info alert-dismissable\"style=\"width: 150px; height: 40px;\">"
+			    					+"<button id=\""+userid+"\"type=\"button\" class=\"close\" data-dismiss=\"alert\"aria-hidden=\"true\">&times;</button>"+
 			    					username+"</div></div>");
-		            	  ids = ids + userid+":";
-		            	  var puserid = $scope.mrSpOrder.mrUserTList[i].userId;
-		            	   $("#"+userid).bind('closed.bs.alert', function () {
-		     			     arrIds = ids2.split(":");
-		     			     ids ="";
-		     			     for(var j=0;j<arrIds.length;j++){
-		     			    	 if(arrIds[j]== puserid){
-		     			    		 
-		     			    	 }else if(arrIds[j]!=""){
-		     			    		 ids = ids+arrIds[j]+":";
-		     			    	 } 
-		     			     }
-		     		    });  
+
+			    		  ids=ids+userid+":";
+			    		   $("#divfirst").bind('closed.bs.alert', function () {
+			    			  var divfirst = $(".close");
+			    			     ids ="";
+			    			     for(i=0;i<divfirst.length;i++){
+			    			    	
+			    			    		 ids = ids+$(divfirst[i]).prop("id")+":";
+			    			     }
+			    		    });
+							 renyuan.value ="";
 	            	 }
 	             }
 	          });
 		   });
-		   $('#startDate').click(function(){
+		   $('#startDate').focus(function(){
 				 $('#startDate').datetimepicker('show');
 			 });
-		   $('#startDate').datetimepicker({
+		  $('#startDate').datetimepicker({
 		    	todayhighlight: true,
 		        format: "yyyy-mm-dd",
 		        autoclose: true,
 		        minView: "month",  
 		        language: 'zh-CN',
-		    });
+		    }); 
 		/*  $('#endDate').datetimepicker({
 		    	todayhighlight: true,
 		        format: "yyyy-mm-dd",
@@ -932,5 +944,7 @@ if(huserId!=null){
 		        language: 'zh-CN'
 		    }); */
 	</script>
+		<div data-options="disabled:true,region:'north'" style="height: 50px; background-color: purple;width: 100%;">
+	</div> 
 </body>
 </html>

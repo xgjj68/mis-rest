@@ -99,7 +99,6 @@ if(huserId!=null){
     		}
     		
     	};
-    	//$('#yudingxuigai').attr("disabled", true);
  };
  //获取员工信息
  	var storage = window.localStorage;
@@ -238,7 +237,8 @@ if(huserId!=null){
       			if(startDate<str2){
       				alert("对不起，该会议已经逾期不能修改！");
       			}else if(startDate == str2){
-      				if(stratTime<=nowTime){
+      				var startime = stratTime.split(":")[0];
+      				if(startime<=nowTime){
       					alert("对不起，该会议已经逾期不能修改！");
       				}else{
       					if(userName == ognization){
@@ -267,7 +267,8 @@ if(huserId!=null){
 	          			if(startDate<str2){
 	          				alert("对不起，该会议已经逾期不能修改！");
 	          			}else if(startDate == str2){
-	          				if(stratTime<=nowTime){
+	          				var startime = stratTime.split(":")[0];
+	          				if(startime<=nowTime){
 	          					alert("对不起，该会议已经逾期不能修改！");
 	          				}else{
 	          					if(userName == ognization){
@@ -286,7 +287,7 @@ if(huserId!=null){
 				    };
 	          });
 			 //获取密码
-			 $scope.p_yuding = function(stratTime,endTime,id,startDate,ognization){
+			 $scope.p_yuding = function(stratTime,endTime,id,startDate,ognization,RoomId){
 				 var myDate = new Date();
 				 var mytime=myDate.getHours();
 				 var starttime =(stratTime.split(":")[0]-0)-1;
@@ -296,13 +297,37 @@ if(huserId!=null){
 						 alert("无法获取密码，此会议已逾期！");
 					 }else if(startDate == str2){
 						 if(mytime < starttime){
-							 alert("当前无法获取密码，请于"+starttime+":00点之后获取！");
+							  $.ajax({
+									type:"post",
+									url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
+									data: {meettingRoomId:RoomId,startdate:str2},
+									success:function(msg54){
+										var myDate = new Date();
+										 var mytime=myDate.getHours();
+											   for(j=0;j<msg54.length;j++){
+												  //alert(msg54.length);
+												   var arr1 = msg54[j].startTime.split(":");
+												   //alert("来不");
+												   var arr2 = msg54[j].endTime.split(":");
+												   if((arr2[0]-0)+1>=mytime & mytime>=(arr1[0]-0)-1){
+													   //$(function () { $('#myModal').modal('hide')});
+													    alert("当前会议进行中，无法获取密码！");
+													    return;
+												   }
+											   }
+									   var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
+					    				 $http.get(url3).success( function(response) {
+					    		             alert("会议室："+response.mrMeettingRoom.meetingRoomName +"，账户为："+response.mrMeettingRoom.roomAccount+"，当前密码为："+response.mrMeettingRoom.password);
+					    		          });
+									}
+									});
+							 
 						 }else if(mytime >= endtime){
 							 alert("无法获取密码，此会议已逾期！");
 						 }else{
 							 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
 		    				 $http.get(url3).success( function(response) {
-		    		             alert("会议室"+response.mrMeettingRoom.meetingRoomName +"账户为："+response.mrMeettingRoom.roomAccount+"，密码为："+response.mrMeettingRoom.password);
+		    		             alert("会议室："+response.mrMeettingRoom.meetingRoomName +"，账户为："+response.mrMeettingRoom.roomAccount+"，当前密码为："+response.mrMeettingRoom.password);
 		    		          });
 						 }
 					 }else{
@@ -434,7 +459,7 @@ if(huserId!=null){
 									<div style="height: 50px;">
 										<div style="margin-left: 0px; float: left;">
 											<button
-												ng-click="p_yuding(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id,mrSpOrder.startDate,mrSpOrder.organization)"
+												ng-click="p_yuding(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id,mrSpOrder.startDate,mrSpOrder.organization,mrSpOrder.meettingRoomId)"
 												id="password{{mrSpOrder.id}}" type="button" class="btn btn-lg btn-primary"
 												data-content="非组织者无法获取密码！" data-original-title="信息提示"
 												data-placement="top" style="height: 40px; margin-left: 0px"
@@ -485,7 +510,7 @@ if(huserId!=null){
 			<!-- 预定详情 -->
 			<div class="modal fade" id="myModal3" tabindex="-1" role="dialog"
 				aria-labelledby="myModalLabel" aria-hidden="true"
-				style="margin-top: 100px;width: 90%;" data-backdrop="false">
+				style="margin-top: 10px;width: 100%;" data-backdrop="false">
 				<div class="modal-dialog">
 					<div class="modal-content">
 							<div class="modal-body">
@@ -503,7 +528,7 @@ if(huserId!=null){
 										<div style="height: px; float: left;margin-left: 13px;">
 											<strong>会议简要:&nbsp&nbsp&nbsp</strong>
 										</div>
-										<div style="width: 700px;">
+										<div style="width: 100%;">
 											{{mrSpOrder.meettingTitle}}</div>
 										<div style="height: 20px"></div>
 										<div style="height: 40px; margin-left: 26px;">
@@ -554,5 +579,7 @@ if(huserId!=null){
 			</div>
 		</div>
 	</div>
+	<div data-options="disabled:true,region:'north'" style="height:50px;background-color:purple;">
+	</div> 
 </body>
 </html>

@@ -1,6 +1,7 @@
 package rest.service.meettingroom;
 
 
+import java.io.File;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,68 +43,37 @@ public class SpDownloadService{
     public void updateSpOrder(@RequestBody MrSpDownload mrSpDownload) {
 		mrSpDownlaodMapper.updateByPrimaryKeySelective(mrSpDownload); 
     }
-
-/*	//上传文件
-	@RequestMapping(value = "/mis-rest/rest/service/meettingroom/upload", method = RequestMethod.POST)
+	//插入文件信息
+	@RequestMapping(value = "/mis-rest/rest/service/meettingroom/insertSpdownload", method = RequestMethod.POST)
 	@ResponseBody 
-    public String upload  (HttpServletRequest request) throws Exception {
-		DiskFileItemFactory factory = new DiskFileItemFactory();  
-		ServletFileUpload upload = new ServletFileUpload(factory);  
-		upload.setHeaderEncoding("utf-8"); 
-		List<FileItem> fis=upload.parseRequest(request);
-		for (int i = 0; i < fis.size(); i++) {
-			System.out.println(fis.get(i).getString());
-		}
+    public void insertSpdownload(@RequestBody MrSpDownload mrSpDownload) {
+		mrSpDownload.setDownload("wenjian");
+		mrSpDownlaodMapper.insert(mrSpDownload); 
 		
-		if (!uploadfile.isEmpty()) {
-			try {
-				//读取配置文件
-				PropertiesReader propertiesReader = new PropertiesReader("uploadURL.properties");
-				//获取上传路径
-				String dirPath = propertiesReader.getValue("uploadURL");
-				//String dirPath = "E:\\workspace\\mis-rest\\src\\main\\webapp\\upload";  
-				File dirFile = new File(dirPath);  
-				if (!dirFile.exists()) {  
-					dirFile.mkdirs();  
-				}
-				  //设置响应的内容类型 
-				//response.setContentType("application/x-msdownload"); //指定响应动作是下载
-				//获取文件
-				File uploadFile = new File(dirFile,  
-						uploadfile.getOriginalFilename());
-				InputStream is = uploadfile.getInputStream();  
-				FileOutputStream fos = new FileOutputStream(uploadFile);  
-				byte[] tmp = new byte[1024];  
-				int len = -1;  
-				while ((len = is.read(tmp)) != -1) {  
-					fos.write(tmp, 0, len);  
-				}  
-				is.close();  
-				fos.flush();  
-				fos.close();  
-				Thread.sleep(1000);
-				return "success";
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "fail";
-			}
-		}
-		return "fail";
-    }*/
+    }
+	//删除文件数据
+	@RequestMapping(value = "/mis-rest/rest/service/meettingroom/deleteSpdownload/{id}", method = RequestMethod.DELETE)
+	@ResponseBody 
+    public void deleteSpdownload(@PathVariable ("id") Integer id) {
+		mrSpDownlaodMapper.deleteByPrimaryKey(id);
+    }
+
 	//下载文件
 	@RequestMapping(value = "/mis-rest/rest/service/meettingroom/Download", method = RequestMethod.GET)
-	//@ResponseBody
-    public ResponseEntity<InputStreamResource> Download  (@RequestParam("filePath")String filePath, HttpServletResponse response,HttpServletRequest request)   {
+    public ResponseEntity<InputStreamResource> Download  (@RequestParam("fileName")String fileName, HttpServletResponse response,HttpServletRequest request)   {
     	try {
+    		//读取配置文件
+    		PropertiesReader propertiesReader = new PropertiesReader("uploadURL.properties");
+    		//获取文件夹路径
+    		String dirPath = propertiesReader.getValue("uploadURL")+"\\"+fileName;
     		//获取文件
-			FileSystemResource file = new FileSystemResource(filePath);
+			FileSystemResource file = new FileSystemResource(dirPath);
 			//获取文件名
-			String fileName = file.getFilename();
-			String dfileName = new String(fileName.getBytes("iso-8859-1"), "UTF-8");
+			String filename = file.getFilename();
+			String dfileName = new String(filename.getBytes(), "UTF-8");
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Cache-Control", "no-cache, no-store, must-revalidate");  
-			headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", dfileName));  
+			headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", new String(dfileName.getBytes("utf-8"),"ISO-8859-1")));  
 			headers.add("Pragma", "no-cache");  
 			headers.add("Expires", "0");  
 
@@ -117,37 +88,30 @@ public class SpDownloadService{
 			return null;
 		}
 		
-			/*File downloadFile = new File(filePath);  
-	
-			ServletContext context = request.getServletContext();  
-	
-			// get MIME type of the file  
-			String mimeType = context.getMimeType(filePath);  
-			if (mimeType == null) {  
-				// set to binary type if MIME mapping not found  
-				mimeType = "application/octet-stream";  
-				System.out.println("context getMimeType is null");  
-			}  
-			System.out.println("MIME type: " + mimeType);  
-	
-			// set content attributes for the response  
-			response.setContentType(mimeType);  
-			response.setContentLength((int) downloadFile.length());  
-	
-			// set headers for the response  
-			String headerKey = "Content-Disposition";  
-			String headerValue = String.format("attachment; filename=\"%s\"",  
-					downloadFile.getName());  
-			response.setHeader(headerKey, headerValue);
-			try {  
-				InputStream myStream = new FileInputStream(filePath);  
-				IOUtils.copy(myStream, response.getOutputStream());  
-				response.flushBuffer();  
-			} catch (IOException e) {  
-				e.printStackTrace();  
-			}  */
     }
-	  
+	//删除文件
+	@RequestMapping(value = "/mis-rest/rest/service/meettingroom/deleteFile", method = RequestMethod.GET)
+    public void deleteFile  (@RequestParam("fileName")String fileName, HttpServletResponse response,HttpServletRequest request)   {
+    	try {
+    		//读取配置文件
+    		PropertiesReader propertiesReader = new PropertiesReader("uploadURL.properties");
+    		//获取文件夹路径
+    		String dirPath = propertiesReader.getValue("uploadURL");
+    		
+    		File dirFile = new File(dirPath);  
+    		if (!dirFile.exists()) {  
+				dirFile.mkdirs();  
+			}
+    		String s = dirPath+"\\"+ fileName;//文件的绝对路径
+    		   File file = new File(s);
+    		   if(file.exists()){
+    			     boolean d = file.delete();
+    		   }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+    }
 	public MrSpDownloadMapper getMrSpDownlaodMapper() {
 		return mrSpDownlaodMapper;
 	}

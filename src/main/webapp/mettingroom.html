@@ -1,25 +1,35 @@
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"  
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>视频会议室列表</title>
+<!-- 页面分辨率选择 -->
+<link rel="stylesheet" type="text/css" media="screen and (max-device-width: 600px)"  
+href="style/css/css600.css" />
+<link rel="stylesheet" type="text/css" media="screen and (min-width: 600px) and (max-device-width: 980px)"  
+href="css600-980.css" />
+
 <!-- 新 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="css/bootstrap-3.3.0-dist/dist/css/bootstrap.min.css">
 
 <!-- 可选的Bootstrap主题文件（一般不用引入） -->
-<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet"
+	href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script type="text/javascript" src="js/jquery.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
-<script  type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
-<script  type="text/javascript" src="js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript"
+	src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript"
+	src="js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
 <script type="text/javascript" src="js/angular/angular.min.js"></script>
 <script type="text/javascript" src="js/interface.js"></script>
 <!-- <script type="text/javascript" src="js/interface2.js"></script> -->
@@ -42,8 +52,8 @@
 			type:"get",
 			 success:function(msg54){
 					 if(msg54 == huserId){
-						 $("#gunlihuiyishi").prop("hidden",false);
-						 $("#quanxianguanli").prop("hidden",false);
+						 $("#gunlihuiyishi").attr("hidden",false);
+						 $("#quanxianguanli").attr("hidden",false);
 						 $.ajax({
 								url:MeettingRoominterfaces.Var_searchUserByUserId+huserId,
 								type:"get",
@@ -66,7 +76,7 @@
 												  if(msg54==""){
 												 }else{
 													 if(msg54.userRole =="ADMIN"){
-														 $("#gunlihuiyishi").prop("hidden",false);
+														 $("#gunlihuiyishi").attr("hidden",false);
 													 }
 												 } 
 									        		}
@@ -85,8 +95,8 @@
 			type:"get",
 			 success:function(msg54){
 					 if(msg54 == storage.getItem("userId")){
-						 $("#gunlihuiyishi").prop("hidden",false);
-						 $("#quanxianguanli").prop("hidden",false);
+						 $("#gunlihuiyishi").attr("hidden",false);
+						 $("#quanxianguanli").attr("hidden",false);
 						 $.ajax({
 								url:MeettingRoominterfaces.Var_searchUserByUserId+storage.getItem("userId"),
 								type:"get",
@@ -109,7 +119,7 @@
 												  if(msg54==""){
 												 }else{
 													 if(msg54.userRole =="ADMIN"){
-														 $("#gunlihuiyishi").prop("hidden",false);
+														 $("#gunlihuiyishi").attr("hidden",false);
 													 }
 												 } 
 									        		}
@@ -276,13 +286,18 @@ angular.element(window).bind('load', function() {
 			    
 				//文件下载
 				 $scope.wendangDownlaod = function(filePath){
-					 window.location.href = MeettingRoominterfaces.Var_downlaod+"?filePath="+filePath;
+					 window.location.href = MeettingRoominterfaces.Var_downlaod+"?fileName="+filePath;
 						/* alert(filePath);
 						 var url=MeettingRoominterfaces.Var_downlaod+"?filePath="+filePath;
 						 $http.get(url).success( function(response) {
 							 alert(response);
 				          }); */
 				    };
+			//加载相关文件 
+			 var url=MeettingRoominterfaces.Var_downloads+"?"+Math.random();
+			 $http.get(url).success( function(response) {
+	             $scope.downloads = response;
+	          });	    
 		});
 	 app.controller('timeCtrl', function($scope,$http) {
 		var chaxunBytime = $("#chaxunBytime");
@@ -339,207 +354,303 @@ angular.element(window).bind('load', function() {
 		});
 </script>
 </head>
-<body ng-app="myApp">
-	<div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;width: 100%">
-		<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 50px;padding-left: 35%;width: 100%">
-				<h1>欢迎使用视频会议室系统</h1>
-		</div>		 
-	</div> 
-    <div class="panel panel-default" style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size: 100%;">
-            <div class="panel-heading" ng-controller="userCtrl" style="width: 100%">
-              <h1 class="panel-title" style="color:purple; text-decoration: none"><strong>视频会议室列表</strong> </h1>
-            </div>
-	        <div class="panel-body">
-	        	<div style="margin-left: 350px;margin-top: 30px;width: 80%" >
-	        		
-	        		<div style="margin-left: 40px;float: left;">
-		        	<input id="time" type="text" style="height: 45px" readonly="readonly" placeholder="选择日期"/>
-			        </div>
-			        	
-		        	<div style="margin-left: 1px;float: left;" >
-		        		<button id="chaxunBytime" class="btn btn-lg btn-success" type="button"><span class="glyphicon glyphicon-calendar"></span>查询</button>
-		        	</div>
-			        <div style="margin-left: 40px;float: left;">
-			        	<a class="btn btn-lg btn-primary" href="allreserve.html" role="button"
-												>预定</a>
-			        </div>
-			        <div style="margin-left: 40px;float: left;">
-			        	<a class="btn btn-lg btn-warning" href="myreserve.html" role="button"
-												>我的预定</a>
-			        </div>
-			        <div id= "gunlihuiyishi" style="margin-left: 40px;float: left;" hidden="true">
-			        	<a class="btn btn-lg btn-info" href="management.html" role="button" 
-												>管理会议室</a>
-			        </div>
-			         <div id="quanxianguanli"  style="margin-left: 40px; margin-right:40px; float: left;" hidden="true">
-							<a class="btn btn-lg btn-danger" href="authority.html" role="button"
-												>权限管理</a>
-			        </div>
-	        	</div>
-	        	<div style="height: 40px"></div>
-				<div ng-controller="myCtrl" class="container" style="margin-top: 40px;">
-					<table class="table table-condensed" >
-						<tbody>
-							<tr ng-repeat="meettingRoom in meettingRooms" class="active">
-								<td>
-									<div style="width: 100px;height:100px;float: left;margin-left: 20px;margin-right: 20px">
-									  	<img alt="图标" src="image/shipin.png" style="width: 80px;height: 60%;">
-									  	<input id="chuanzhi" name="{{meettingRoom.meetingRoomName}}" type="text"  value="{{meettingRoom.id}}" hidden=""/>
-									  	<div id="meettingId" style="margin-top: 10px"><span style="color:black;font-weight: bold;">{{meettingRoom.meetingRoomName}}</span></div>
+<body ng-app="myApp" style="width: 101%;">
+	<div data-options="disabled:true,region:'north'"
+		style="height: 150px; background-color: purple; width: 100%">
+		<div
+			style="color: orange; text-decoration: none; font-style: italic; padding-top: 50px; padding-left: 35%; width: 80%">
+			<h1>欢迎使用视频会议室系统</h1>
+		</div>
+	</div>
+	<div class="panel panel-default"
+		style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 100%;">
+		<div class="panel-heading" ng-controller="userCtrl"
+			style="width: 100%">
+			<h1 class="panel-title" style="color: purple; text-decoration: none">
+				<strong>视频会议室列表</strong>
+			</h1>
+		</div>
+		<div class="panel-body">
+			<div style="margin-left: 18%; margin-top: 30px; width: 80%">
+
+				<div style="margin-left: 40px; float: left;">
+					<input id="time" type="text" style="height: 45px"
+						readonly="readonly" placeholder="选择日期" />
+				</div>
+
+				<div style="margin-left: 1px; float: left;">
+					<button id="chaxunBytime" class="btn btn-lg btn-success"
+						type="button">
+						<span class="glyphicon glyphicon-calendar"></span>查询
+					</button>
+				</div>
+				<div style="margin-left: 40px; float: left;">
+					<a class="btn btn-lg btn-primary" href="allreserve.html"
+						role="button">预定</a>
+				</div>
+				<div style="margin-left: 40px; float: left;">
+					<a class="btn btn-lg btn-warning" href="myreserve.html"
+						role="button">我的预定</a>
+				</div>
+				<div id="gunlihuiyishi" style="margin-left: 40px; float: left;"
+					hidden="true">
+					<a class="btn btn-lg btn-info" href="management.html" role="button">管理会议室</a>
+				</div>
+				<div id="quanxianguanli"
+					style="margin-left: 40px; margin-right: 40px; float: left;"
+					hidden="true">
+					<a class="btn btn-lg btn-danger" href="authority.html"
+						role="button">权限管理</a>
+				</div>
+			</div>
+			<div style="height: 40px"></div>
+			<div ng-controller="myCtrl" class="container"
+				style="margin-top: 40px;">
+				<table class="table table-condensed">
+					<tbody>
+						<tr ng-repeat="meettingRoom in meettingRooms" class="active">
+							<td>
+								<div
+									style="width:10%; height: 100px; float: left; margin-left: 20px; margin-right: 20px">
+									<img alt="图标" src="image/shipin.png"
+										style="width: 70%; height: 60%;"> <input id="chuanzhi"
+										name="{{meettingRoom.meetingRoomName}}" type="text"
+										value="{{meettingRoom.id}}" hidden="" />
+									<div id="meettingId" style="margin-top: 10px">
+										<span style="color: black; font-weight: bold;">{{meettingRoom.meetingRoomName}}</span>
 									</div>
-									<div  style="width: 40px;float: left;margin-right: 350px"><span >0:00</span></div>
-									<div style="width: 80px;float: left;margin-right: 350px"><span >12:00</span></div>
-									<div style="width:20px;float: left;margin-right: 25px"><span >24:00</span></div>
-									
-									<div class="progress"
+								</div>
+								<div style="width: 40px; float: left; margin-right: 350px">
+									<span>0:00</span>
+								</div>
+								<div style="width: 80px; float: left; margin-right: 350px">
+									<span>12:00</span>
+								</div>
+								<div style="width: 20px; float: left; margin-right: 25px">
+									<span>24:00</span>
+								</div>
+
+								<div class="progress"
 									style="width: 75%; height: 40px; float: left"
 									ng-controller="timeCtrl" id="alltime">
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">35% Complete (success)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">20% Complete (warning)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">35% Complete (success)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">20% Complete (warning)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 4.1%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
-									<div id="{{meettingRoom.meetingRoomName}}" data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
+									<div id="{{meettingRoom.meetingRoomName}}"
+										data-content="为我的网站创建一个提示框如此简单！" data-original-title="信息提示"
 										class="progress-bar progress-bar-default" style="width: 5.5%;">
 										<span class="sr-only">10% Complete (danger)</span>
 									</div>
 								</div>
-								<div style="margin-left: 20px;float: left;">
-									      <button id="p_yuding" class="btn btn-lg btn-primary" type="button"  style="height: 40px" ng-click="p_yuding(meettingRoom.meetingRoomName,meettingRoom.id)">预定</button>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<div align="center" style="margin-left: 38%">
-						<div id="first" style="float: left;">
-							<ul class="pagination" style="height: 40px; margin-right: 10px">
-								<li><a ng-click="first()">首页</a></li>
-							</ul>
-						</div>
-
-						<div id="befor" style="float: left;">
-							<ul class="pagination" style="height: 40px; margin-right: 10px">
-								<li><span class="glyphicon  glyphicon-backward"
-									ng-click="befor()"></span></li>
-							</ul>
-						</div>
-
-						<div id="next" style="float: left;">
-							<ul class="pagination" style="height: 40px; margin-right: 10px">
-								<li><span class="glyphicon  glyphicon-forward"
-									ng-click="next()"></span></li>
-							</ul>
-						</div>
-
-						<div id="last" style="float: left;">
-							<ul class="pagination" style="height: 40px; margin-right: 10px">
-								<li><span ng-click="last()">最后一页</span></li>
-							</ul>
-						</div>
-						
+								<div style="margin-left: 20px; float: left;">
+									<button id="p_yuding" class="btn btn-lg btn-primary"
+										type="button" style="height: 40px"
+										ng-click="p_yuding(meettingRoom.meetingRoomName,meettingRoom.id)">预定</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div align="center" style="margin-left: 38%">
+					<div id="first" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><a ng-click="first()">首页</a></li>
+						</ul>
 					</div>
-					<div style="height: 60px;"></div>
-					<HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3>
-					<h4 style="color: black; text-decoration: none" ng-repeat=" download in downloads">{{download.download}}:&nbsp&nbsp&nbsp&nbsp<a class="" href="" ng-click="wendangDownlaod(download.instructions)" style="color: blue;"><u>{{download.instructions}}</u></a></h4>
-				</div>
-          </div>   	
-          <div style="height: 50px"></div>
-          <div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;">
-				<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 50px;padding-left: 35%;">
-					<div style="margin-top: 50px;margin-left: 60%">
-						<h5>质量管理与信息化办公室 制作 版权所有 2016</h5>
-						<h5>MIS仅提供相关工具 所有具体内容均需按照公司制度执行 </h5>
+
+					<div id="befor" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><span class="glyphicon  glyphicon-backward"
+								ng-click="befor()"></span></li>
+						</ul>
 					</div>
+
+					<div id="next" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><span class="glyphicon  glyphicon-forward"
+								ng-click="next()"></span></li>
+						</ul>
+					</div>
+
+					<div id="last" style="float: left;">
+						<ul class="pagination" style="height: 40px; margin-right: 10px">
+							<li><span ng-click="last()">最后一页</span></li>
+						</ul>
+					</div>
+
 				</div>
-		 </div> 
-     </div>
-</body> 
+				<div style="height: 60px;"></div>
+				<HR
+					style="FILTER: alpha(opacity = 100, finishopacity = 0, style = 3)"
+					width="80%" color=#987cb9 SIZE=3>
+				<h4>
+					<u><a href="" style="color: blue;" data-toggle="modal"
+						data-target="#myModal1">视频会议室相关文件下载</a></u>
+				</h4>
+				<!-- 文件下载列表 -->
+			<div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
+				aria-labelledby="myModalLabel" aria-hidden="true"
+				style="margin-top: 200px;" data-backdrop="false">
+				<div class="modal-dialog">
+					<form action="" class="">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel">视频会议室先关文件列表</h4>
+							</div>
+							<div class="modal-body">
+								<table id="table" class="table">
+									<thead>
+										<tr class="active">
+											<td style="width: 50%;"><strong>文件</strong></td>
+											<td style="width: 50%;"><strong>操作</strong></td>
+										</tr>
+									</thead>
+									<tr class="default" ng-repeat="downlaod in downloads">
+										<td><strong style="color: purple;">{{downlaod.instructions}}</strong></td>
+										<td>
+											<div style="height: 50px; margin-left: 120px;">
+												<div style="margin-left: 0px;">
+													<a class="btn btn-lg btn-primary"
+														ng-click="wendangDownlaod(downlaod.instructions)"
+														role="button" style="height: 40px;">下载</a>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+			</div>
+
+		<div style="height: 50px"></div>
+		<div data-options="disabled:true,region:'north'"
+			style="height: 10%; background-color: purple;">
+			<div
+				style="color: orange; text-decoration: none; font-style: italic; padding-top: 10px; padding-left: 33%;">
+				<div style="margin-top: 50px; margin-left: 59%">
+					<h5>质量管理与信息化办公室 制作 版权所有 2016</h5>
+					<h5>MIS仅提供相关工具 所有具体内容均需按照公司制度执行</h5>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
 </html>
