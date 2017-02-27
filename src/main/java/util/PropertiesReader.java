@@ -150,7 +150,7 @@ public class PropertiesReader{
         }
     }//end saveFile(...)
 
-    public static void main(String[] args){
+//    public static void main(String[] args){
 //    	PropertiesReader rc = new PropertiesReader(".\\url.properties");//相对路径
 
 //        String path = rc.getValue("URL");//以下读取properties文件的值
