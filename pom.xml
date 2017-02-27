@@ -125,7 +125,6 @@
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
-        <!-- spring security配置 -->
         <repository>
         <id>spring-snapshots</id>
         <name>Spring Snapshots</name>
