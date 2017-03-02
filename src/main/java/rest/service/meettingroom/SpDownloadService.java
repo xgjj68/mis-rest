@@ -65,7 +65,7 @@ public class SpDownloadService{
     		//读取配置文件
     		PropertiesReader propertiesReader = new PropertiesReader("uploadURL.properties");
     		//获取文件夹路径
-    		String dirPath = propertiesReader.getValue("uploadURL")+"\\"+fileName;
+    		String dirPath = propertiesReader.getValue("uploadURL")+fileName;
     		//获取文件
 			FileSystemResource file = new FileSystemResource(dirPath);
 			//获取文件名
@@ -102,7 +102,7 @@ public class SpDownloadService{
     		if (!dirFile.exists()) {  
 				dirFile.mkdirs();  
 			}
-    		String s = dirPath+"\\"+ fileName;//文件的绝对路径
+    		String s = dirPath+ fileName;//文件的绝对路径
     		   File file = new File(s);
     		   if(file.exists()){
     			     boolean d = file.delete();
