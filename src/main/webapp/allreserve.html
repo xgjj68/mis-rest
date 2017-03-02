@@ -1,0 +1,884 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>视频会议室 预定</title>
+<!-- 新 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap.min.css">
+
+<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+<link rel="stylesheet" href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script type="text/javascript" src="js/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script type="text/javascript" src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script  type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+<script  type="text/javascript" src="js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
+<!-- <script type="text/javascript" src="js/interface2.js"></script> -->
+<script src="js/angular/controller.js"></script>
+<script type="text/javascript">
+String.prototype.getQuery = function(name) {  
+	　　var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	　　var r = this.substr(this.indexOf("/?")+1).match(reg);
+	　　if (r!=null) return unescape(r[2]); 
+	   return null;  
+	}
+var strHref = window.location.href;
+var storage = window.localStorage;
+var huserId = strHref.getQuery("userId");
+if(huserId!=null){
+	
+}else{
+	if(storage.getItem("userId")==null){
+		window.location.href="http://mis.dayang.com"; 
+	}
+}
+</script>
+<script type="text/javascript">
+		
+		window.onload=function(){
+			//日期格式化函数初始化日期
+			 var str3 = new Date().getFullYear();
+			 var str4 = new Date().getMonth()+1;
+			 var str5 = new Date().getDate(); 
+			var str2="";
+			 if(str4-10 >=0 && str5-10 >=0){
+				str2 = str3+"-"+str4+"-"+str5;
+			}else if(str4-10 <=0 && str5-10 <=0){
+				str2 = str3+"-0"+str4+"-0"+str5;
+			}else if(str4-10 >=0 && str5-10 <=0){
+				str2 = str3+"-"+str4+"-0"+str5;
+			}else if(str4-10 <=0 && str5-10 >=0){
+				str2 = str3+"-0"+str4+"-"+str5;
+			}
+		      var tijiao = document.getElementById('tijiaoform');
+		      var department = document.getElementById('department');
+		      var zuzhiren = document.getElementById('zuzhiren');
+		      var huiyi = document.getElementById('huiyi');
+		      var mettingroom = document.getElementById('mettingroom');
+		      var starttimes =  document.getElementById('starttime');
+			  var endtimes = document.getElementById('endtime');
+			  var startDate = document.getElementById('startDate');
+			  var renyuan =  document.getElementById('renyuan');
+			  var ry_tianjia = document.getElementById('ry_tianjia');
+			  var renshu = document.getElementById('renshu');
+			  var huiyijianyao = document.getElementById('huiyijianyao');
+			  var youjian1 = document.getElementById('youjian1');
+			  var weixin1 = document.getElementById('weixin1');
+			//初始化结束时间
+			  mettingroom.onchange=function(){
+				  xiandingshunxu();
+				  var endDate = document.getElementById('endDate');
+				  endDate.value = startDate.value;
+				  for( i=0 ;i<starttimes.length;i++){
+					   starttimes[i].removeAttribute("disabled");   
+					   endtimes[i].removeAttribute("disabled");  
+					   }
+				   //alert("上个");
+			    	 if(mettingroom.value == "请选择视频会议室"){
+			         }else{
+			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
+			        	 var stringObj = startDate.value; */  
+			        	 var date=startDate.value;  
+			        	 var id = mettingroom.value  
+			        	
+			        	 $.ajax({
+								type:"post",
+								url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
+								//contentType: "application/json",
+								data: {meettingRoomId:id,startdate:date},
+								success:function(msg54){
+									//alert(msg54.length);
+									if(str2 == date){
+										var myDate = new Date();
+										var mytime=myDate.getHours();
+										for(i=0;i<=mytime;i++){
+											starttimes[i].disabled="disabled";
+											endtimes[i].disabled="disabled";
+										}
+									}
+									for( i=0 ;i<starttimes.length;i++){
+										   for(j=0;j<msg54.length;j++){
+											  //alert(msg54.length);
+											   var arr1 = msg54[j].startTime.split(":");
+											   //alert("来不");
+											   var arr2 = msg54[j].endTime.split(":");
+												if(((arr2[0]-0)+2)>=i & i>=arr1[0]){
+												   starttimes[i].disabled="disabled";
+												   endtimes[i].disabled="disabled";
+										  		 }
+										   }
+									   }  	
+								}
+							});
+			         } 
+			}
+			  startDate.onchange=function(){
+				starttimes.value="0:00";
+				endtimes.value="0:00";
+				xiandingshunxu();
+				  var endDate = document.getElementById('endDate');
+				  endDate.value = startDate.value;
+				  for( i=0 ;i<starttimes.length;i++){
+					   starttimes[i].removeAttribute("disabled");   
+					   endtimes[i].removeAttribute("disabled");  
+					   }
+			    	 if(mettingroom.value == "请选择视频会议室"){
+			         }else{
+			        	 /* var reg=new RegExp("-","g"); //创建正则RegExp对象  
+			        	 var stringObj = startDate.value; */  
+			        	 var date= startDate.value;  
+			        	 var id = mettingroom.value  
+			        	
+			        	 $.ajax({
+								type:"post",
+								url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
+								//contentType: "application/json",
+								data: {meettingRoomId:id,startdate:date},
+								success:function(msg54){
+									if(str2 == date){
+										var myDate = new Date();
+										var mytime=myDate.getHours();
+										for(i=0;i<=mytime;i++){
+											starttimes[i].disabled="disabled";
+											endtimes[i].disabled="disabled";
+										}
+									}
+									//alert(msg54.length);
+									for( i=0 ;i<starttimes.length;i++){
+										   for(j=0;j<msg54.length;j++){
+											  //alert(msg54.length);
+											   var arr1 = msg54[j].startTime.split(":");
+											   //alert("来不");
+											   var arr2 = msg54[j].endTime.split(":");
+											   if(((arr2[0]-0)+2)>=i & i>=arr1[0]){
+												   
+												   starttimes[i].disabled="disabled";
+												   endtimes[i].disabled="disabled";
+											   }
+										   }
+									   }  	
+								}
+							});
+			         } 
+		      } 
+			  //会议室填充
+			    function getParameter(param)
+			   {
+			   var query = window.location.search;
+			   var iLen = param.length;
+			   var iStart = query.indexOf(param);
+			   if (iStart == -1)
+			   　	return "";
+			   iStart += iLen + 1;
+			   var iEnd = query.indexOf("&", iStart);
+			   if (iEnd == -1)
+			   　return query.substring(iStart);
+			   return query.substring(iStart, iEnd);
+			   }
+			   //alert(getParameter("meettingroomname"));
+			   var meettingroomname = getParameter("meettingroomname");
+			   var meettingroomid = getParameter("meettingId");
+			   var morentishi = document.getElementById('morentishi');
+			   if(meettingroomname != ""){
+				   //alert(meettingroomid);
+				   
+				   $.ajax({
+					   type: "get",
+					   url: MeettingRoominterfaces.Var_searchMeettingRoomById+meettingroomid,
+					   success:function(msg54){
+						   $(morentishi).after("<option id=\"xinzeng\" selected=\"selected\" value="+meettingroomid +">"+msg54.meetingRoomName+"</option>");
+						 //限定会议室，日期，时间的选择顺序
+							  if(mettingroom.value == "请选择视频会议室"){
+								  
+								  var endDate = document.getElementById('endDate');
+									startDate.disabled="disabled";
+									endDate.disabled="disabled";
+									starttimes.disabled="disabled";
+									endtimes.disabled="disabled";
+									
+								}else{
+									
+									 var endDate = document.getElementById('endDate');
+									if(startDate.disabled){
+										startDate.removeAttribute("disabled");
+									}
+									if(endDate.disabled){
+										endDate.removeAttribute("disabled");
+									}
+									if(startDate.value==""){
+										starttimes.disabled="disabled";
+										endtimes.disabled="disabled";
+									}else{
+										starttimes.removeAttribute("disabled");
+										endtimes.removeAttribute("disabled");
+									}
+								}	
+					   }
+				   });
+				   morentishi.removeAttribute("selected");
+				   var xinzeng = $("#xinzeng");
+				   mettingroom.onmousedown=function(){
+					   $(xinzeng).remove();
+				   }
+			   } 
+			//限定会议室，日期，时间的选择顺序
+			  if(mettingroom.value == "请选择视频会议室"){
+				  
+				  var endDate = document.getElementById('endDate');
+					startDate.disabled="disabled";
+					endDate.disabled="disabled";
+					starttimes.disabled="disabled";
+					endtimes.disabled="disabled";
+					
+				}else{
+					
+					 var endDate = document.getElementById('endDate');
+					if(startDate.disabled){
+						startDate.removeAttribute("disabled");
+					}
+					if(endDate.disabled){
+						endDate.removeAttribute("disabled");
+					}
+					if(startDate.value==""){
+						starttimes.disabled="disabled";
+						endtimes.disabled="disabled";
+					}else{
+						starttimes.removeAttribute("disabled");
+						endtimes.removeAttribute("disabled");
+					}
+				}	
+		function xiandingshunxu(){
+				if(mettingroom.value == "请选择视频会议室"){
+					startDate.disabled="disabled";
+					endDate.disabled="disabled";
+					starttimes.disabled="disabled";
+					endtimes.disabled="disabled";
+					
+				}else{
+					if(startDate.disabled){
+						startDate.removeAttribute("disabled");
+					}
+					if(endDate.disabled){
+						endDate.removeAttribute("disabled");
+					}
+					if(startDate.value == ""){
+						starttimes.disabled="disabled";
+						endtimes.disabled="disabled";
+					}else{
+						starttimes.removeAttribute("disabled");
+						endtimes.removeAttribute("disabled");
+					}
+				}	
+			}		
+			//表单信息验证
+			 	  var departments =null;
+			      $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_departments,
+					    success:function(msg54){
+					    	departments = msg54;
+			        		}
+					});
+			      var employments =null;
+			      $.ajax({
+						type: "get",
+						url:MeettingRoominterfaces.Var_searchUsers,
+					    success:function(msg54){
+					    	employments = msg54;
+			        		}
+					});
+		      tijiao.onclick=function(){
+		    	  var arr1 = starttimes.value.split(":");
+		    	  
+			      var arr2 = endtimes.value.split(":");
+			      var endDate = document.getElementById('endDate');
+			      var result1 =null;
+			      var result2 =null;
+			      if(department.value!=""){
+			    	  for(i=0;i<departments.length;i++){
+				    	  if(department.value ==departments[i].departmentName){
+				    		  result1 =true ;
+				    		  break;
+				    	  }
+				      } 
+			      }
+			      if(zuzhiren.value!=""){
+			    	  for(i=0;i<employments.length;i++){
+				    	  if(zuzhiren.value == employments[i].userName){
+				    		  result2 =true ;
+				    		  break;
+				    	  }
+				      }   
+			      }
+		    	  if(department.value ==""){
+			    	  alert("部门不能为空");
+			    	  return;
+		         }else if (zuzhiren.value == ""){
+		        	 alert("组织人不能为空");
+		        	 return;
+		         }else if(huiyi.value == ""){
+		        	 alert("会议议题不能为空");
+		        	 return;
+		         }else if(mettingroom.value == "请选择视频会议室"){
+		        	 alert("请选择会议室");
+		        	 return;
+		         }else if(!result1){
+		        	 alert("部门不存在");
+		        	 return; 
+		         }else if(!result2){
+		        	 alert("人员不存在");
+		        	 return;
+		         }else if(arr1[0] - arr2[0]>=0){
+		        	 alert("请选择正确的结束时间");
+		        	 return;
+		         }else {
+		        	 for( i=arr1[0];i<=arr2[0];i++){
+		        		if(starttimes[i].disabled){
+		        			alert("所选时间段已有会议存在，请重新选择时间");
+				        	 return; 	
+		        		} 
+		        	 }
+		        	 if(arr2[0]-0+1>=24){
+		        		 
+		        	 }else{
+		        		 for(i=arr2[0];i<=arr2[0]-0+2;i++){
+			        		 if(starttimes[i].disabled){
+				        			alert("会议延伸时间与已存在会议时间冲突，请重新选择");
+						        	 return; 	
+				        		}  
+			        	 }
+		        	 }	
+		         }
+		    	  var mrSpOrder =
+		    			  {
+				    		    department: department.value,
+				    		    organization: zuzhiren.value,
+				    		    meettingName: huiyi.value,
+				    		    peopleNumbers: renshu.value,
+				    		    startTime: starttimes.value,
+				    		    endTime: endtimes.value,
+				    		    startDate: startDate.value,
+				    		    endDate: endDate.value,
+				    		    meettingRoomId: mettingroom.value,
+				    		    meettingTitle: huiyijianyao.value
+				    		  } ;
+		    	   $.ajax({
+					type: "POST",
+					url: MeettingRoominterfaces.Var_InsertSpOrder,
+					contentType: "application/json", 
+					data: JSON.stringify(mrSpOrder),
+				    success:function(msg54){
+				    	//alert(ids+yuangongid.value);
+				    	var eids = (ids+yuangongid.value).split(":");
+				    	//alert(eids.length); 
+				    	$.ajax({
+							type: "POST",
+							url:MeettingRoominterfaces.Var_InsertMrMeettingEmploye,
+							contentType: "application/json", 
+							data: JSON.stringify(eids),
+						    success:function(msg54){
+							var youjian = $("input[name=youjian]:checked");
+						    	if($(youjian).val()=="yes"){
+						    		 $.ajax({
+											type: "get",
+											url:MeettingRoominterfaces.Var_sendMailetoEmployee,
+											//contentType: "application/json", 
+											//data: {spOrderId:67},
+										    success:function(msg54){
+								        		}
+										});
+						    	}
+						    	 $.ajax({
+										type: "get",
+										url:MeettingRoominterfaces.Var_sendMaileToAdmin,
+										//contentType: "application/json", 
+										//data: {spOrderId:67},
+									    success:function(msg54){
+							        		}
+									});
+						    	window.location.href='myreserve.html';
+				        		}
+						});
+				    	//window.location.href='myreserve.html';
+		        		}
+				});
+					//alert(mrSpOrder.department);
+			}	  
+		 };
+</script>
+</head>
+<body  ng-app="myApp"  style="background-image: url('image/beijing6.jpg');background-repeat: no-repeat;background-size:100%;">
+	<div data-options="disabled:true,region:'north'" style="height:150px;background-color:purple;width: 100%">
+		<div style="color: orange; text-decoration: none; font-style: italic;padding-top: 20px;width: 100%">
+			<h3 style="color: orange;width: 80%;"><strong>预定提示:</strong></h3>
+			<h4 style="color: orange;width: 80%;"><strong>&nbsp&nbsp1.会议室的使用时间，是在预定的会议结束时间上顺延一个小时。</strong>
+			</h4>
+			<h4 style="color: orange;width: 80%;">
+				<strong>&nbsp&nbsp2.上个会议室使用时间结束后的一小时，会由管理员对会议室进行维护，此时间段无法使用会议室。</strong>
+			</h4>
+		</div>		 
+	</div>
+	<div class="panel panel-default" style="width: 100%">
+		<div class="panel-heading">
+			<div style="width: 100%" align="left">
+				<a href="mettingroom.html" class="btn btn-lg btn-primary" type="button" style="height: 40px"><span class="glyphicon glyphicon-home"></span><strong style="color: purple;">返回首页</strong></a>
+			</div>
+		</div>
+	</div>
+
+	<form action="myapp" name="form1" >
+		<!-- 必填信息模块 -->
+			<div class="panel panel-primary" style="width: 70%; margin-left: 15%;">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>视频会议室预定</strong></h3>
+					
+				</div>
+			<div class="panel-body">
+				<div>
+					<div style="float: left;" >
+						<div style="margin-left: 252px;">
+							<strong>部门:</strong> <input id="department" placeholder="必填"
+								style="width: 185px; height: 40px" />
+						</div>
+						<div ng-controller="myCtrl" 
+							style="z-index: 20; position: absolute;">
+							<select id="bumen" 
+								style="width:  185px;margin-left: 290px; color: teal;display: none;" size="10">
+								<option selected="selected">请选择部门</option>
+								<option ng-repeat="department in departments"
+									value="{{department.departmentId}}">{{department.departmentName}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div style="margin-left: 80px; float: left;">
+						<strong>组织人:</strong> <input id="zuzhiren" placeholder="必填"
+							style=" width: 185px; height: 40px" /> <input
+							id="yuangongid" type="text" hidden="true" name="employeeId" style="width: 1%;"/>
+					</div>
+						
+					<div ng-controller="zuzhirenCtrl"
+						style="z-index: 20; position: absolute;">
+						<strong> <select id="zuhzirenleibaio"
+							style=" margin-left: 604px;margin-top: 40px; width: 185px;display:none; color: teal;"
+							size="10" >
+								<option selected="selected">请选择</option>
+								<option ng-repeat="zuhziren  in zuzhirens"
+									value="{{zuhziren.userId}}">{{zuhziren.userName+"--"+zuhziren.mrDepartment.departmentName}}</option>
+						</select>
+						</strong>
+					</div>
+				</div>
+
+				<div style="height: 60px; width: 80%"></div>
+
+				<div>
+					<div style="margin-left: 225px; float: left;">
+						<strong>会议议题:</strong> <input type="text" id="huiyi"
+							style="width: 185px; height: 40px;"
+							placeholder="必填" />
+					</div>
+					<div style="margin-left: 66px; float: left;">
+						<strong>参与人数:</strong> <input type="text" id="renshu"
+							style="width: 185px; height: 40px;"
+							onkeyup="this.value=this.value.replace(/\D/g,'')" />
+					</div>
+				</div>
+
+				<div style="height: 60px;"></div>
+
+				<div style="height: 60px;">
+					<div style="margin-left: 223px; float: left;width: 80%">
+						<div style="float: left;">
+							<strong>会议简要:</strong>
+						</div>
+						<div style="float: left;">
+							<textarea id="huiyijianyao" rows="4" cols="102"
+								style="margin-left:5px; width:503px"></textarea>
+						</div>
+
+					</div>
+				</div>
+
+			<div style="height: 50px;"></div>
+
+				<div style="height: 50px;">
+					<div ng-controller="meettingRoomCtrl"
+						style="margin-left: 210px; float: left;width: 640px;">
+						<input id="meettingRoomId" type="text" hidden="true"
+							name="meettingRoomId" /> <strong>视频会议室:</strong> <select
+							id="mettingroom"
+							style="margin-left: ; width:180px; height: 40px"
+							name="meettingRoomId">
+							<option id="morentishi" selected="selected">请选择视频会议室</option>
+							<option ng-repeat="meettingRoom in meettingRooms"
+								value="{{meettingRoom.id}}">{{meettingRoom.meetingRoomName}}</option>
+						</select>
+					</div>
+				</div>
+
+			<div style="height: 20px;"></div>
+			
+				<div>
+					<div style="margin-left: 217px; float: left;width: 280px;">
+						<strong>开始日期:</strong><input id="startDate" value="" type="text"
+							readonly="readonly" placeholder="选择日期"
+							style="margin-left:10px; width:180px; height: 40px" />
+					</div>
+					<div style="margin-left: 50px; float: left;width: 280px;">
+						<strong>开始时间:</strong><select id="starttime"
+							style="margin-left: 10px; width: 180px; height: 40px">
+
+							<option>0:00</option>
+							<option>1:00</option>
+							<option>2:00</option>
+							<option>3:00</option>
+							<option>4:00</option>
+							<option>5:00</option>
+							<option>6:00</option>
+							<option>7:00</option>
+							<option>8:00</option>
+							<option>9:00</option>
+							<option>10:00</option>
+							<option>11:00</option>
+							<option>12:00</option>
+							<option>13:00</option>
+							<option>14:00</option>
+							<option>15:00</option>
+							<option>16:00</option>
+							<option>17:00</option>
+							<option>18:00</option>
+							<option>19:00</option>
+							<option>20:00</option>
+							<option>21:00</option>
+							<option>22:00</option>
+							<option>23:00</option>
+							<option>24:00</option>
+						</select>
+					</div>
+
+					<div style="height: 60px;"></div>
+
+					<div style="margin-left: 217px; float: left;width: 280px;">
+						<strong>结束日期:</strong><input id="endDate" type="text"
+							placeholder="选择日期"
+							style="margin-left: 10px; width: 180px; height: 40px"
+							readonly="readonly" />
+					</div>
+					<div style="margin-left: 50px; float: left;width: 280px;">
+						<strong>结束时间:</strong> <select id="endtime"
+							style="margin-left: 8px; width: 180px; height: 40px">
+							<option>0:00</option>
+							<option>1:00</option>
+							<option>2:00</option>
+							<option>3:00</option>
+							<option>4:00</option>
+							<option>5:00</option>
+							<option>6:00</option>
+							<option>7:00</option>
+							<option>8:00</option>
+							<option>9:00</option>
+							<option>10:00</option>
+							<option>11:00</option>
+							<option>12:00</option>
+							<option>13:00</option>
+							<option>14:00</option>
+							<option>15:00</option>
+							<option>16:00</option>
+							<option>17:00</option>
+							<option>18:00</option>
+							<option>19:00</option>
+							<option>20:00</option>
+							<option>21:00</option>
+							<option>22:00</option>
+							<option>23:00</option>
+							<option>24:00</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- 参会人员模块 -->
+				<div style="height: 60px;"></div>
+				<div style="margin-left: 215px; float: left;" class="input-group">
+					<div style="">
+						<strong>参与人员:</strong> <input id="renyuan"
+							placeholder="输入姓名"
+							style="margin-left: 10px; width: 180px; height: 40px" />
+					</div>
+					<div ng-controller="canyurenCtrl" style="z-index: 20; position: absolute;">
+						<select id="renyunleibaio"
+							style="margin-left: 75px; width: 180px; color: teal;"
+							hidden="true" size="10">
+							<option selected="selected">请选择</option>
+							<option ng-repeat="canyuren  in canyurens"
+								value="{{canyuren.userId}}">{{canyuren.userName+"--"+canyuren.mrDepartment.departmentName}}</option>
+						</select>
+					</div>
+				</div>
+				<div style="float: left;margin-left: 180px">
+					<a class="btn btn-lg btn-primary" id="ry_tianjia" role="button"
+						style="height: 40px;" data-content="此人员不存在！"
+						data-original-title="信息提示">添加</a>
+				</div>
+
+				<div style="height: 60px;"></div>
+
+				<div style="">
+				 <div style="float: left;margin-left: 217px">
+							<strong>人员列表:</strong>
+				 </div>
+					<div style="margin-top:10px; float: left;">
+						
+						<div style="width: 340px;margin-left: 20px">
+							<div id="firststart"></div>
+							
+						</div>
+						
+					</div>
+				</div>
+				<div style="height: 60px;"></div>
+				<!-- 信息通知模块 -->
+				<div style="width: 80%;">
+					<div style="margin-left: 217px; float: left;width: 20%;">
+						<strong>邮件通知:</strong> <input type="radio"
+							style="margin-left: 3%;" name="youjian" value="yes"
+							checked="checked" /><strong>是</strong> <input type="radio"
+							style="margin-left: 3%;" name="youjian" value="no" /><strong>否</strong>
+					</div>
+					<div style="margin-left: 130px; float: left;width: 20%;">
+						<strong>微信通知:</strong> <input type="radio"
+							style="margin-left: 3%;" name="weixing" value="yes"
+							disabled="disabled" /><strong>是</strong> <input type="radio"
+							style="margin-left: 3%;" name="weixing" value="no"
+							disabled="disabled" /><strong>否</strong>
+					</div>
+				</div>
+			</div>
+		</div>
+			
+			<!--提交按钮 -->
+			<div style="margin-left: 220px">
+				<div style="margin-left: 15%; float: left;">
+					<button id="tijiaoform" type="button" class="btn btn-lg btn-primary">提交</button>
+				</div>
+				
+				<div style="margin-left: 30%; float: left;">
+					<a class="btn btn-lg btn-primary" href="mettingroom.html" role="button"
+												>取消</a>
+				</div>
+			</div>
+			<div style="height: 60px;"></div>
+	</form>
+	<div data-options="disabled:true,region:'north'"
+		style="height: 50px; background-color: purple;width: 100%;"></div>
+	<script type="text/javascript">
+		//部门初始化
+		 var app = angular.module('myApp', []);
+		//加载部门
+		 app.controller('myCtrl', function($scope,$http) {
+				 var department = document.getElementById('department');
+				 department.onkeyup=function(){
+					 //alert(department.value);
+					  var url=MeettingRoominterfaces.Var_departmentsByName+department.value+"?"+Math.random();
+						 $http.get(url).success( function(response) {
+			                 $scope.departments = response;
+			              });
+					  var bumen = document.getElementById('bumen');
+					  bumen.style.display="block";
+					 // bumen.removeAttribute("hidden");
+					  bumen.onchange=function(){
+						  var hide = $scope.departments;
+						  for(i=0;i<hide.length;i++){
+							  if(hide[i].departmentId == bumen.value){
+								  department.value = hide[i].departmentName;
+							  }
+						  }
+						  bumen.style.display="none";
+					  }
+					  bumen.onblur =function(){
+						  var result=false;
+						  var hide = $scope.departments;
+						  if(hide==null||hide==""){
+							  department.value = null;
+						  }else{
+							  for(i=0;i<hide.length;i++){
+								  if(hide[i].departmentName == department.value){
+									  result=true;
+									  department.value = hide[i].departmentName;
+									  return; 
+								  }	 
+							  } 							  
+						  }
+						  if(!result)
+							  {
+							  department.value = null;
+							  }
+						  bumen.style.display="none";
+					  }
+			      } 
+			});
+		 var yuangongid = document.getElementById('yuangongid');
+		//加载组织人
+		 app.controller('zuzhirenCtrl', function($scope,$http) {
+			 var zuzhiren = document.getElementById('zuzhiren');
+			  zuzhiren.onkeyup=function(){
+				  var url = MeettingRoominterfaces.Var_searchUserByName+zuzhiren.value+"?"+Math.random();
+					 $http.get(url).success( function(response) {
+		                 $scope.zuzhirens = response;
+		              });
+				  var zuhzirenleibaio = document.getElementById('zuhzirenleibaio');
+				  zuhzirenleibaio.style.display="block";
+				  zuhzirenleibaio.onchange=function(){
+					  var hike = $scope.zuzhirens;
+					  for(i=0;i<hike.length;i++){
+						  if(hike[i].userId == zuhzirenleibaio.value){
+							  yuangongid.value = zuhzirenleibaio.value;
+							  zuzhiren.value = hike[i].userName; 
+						  }
+					  }
+					  zuhzirenleibaio.style.display="none";
+				  }
+				  zuhzirenleibaio.onblur =function(){
+					  var result=false;
+					  var hike = $scope.zuzhirens;
+					  if(hike==null||hike==""){
+						  zuzhiren.value = null;
+					  }else{
+						  for(i=0;i<hike.length;i++){
+							  if(hike[i].userName == zuzhiren.value){
+								  result=true;
+								  zuzhiren.value = hike[i].userName;
+								  return;  
+							  }
+						  } 
+					  }
+					  if(!result)
+					  {
+						  zuzhiren.value = null;
+					  }
+					  zuhzirenleibaio.style.display="none";
+				  }
+		      } 
+			 
+			}); 
+		 //加载会议室
+		 app.controller('meettingRoomCtrl', function($scope,$http) {
+			 var url=MeettingRoominterfaces.Var_searchAllMeettingRoom+"?"+Math.random();
+				 $http.get(url).success( function(response) {
+	                 $scope.meettingRooms = response;
+	              });
+			});
+		 //点击添加将人员写入页面
+		 var ry_tianjia = document.getElementById('ry_tianjia');
+		 var ids = "";
+		 var liebiao ="";
+		 
+		 //加载参与人
+		 app.controller('canyurenCtrl', function($scope,$http) {
+			 var renyuan =  document.getElementById('renyuan');
+			 renyuan.onkeyup=function(){
+				 var url = MeettingRoominterfaces.Var_searchUserByName+renyuan.value+"?"+Math.random();
+				 $http.get(url).success( function(response) {
+	                 $scope.canyurens = response;
+	              });
+				 var url2 = MeettingRoominterfaces.Var_searchUsers;
+				 $http.get(url2).success( function(response) {
+	                 $scope.renyuanss = response;
+	              });
+				  var renyunleibaio = document.getElementById('renyunleibaio');
+				  renyunleibaio.style.display="block";
+				  renyunleibaio.onchange=function(){
+					  var hike = $scope.canyurens;
+					  for(i=0;i<hike.length;i++){
+						  if(hike[i].userId == renyunleibaio.value){
+							  renyuan.value = hike[i].userName; 
+						  }
+					  }
+					  renyunleibaio.style.display="none";
+					  ry_tianjia.onclick=function(){
+						   var result3 =null;
+						  if(renyuan.value!=""){
+					    	  for(i=0;i<$scope.renyuanss.length;i++){
+						    	  if(renyuan.value == $scope.renyuanss[i].userName){
+						    		  result3 =true ;
+						    	  }
+						      }
+					    	  if(result3){
+					    		  $("#firststart").after("<div style=\"float: left;margin-left: 10px;\"><div id=\"divfirst\"class=\"alert alert-info alert-dismissable\"style=\"width: 150px; height: 40px;\">"
+					    					+"<button id=\""+renyunleibaio.value+"\"type=\"button\" class=\"close\" data-dismiss=\"alert\"aria-hidden=\"true\">&times;</button>"+
+					    					renyuan.value+"</div></div>");
+
+					    		  ids=ids+renyunleibaio.value+":";
+					    		   $("#divfirst").bind('closed.bs.alert', function () {
+					    			  var divfirst = $(".close");
+					    			     arrIds = ids.split(":");
+					    			     ids ="";
+					    			     for(i=0;i<divfirst.length;i++){
+					    			    	
+					    			    		 ids = ids+$(divfirst[i]).prop("id")+":";
+					    			     }
+					    		    }); 
+									 renyuan.value ="";
+					    	  }else{
+					    		  $("#ry_tianjia").popover('show');
+					    	  }
+					      }else{
+					    	  $("#ry_tianjia").popover('show');
+					      }
+					     } 
+				  }
+				  renyuan.onfocus = function(){
+					  $("#ry_tianjia").popover('destroy');
+				  }
+				  renyunleibaio.onblur =function(){
+					  var result=false;
+					  var hike = $scope.canyurens;
+					  if(hike==null||hike==""){
+						  renyuan.value = null;
+					  }else{
+						  for(i=0;i<hike.length;i++){
+							  if(hike[i].userName == renyuan.value){
+								  result=true;
+								  renyuan.value = hike[i].userName;
+								  return;  
+							  }
+						  } 
+					  }
+					  if(!result)
+					  {
+						  renyuan.value = null;
+					  }
+					  renyunleibaio.style.display="none";
+				  }
+		      } 
+			}); 
+		 $('#startDate').focus(function(){
+			 $('#startDate').datetimepicker('show');
+		 });
+		 $('#startDate').datetimepicker({
+		    	todayhighlight: true,
+		        format: "yyyy-mm-dd",
+		        autoclose: true,
+		        minView: "month",  
+		        language: 'zh-CN',
+		        pickdate:true,
+		    });
+		 /*  $('#endDate').datetimepicker({
+		    	todayhighlight: true,
+		        format: "yyyy-mm-dd",
+		        autoclose: true,
+		        minView: "month",  
+		        language: 'zh-CN'
+		    });  */
+		 
+	</script>
+</body>
+</html>

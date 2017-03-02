@@ -2,7 +2,7 @@
 <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
 <!--数据库驱动-->
-    <classPathEntry location="C:\Users\Administrator\.m2\repository\mysql\mysql-connector-java\5.0.8\mysql-connector-java-5.0.8.jar"/>
+    <classPathEntry location="C:\Users\Administrator\.m2\repository\mysql\mysql-connector-java\5.1.39\mysql-connector-java-5.1.39.jar"/>
   <context id="context1">
     <!--  <jdbcConnection connectionURL="???" driverClass="???" password="???" userId="???" />
     <javaModelGenerator targetPackage="???" targetProject="???" />
@@ -16,23 +16,24 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://172.16.2.4:3306/DY_PMIS" userId="root" password="pmo2009">
         </jdbcConnection>
     <!--生成Model类存放位置-->
-        <javaModelGenerator targetPackage="rest.mybatis.model.test" targetProject="D:\daily-tools\neonWorkspace\mis-rest/src/main/java">
+        <javaModelGenerator targetPackage="rest.mybatis.model.meettingroom" targetProject="E:\workspace\mis-rest\src\main\java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
         <!--生成映射文件存放位置-->
-        <sqlMapGenerator targetPackage="rest.mybatis.mapping.test" targetProject="D:\daily-tools\neonWorkspace\mis-rest/src/main/resources">
+        <sqlMapGenerator targetPackage="rest.mybatis.mapping.meettingroom" targetProject="E:\workspace\mis-rest\src\main\resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
         <!--生成Dao类存放位置-->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="rest.mybatis.dao.test" targetProject="D:\daily-tools\neonWorkspace\mis-rest/src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="rest.mybatis.dao.meettingroom" targetProject="E:\workspace\mis-rest\src\main\java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
         <!--生成对应表及类名-->
-        <table schema="DY_PMIS" tableName="UserT" domainObjectName="UserT" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table schema="DY_PMIS" tableName="T_PRO_BU" domainObjectName="ProBu" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table schema="DY_PMIS" tableName="T_PLIN" domainObjectName="Pline" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table schema="DY_PMIS" tableName="T_PSER" domainObjectName="Pser" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table schema="DY_PMIS" tableName="T_PRO" domainObjectName="Pro" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table schema="DY_PMIS" tableName="UserT" domainObjectName="MrUserT" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table schema="DY_PMIS" tableName="SP_DOWNLOAD" domainObjectName="MrSpDownload" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table schema="DY_PMIS" tableName="SP_ORDER" domainObjectName="MrSpOrder" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table schema="DY_PMIS" tableName="MEETTING_EMPLOYEE" domainObjectName="MrMeettingEmployee" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table schema="DY_PMIS" tableName="MEETTING_ROOM" domainObjectName="MrMeettingRoom" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table schema="DY_PMIS" tableName="Department" domainObjectName="MrDepartment" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
   </context>
 </generatorConfiguration>

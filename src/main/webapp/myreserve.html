@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>我的预定</title>
+<!-- 新 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet"
+	href="css/bootstrap-3.3.0-dist/dist/css/bootstrap.min.css">
+
+<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+<link rel="stylesheet"
+	href="css/bootstrap-3.3.0-dist/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script type="text/javascript" src="js/jquery.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script type="text/javascript"
+	src="css/bootstrap-3.3.0-dist/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
+<!-- <script type="text/javascript" src="js/interface2.js"></script> -->
+<script src="js/angular/controller.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var myDate = new Date();
+		myDate.toLocaleDateString(); //获取当前日期
+		
+	});
+</script>
+<script type="text/javascript">
+String.prototype.getQuery = function(name) {  
+	　　var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	　　var r = this.substr(this.indexOf("/?")+1).match(reg);
+	　　if (r!=null) return unescape(r[2]); 
+	   return null;  
+	}
+var strHref = window.location.href;
+var storage = window.localStorage;
+var huserId = strHref.getQuery("userId");
+if(huserId!=null){
+	
+}else{
+	if(storage.getItem("userId")==null){
+		window.location.href="http://mis.dayang.com"; 
+	}
+}
+</script>
+<!-- 实现全选和反选 -->
+<script>
+ window.onload=function(){
+      var CheckAll=document.getElementById('All');
+      var table=document.getElementById('table'); 
+      var    CheckBox=table.getElementsByTagName('input');
+      CheckAll.onclick=function(){
+    	  	if(CheckAll.checked == true){ 
+    	  		for(i=1;i<CheckBox.length;i++){
+                    CheckBox[i].checked=true;
+                };
+    	  	}else{
+    	  		for(i=1;i<CheckBox.length;i++){
+                    CheckBox[i].checked=false;
+                };
+    	  	}  
+         };
+  	//获取员工id
+ 	var storage = window.localStorage;
+	var userId = storage.getItem("userId");
+	var userName =storage.getItem("userName");
+    //删除会议预定
+    var yudingshanchu = document.getElementById('yudingshanchu');
+    	yudingshanchu.onclick = function(){
+    		var idInputs = $(":checked");
+    		if(idInputs.length == 0){
+    			alert("请勾选操作项");
+    		}else{
+    			if(confirm("确认删除？")){
+    				var pids ="";
+    				for(i=0;i<idInputs.length;i++){
+    	    			if(userName == idInputs[i].name ){
+    	    				pids = pids+idInputs[i].value.split(":")[0] + ":";
+    	    			}
+    	    		}
+    				var spids = pids.split(":");
+    				//删除员工会议及关系记录
+    				 $.ajax({
+    					type: "post",
+    					url: MeettingRoominterfaces.Var_deleteSpOrderByIds,
+    					contentType: "application/json", 
+    					data: JSON.stringify(spids),
+    				    success:function(msg54){
+    	    				window.location.href='myreserve.html';
+    		        		}
+    				}); 
+    			};
+    			
+    		}
+    		
+    	};
+ };
+ //获取员工信息
+ 	var storage = window.localStorage;
+	var userId = storage.getItem("userId");
+	var userName =storage.getItem("userName");
+	//会议初始化
+	 var app = angular.module('myApp', []);
+	//加载会议列表
+	 app.controller('myCtrl', function($scope,$http) {
+		 
+		 $scope.checked = function(starttime,endtime){
+			 yudingshanchu.disabled="";
+		    	var idInputs = $(":checked");
+		    	var start = starttime.split(":")[0];
+		    	var end = endtime.split(":")[0];
+		    	var nowtime = new Date().getHours();
+		    	for(i=0;i<idInputs.length;i++){
+		    		
+		    		if(start<=nowtime&&nowtime<=end){
+		    			yudingshanchu.disabled="disabled";
+		    		}
+		    		if(userName == idInputs[i].name ){
+		    		}else{
+		    			yudingshanchu.disabled="disabled";
+		    		}
+		    	} 
+		 };
+		//日期格式化函数初始化日期
+			 var str3 = new Date().getFullYear();
+			 var str4 = new Date().getMonth()+1;
+			 var str5 = new Date().getDate(); 
+			var str2="";
+			 if(str4-10 >=0 && str5-10 >=0){
+				str2 = str3+"-"+str4+"-"+str5;
+			}else if(str4-10 <=0 && str5-10 <=0){
+				str2 = str3+"-0"+str4+"-0"+str5;
+			}else if(str4-10 >=0 && str5-10 <=0){
+				str2 = str3+"-"+str4+"-0"+str5;
+			}else if(str4-10 <=0 && str5-10 >=0){
+				str2 = str3+"-0"+str4+"-"+str5;
+			}
+			 var pages = 1;
+			 if(pages==1){
+				 $("#befor").attr("hidden",true);
+			 }else{
+				 document.getElementById('befor').removeAttribute("hidden");
+			 }
+		    //分页控制
+			//首页
+		 	$scope.first = function(){
+				var page = 1;
+				pages = page;
+				if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+				 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		    	ShowBypage(page);
+			};
+			//上一页
+		 	$scope.befor = function(){
+		 		var page = pages-1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+		 		 if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		    	ShowBypage(page);
+			};
+			//下一页
+		 	$scope.next = function(){
+		 		var page = pages+1;
+		 		pages = page;
+		 		if(pages==1){
+					 $("#befor").attr("hidden",true);
+				 }else{
+					 document.getElementById('befor').removeAttribute("hidden");
+				 }
+
+			   if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 }
+		    	ShowBypage(page);	
+			};
+	 		//获取总条数
+	 		var url=MeettingRoominterfaces.Var_searchbeSpOrderCounts+userId+"?"+Math.random();
+	 		 var number = 0;
+			 $http.get(url).success( function(response) {
+				 if(response%10==0){
+					 number = respons/10;
+				 }else{
+					 number = (response-response%10)/10+1;
+				 }
+				  if(pages == number){
+					 $("#next").attr("hidden",true);
+				 }else{
+					 document.getElementById("next").removeAttribute("hidden");
+				 } 
+				//最后一页
+				 $scope.last = function(){
+				 		pages = number;
+				 		if(pages==1){
+							 $("#befor").attr("hidden",true);
+						 }else{
+							 document.getElementById('befor').removeAttribute("hidden");
+						 }
+				 		 if(pages == number){
+							 $("#next").attr("hidden",true);
+						 }else{
+							 document.getElementById("next").removeAttribute("hidden");
+						 }
+			    	ShowBypage(number);
+				};
+	          });
+	function ShowBypage(page){
+		var url=MeettingRoominterfaces.Var_searchAllSpOrder+userId+"?page="+page+"&"+Math.random();
+		 $http.get(url).success( function(response) {
+			 //alert(response);
+            $scope.mrSpOrders = response;
+          //修改会议预定
+            $scope.yudingxuigai = function(stratTime,endTime,id,startDate,ognization){
+      			var nowTime = new Date().getHours();
+      			if(startDate<str2){
+      				alert("对不起，该会议已经逾期不能修改！");
+      			}else if(startDate == str2){
+      				var startime = stratTime.split(":")[0];
+      				if(startime<=nowTime){
+      					alert("对不起，该会议已经逾期不能修改！");
+      				}else{
+      					if(userName == ognization){
+	          				window.location.href='changeReserve.html?id='+id;
+	          			}else{
+	          				alert("对不起，您不是组织者无修改权限！");
+	          			}
+      				}
+      			}else{
+      				if(userName == ognization){
+          				window.location.href='changeReserve.html?id='+id;
+          			}else{
+          				alert("对不起，您不是组织者无修改权限！");
+          			}
+      			}	   
+		    };
+         });
+	}
+		 var url=MeettingRoominterfaces.Var_searchAllSpOrder+userId+"?page="+1+"&"+Math.random();
+			 $http.get(url).success( function(response) {
+				 //alert(response);
+	             $scope.mrSpOrders = response;
+	           //修改会议预定
+	             $scope.yudingxuigai = function(stratTime,endTime,id,startDate,ognization){
+	          			var nowTime = new Date().getHours();
+	          			if(startDate<str2){
+	          				alert("对不起，该会议已经逾期不能修改！");
+	          			}else if(startDate == str2){
+	          				var startime = stratTime.split(":")[0];
+	          				if(startime<=nowTime){
+	          					alert("对不起，该会议已经逾期不能修改！");
+	          				}else{
+	          					if(userName == ognization){
+	    	          				window.location.href='changeReserve.html?id='+id;
+	    	          			}else{
+	    	          				alert("对不起，您不是组织者无修改权限！");
+	    	          			}
+	          				}
+	          			}else{
+	          				if(userName == ognization){
+    	          				window.location.href='changeReserve.html?id='+id;
+    	          			}else{
+    	          				alert("对不起，您不是组织者无修改权限！");
+    	          			}
+	          			}	   
+				    };
+	          });
+			 //获取密码
+			 $scope.p_yuding = function(stratTime,endTime,id,startDate,ognization,RoomId){
+				 var myDate = new Date();
+				 var mytime=myDate.getHours();
+				 var starttime =(stratTime.split(":")[0]-0)-1;
+				 var endtime =(endTime.split(":")[0]-0);
+				 if(ognization==userName){
+					 if(startDate<str2){
+						 alert("无法获取密码，此会议已逾期！");
+					 }else if(startDate == str2){
+						 if(mytime < starttime){
+							  $.ajax({
+									type:"post",
+									url:MeettingRoominterfaces.Var_searchSpOrderByMeettingRoomIdAndTime,
+									data: {meettingRoomId:RoomId,startdate:str2},
+									success:function(msg54){
+										var myDate = new Date();
+										 var mytime=myDate.getHours();
+											   for(j=0;j<msg54.length;j++){
+												  //alert(msg54.length);
+												   var arr1 = msg54[j].startTime.split(":");
+												   //alert("来不");
+												   var arr2 = msg54[j].endTime.split(":");
+												   if((arr2[0]-0)+1>=mytime & mytime>=(arr1[0]-0)-1){
+													   //$(function () { $('#myModal').modal('hide')});
+													    alert("当前会议进行中，无法获取密码！");
+													    return;
+												   }
+											   }
+									   var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
+					    				 $http.get(url3).success( function(response) {
+					    		             alert("会议室："+response.mrMeettingRoom.meetingRoomName +"，账户为："+response.mrMeettingRoom.roomAccount+"，当前密码为："+response.mrMeettingRoom.password);
+					    		          });
+									}
+									});
+							 
+						 }else if(mytime >= endtime){
+							 alert("无法获取密码，此会议已逾期！");
+						 }else{
+							 var url3=MeettingRoominterfaces.Var_searchSpOrderById+id;
+		    				 $http.get(url3).success( function(response) {
+		    		             alert("会议室："+response.mrMeettingRoom.meetingRoomName +"，账户为："+response.mrMeettingRoom.roomAccount+"，当前密码为："+response.mrMeettingRoom.password);
+		    		          });
+						 }
+					 }else{
+						 alert("当前无法获取密码，请于"+startDate+"会议当天获取！");
+					 } 
+				 }else{
+					 $("#password"+id).popover('show');
+					 
+				 }
+			    };
+		});
+	//展示预定详情
+	 app.controller('xiangqingCtrl', function($scope,$http) {
+		
+		 $scope.changeStatus = function(prop){
+			 //alert(prop);
+			 var trs = document.getElementsByTagName('tr');
+			 for(i=1;i<trs.length;i++){
+	    			if(i == prop+1){
+	    				//alert("lalbu");
+	    				//alert(trs[i]);
+	    				trs[i].className="info";
+	    				var id = $($(trs[i]).children("td")[0]).children("input").val().split(":")[0];;
+	    				//获取会议记录详情
+	    				//alert(id);
+	    				var url=MeettingRoominterfaces.Var_searchSpOrderById+id+"?"+Math.random();
+	    				 $http.get(url).success( function(response) {
+	    		             $scope.mrSpOrder = response;
+	    		             //alert($scope.mrSpOrder.id);
+	    		          });
+	    			}else{
+	    				trs[i].className="success";
+	    			} 
+	    		}
+			 $('#myModal3').modal({
+			        keyboard: true
+			    })
+
+		    };
+		});
+ </script>
+</head>
+<body ng-app="myApp"
+	style="background-image: url('image/beijing6.jpg'); background-repeat: no-repeat; background-size: 150%;">
+	<div data-options="disabled:true,region:'north'"
+		style="height: 180px; background-color: purple; width: 100%;">
+		<div
+			style="color: orange; text-decoration: none; font-style: italic; padding-top: 2px; padding-left:; width: 100%">
+			<h3 style="color: orange;">
+				<strong>温馨提示:</strong>
+			</h3>
+			<h4 style="color: orange;">
+				<strong>&nbsp&nbsp1.请留意会议室登录账号。</strong>
+			</h4>
+			<h4 style="color: orange;">
+				<strong>&nbsp&nbsp2.获取密码：点击获取密码按钮获取对应的会议室密码。</strong>
+			</h4>
+			<h4 style="color: orange;">
+				<strong>&nbsp&nbsp3.双击可查看预定详情。</strong>
+			</h4>
+			<h4 style="color: orange;">
+				<strong>&nbsp&nbsp&nbsp&nbsp注意：会议室密码会在上个会议结束后才可获取，而且密码可能在会议开始前发生变更。请在会议开始前的一小时内获取最终登录密码。</strong>
+			</h4>
+
+		</div>
+	</div>
+	<div class="panel panel-default" >
+		<div class="panel-heading">
+			<div style="" align="left">
+				<a href="mettingroom.html" class="btn btn-lg btn-primary"
+					type="button" style="height: 40px"><span
+					class="glyphicon glyphicon-home"></span><strong
+					style="color: purple;">返回首页</strong></a>
+			</div>
+		</div>
+	</div>
+	<!-- 预定列表 -->
+	<div class="panel panel-primary" style="width: 80%; margin-left: 10%;">
+		<div class="panel-heading">
+			<div style="float: left;">
+				<h3 class="panel-title">
+					<strong>我的预定列表</strong>
+				</h3>
+			</div>
+			<div style="height: 20px;"></div>
+		</div>
+		<div class="panel-body" ng-controller="xiangqingCtrl">
+			<div class="panel panel-primary" style="width: 90%; margin-left: 5%;"
+				ng-controller="myCtrl">
+				<div class="panel-body">
+
+					<div style="height: 50px;">
+						<div style="margin-left: 0px; float: left;">
+							<button class="btn btn-lg btn-primary" id="yudingshanchu"
+								role="button" style="height: 40px;">删除</button>
+						</div>
+					</div>
+					<div style="width: 100%">
+						<table id="table" class="table">
+							<thead>
+								<tr class="warning">
+									<td><input id="All" type="checkbox" name="" value="0" /></td>
+									<td style="width: 120px"><strong>部门</strong></td>
+									<td  style="width: 110px"><strong>会议室</strong></td>
+									<td style="width: 200px"><strong>会议标题</strong></td>
+									<td  style="width: 110px"><strong>开始时间</strong></td>
+									<td style="width: 110px"><strong>结束时间</strong></td>
+									<td style="width: 110px"><strong>组织人</strong></td>
+									<td style="width: 110px"><strong>账户</strong></td>
+									<td style="width: 150px"><strong>日期</strong> </td>
+									<td style="width: 400px"><strong>操作</strong> </td>
+								</tr>
+							</thead>
+							<tr class="success" ng-repeat="mrSpOrder in mrSpOrders"
+								ng-dblclick="changeStatus($index)" id="success">
+								<td><input id="meetting_id" type="checkbox"
+									value="{{mrSpOrder.id}}:{{mrSpOrder.startDate}}:{{mrSpOrder.startTime}}"
+									name="{{mrSpOrder.organization}}"
+									ng-click="checked(mrSpOrder.startTime,mrSpOrder.endTime)" /></td>
+								<td >{{mrSpOrder.department}}</td>
+								<td >{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</td>
+								<td >{{mrSpOrder.meettingName}}</td>
+								<td >{{mrSpOrder.startTime}}</td>
+								<td >{{mrSpOrder.endTime}}</td>
+								<td >{{mrSpOrder.organization}}</td>
+								<td >{{mrSpOrder.mrMeettingRoom.roomAccount}}</td>
+								<td >{{mrSpOrder.startDate}}</td>
+								<td >
+									<div style="height: 50px;">
+										<div style="margin-left: 0px; float: left;">
+											<button
+												ng-click="p_yuding(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id,mrSpOrder.startDate,mrSpOrder.organization,mrSpOrder.meettingRoomId)"
+												id="password{{mrSpOrder.id}}" type="button" class="btn btn-lg btn-primary"
+												data-content="非组织者无法获取密码！" data-original-title="信息提示"
+												data-placement="top" style="height: 40px; margin-left: 0px"
+												value="{{mrSpOrder.id}}">获取密码</button>
+										</div>
+										<div style="margin-left: 20px; float: left;">
+											<a id="yudingxuigai"
+												ng-click="yudingxuigai(mrSpOrder.startTime,mrSpOrder.endTime,mrSpOrder.id,mrSpOrder.startDate,mrSpOrder.organization)"
+												class="btn btn-lg btn-primary" role="button"
+												style="height: 40px;">修改</a>
+										</div>
+									</div>
+
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div align="center" style="margin-left: 38%">
+						<div id="first" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><a ng-click="first()">首页</a></li>
+							</ul>
+						</div>
+
+						<div id="befor" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><span class="glyphicon  glyphicon-backward"
+									ng-click="befor()"></span></li>
+							</ul>
+						</div>
+
+						<div id="next" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><span class="glyphicon  glyphicon-forward"
+									ng-click="next()"></span></li>
+							</ul>
+						</div>
+
+						<div id="last" style="float: left;">
+							<ul class="pagination" style="height: 40px; margin-right: 10px">
+								<li><span ng-click="last()">最后一页</span></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 预定详情 -->
+			<div class="modal fade" id="myModal3" tabindex="-1" role="dialog"
+				aria-labelledby="myModalLabel" aria-hidden="true"
+				style="margin-top: 10px;width: 100%;" data-backdrop="false">
+				<div class="modal-dialog">
+					<div class="modal-content">
+							<div class="modal-body">
+								<div class="panel panel-success"
+									style="width: 90%; margin-left: 5%;">
+									<div class="panel-heading">
+										<h3 class="panel-title">预定详情</h3>
+									</div>
+									<div class="panel-body">
+										<div style="height: 40px;margin-left: 13px;">
+											<strong>会议主题:&nbsp&nbsp&nbsp</strong>
+											{{mrSpOrder.meettingName}}
+										</div>
+
+										<div style="height: px; float: left;margin-left: 13px;">
+											<strong>会议简要:&nbsp&nbsp&nbsp</strong>
+										</div>
+										<div style="width: 100%;">
+											{{mrSpOrder.meettingTitle}}</div>
+										<div style="height: 20px"></div>
+										<div style="height: 40px; margin-left: 26px;">
+											<strong>组织人:&nbsp&nbsp&nbsp</strong>
+											{{mrSpOrder.organization}}
+										</div>
+										<div style="height: 40px; margin-left: 13px;">
+											<strong>参会人数:&nbsp&nbsp&nbsp</strong>
+											{{mrSpOrder.peopleNumbers}}
+										</div>
+										<div style="height: 40px;  margin-left: 26px;">
+											<strong>会议室:&nbsp&nbsp&nbsp</strong> <span
+												style="color: purple; font-weight: bold;">{{mrSpOrder.mrMeettingRoom.meetingRoomName}}</span>
+										</div>
+										<div style="height: 40px; margin-left: px;">
+											<strong>会议室账户:&nbsp&nbsp&nbsp</strong> <span
+												style="color: purple; font-weight: bold;">{{mrSpOrder.mrMeettingRoom.roomAccount}}</span>
+										</div>
+										<div style="height: 40px; margin-left: 13px;">
+											<strong>举行日期:&nbsp&nbsp&nbsp</strong> <span
+												style="color: purple; font-weight: bold;">{{mrSpOrder.startDate}}</span>
+										</div>
+										<div style="height: 40px; margin-left: 13px;">
+											<strong>开始时间:&nbsp&nbsp&nbsp</strong> <span
+												style="color: purple; font-weight: bold;">{{mrSpOrder.startTime}}</span>
+										</div>
+										<div style="height: 40px; margin-left: 13px;">
+											<strong>结束时间:&nbsp&nbsp&nbsp</strong> <span
+												style="color: purple; font-weight: bold;">{{mrSpOrder.endTime}}</span>
+										</div>
+										<div style="height: 200px; float: left;margin-left: 13px;">
+											<strong>参会人员:</strong>
+										</div>
+										<div style="margin-left: 64px" ng-repeat="usert in mrSpOrder.mrUserTList">
+											<p >&nbsp&nbsp&nbsp
+												{{usert.mrDepartment.departmentName}}，{{usert.userName}}；</p>
+												<p>邮箱:{{usert.userEmail}}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-options="disabled:true,region:'north'" style="height:50px;background-color:purple;">
+	</div> 
+</body>
+</html>
