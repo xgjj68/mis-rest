@@ -1,4 +1,4 @@
-var misrest_dns="http://mis.dayang.com/mis-rest";
+var misrest_dns="https://mis.dayang.com/mis-rest";
 MeettingRoominterfaces={
 //	//张鹏机器
 //	//条件（id和开始时间）提取会议预定记录
