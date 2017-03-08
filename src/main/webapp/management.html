@@ -669,12 +669,13 @@ if(huserId!=null){
 											style="width: 185px; height: 40px; margin-left: 20px" />
 									</div>
 									<div style="margin-left:60px;margin-top: 20px">
-										账户: <input type="text" id="add_roomAccount" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" placeholder="请输入字母或数字"
-											style="width: 185px; height: 40px; margin-left: 20px" maxlength="12"/>
+										账户: <input type="text" id="add_roomAccount" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\@\.]/g,'')"
+ placeholder="请输入字母或数字"
+											style="width: 185px; height: 40px; margin-left: 20px" maxlength="40"/>
 									</div>
 									<div style="margin-left: 60px;margin-top: 20px">
 										密码: <input type="text" id="add_password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" placeholder="请输入字母或数字"
-											style="width: 185px; height: 40px; margin-left: 20px" maxlength="12"/>
+											style="width: 185px; height: 40px; margin-left: 20px" maxlength="40"/>
 									</div>
 								</div>
 
@@ -719,7 +720,7 @@ if(huserId!=null){
 									</div>
 									<div style="margin-left: 65px;margin-top: 20px">
 										<label class="control-label">密码:</label> <input type="text" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" placeholder="请输入字母或数字" 
-											id="update_password"style="width: 185px; height: 40px; margin-left: 20px;" maxlength="12" />
+											id="update_password"style="width: 185px; height: 40px; margin-left: 20px;" maxlength="40" />
 									</div>
 								</div>
 
